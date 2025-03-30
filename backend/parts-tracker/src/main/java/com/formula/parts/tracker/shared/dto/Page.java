@@ -1,4 +1,4 @@
-package com.formula.parts.tracker.dto;
+package com.formula.parts.tracker.shared.dto;
 
 import java.io.Serial;
 import java.io.Serializable;
