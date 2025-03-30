@@ -20,4 +20,13 @@ public class SwaggerConfiguration {
             .build();
     }
 
+    @Bean
+    public GroupedOpenApi authenticationApi() {
+        return GroupedOpenApi.builder()
+            .group("authentication-api")
+            .packagesToScan("com.formula.parts.tracker.rest")
+            .pathsToMatch("/api/auth/**")
+            .build();
+    }
+
 }

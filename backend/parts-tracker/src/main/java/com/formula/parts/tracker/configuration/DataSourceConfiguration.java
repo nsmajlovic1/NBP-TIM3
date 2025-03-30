@@ -10,28 +10,26 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class DataSourceConfiguration {
 
-    @Value("${spring.datasource.url}")
+    @Value("${db.url}")
     private String url;
 
-    @Value("${spring.datasource.username}")
+    @Value("${db.username}")
     private String username;
 
-    @Value("${spring.datasource.password}")
+    @Value("${db.password}")
     private String password;
 
-    @Value("${spring.datasource.driver-class-name}")
+    @Value("${db.driver-class-name}")
     private String driverClassName;
 
     @Bean
     public DataSource dataSource() {
         final HikariConfig config = new HikariConfig();
+        
         config.setJdbcUrl(url);
         config.setUsername(username);
         config.setPassword(password);
         config.setDriverClassName(driverClassName);
-
-        // TODO: Remove this once the database is set up
-        config.setInitializationFailTimeout(-1);
 
         return new HikariDataSource(config);
     }

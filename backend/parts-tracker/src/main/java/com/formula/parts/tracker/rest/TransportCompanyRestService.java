@@ -1,8 +1,8 @@
 package com.formula.parts.tracker.rest;
 
 import com.formula.parts.tracker.core.service.transportcompany.TransportCompanyService;
-import com.formula.parts.tracker.dto.Page;
-import com.formula.parts.tracker.dto.TransportCompanyResponse;
+import com.formula.parts.tracker.shared.dto.Page;
+import com.formula.parts.tracker.shared.dto.transportcompany.TransportCompanyResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -18,7 +18,7 @@ public class TransportCompanyRestService {
 
     private final TransportCompanyService transportCompanyService;
 
-    @GetMapping("/api/transport-company")
+    @GetMapping
     public ResponseEntity<Page<TransportCompanyResponse>> getTransportCompanyInfo() {
         return ResponseEntity.ok(transportCompanyService.get());
     }
