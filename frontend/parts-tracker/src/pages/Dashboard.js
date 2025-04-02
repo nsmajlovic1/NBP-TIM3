@@ -3,10 +3,12 @@ import { useAuth } from "../context/AuthContext";
 import { AppBar, Toolbar, IconButton, Typography, Menu, MenuItem, Box } from "@mui/material";
 import { FaUserCircle } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
+import ChangePasswordModal from "../components/ChangePasswordModal";
 
 const Dashboard = () => {
   const { user, logout } = useAuth();
   const [anchorEl, setAnchorEl] = useState(null);
+  const [openModal, setOpenModal] = useState(false); 
   const navigate = useNavigate();
 
   const handleMenuClick = (event) => {
@@ -19,7 +21,19 @@ const Dashboard = () => {
 
   const handleLogout = () => {
     logout();
-    navigate("/login");  
+    navigate("/login");
+  };
+
+  const handleOpenModal = () => {
+    setOpenModal(true);
+  };
+
+  const handleCloseModal = () => {
+    setOpenModal(false);
+  };
+
+  const handlePasswordChange = () => {
+    alert("Password changed successfully!");
   };
 
   return (
@@ -28,7 +42,7 @@ const Dashboard = () => {
         <Toolbar>
           <Box sx={{ flexGrow: 1 }} />
           <Box sx={{ display: "flex", alignItems: "center" }}>
-            <IconButton edge="end" color="inherit" aria-label="user profile" sx={{ marginRight: 1 }}>
+            <IconButton edge="end" color="inherit" aria-label="user profile" sx={{ marginRight: 1 }} onClick={handleMenuClick}>
               <FaUserCircle size={30} />
             </IconButton>
             <Typography variant="h6" sx={{ marginRight: 2, cursor: "pointer" }} onClick={handleMenuClick}>
@@ -42,16 +56,19 @@ const Dashboard = () => {
         anchorEl={anchorEl}
         open={Boolean(anchorEl)}
         onClose={handleClose}
-        anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+        anchorOrigin={{ vertical: "top", horizontal: "right" }}
         transformOrigin={{ vertical: "top", horizontal: "right" }}
         PaperProps={{
           style: {
+            position: "absolute",
+            top: "64px",
+            right: "0px",
             width: "200px",
-            marginTop: "16px",
-            right: "-200px"
-          }
+            marginTop: "60px",
+          },
         }}
       >
+        <MenuItem onClick={handleOpenModal}>Change Password</MenuItem>
         <MenuItem onClick={handleLogout}>Logout</MenuItem>
       </Menu>
 
@@ -60,6 +77,12 @@ const Dashboard = () => {
           Welcome, {user.username}!
         </Typography>
       </div>
+
+      <ChangePasswordModal
+        open={openModal}
+        onClose={handleCloseModal}
+        onPasswordChange={handlePasswordChange}
+      />
     </div>
   );
 };
