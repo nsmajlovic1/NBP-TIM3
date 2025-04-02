@@ -4,16 +4,20 @@ import { Container, TextField, Button, Typography, Box, Paper } from "@mui/mater
 
 const Login = () => {
   const { login } = useAuth();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [usernameInput, setUsername] = useState("");
+  const [passwordInput, setPassword] = useState("");
   const [error, setError] = useState("");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await login(email, password);
+      const credentials = {
+        username: usernameInput,
+        password: passwordInput
+      }
+      await login(credentials);
     } catch (err) {
-      setError("Invalid email or password");
+      setError("Invalid username or password");
     }
   };
 
@@ -30,18 +34,18 @@ const Login = () => {
         )}
         <Box component="form" onSubmit={handleSubmit} sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
           <TextField
-            label="Email"
+            label="username"
             variant="outlined"
             fullWidth
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            value={usernameInput}
+            onChange={(e) => setUsername(e.target.value)}
           />
           <TextField
             label="Password"
             type="password"
             variant="outlined"
             fullWidth
-            value={password}
+            value={passwordInput}
             onChange={(e) => setPassword(e.target.value)}
           />
           <Button type="submit" variant="contained" color="primary" fullWidth>

@@ -6,8 +6,8 @@ import Dashboard from "./pages/Dashboard";
 
 function App() {
   return (
-    <AuthProvider>
-      <Router>
+    <Router>
+      <AuthProvider> 
         <Routes>
           <Route path="/login" element={<Login />} />
           <Route element={<ProtectedRoute />}>
@@ -15,8 +15,8 @@ function App() {
           </Route>
           <Route path="*" element={<Login />} />
         </Routes>
-      </Router>
-    </AuthProvider>
+      </AuthProvider>
+    </Router>
   );
 }
 
