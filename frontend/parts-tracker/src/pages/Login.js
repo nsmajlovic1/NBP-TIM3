@@ -34,7 +34,7 @@ const Login = () => {
         )}
         <Box component="form" onSubmit={handleSubmit} sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
           <TextField
-            label="username"
+            label="Username"
             variant="outlined"
             fullWidth
             value={usernameInput}
