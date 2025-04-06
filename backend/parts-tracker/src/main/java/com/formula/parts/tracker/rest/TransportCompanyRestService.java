@@ -23,8 +23,7 @@ public class TransportCompanyRestService {
         return ResponseEntity.ok(transportCompanyService.get());
     }
 
-
-    @PostMapping("/create")
+    @PostMapping("create")
     public ResponseEntity<TransportCompanyResponse> createTransportCompany(
             @Valid @RequestBody final TransportCompanyRequest request) {
         return ResponseEntity.ok(transportCompanyService.create(request));

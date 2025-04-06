@@ -16,6 +16,7 @@ import com.formula.parts.tracker.shared.exception.ApiException;
 import com.formula.parts.tracker.shared.exception.BadRequestException;
 import com.formula.parts.tracker.shared.exception.NotFoundException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
 import lombok.RequiredArgsConstructor;
@@ -138,4 +139,11 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             accessTokenSecret);
     }
 
+    @Override
+    public List<UserResponse> getAllUsers() {
+        List<User> users = userRepository.findAll();
+        return users.stream()
+                .map(userMapper::toUserResponse)
+                .toList();
+    }
 }

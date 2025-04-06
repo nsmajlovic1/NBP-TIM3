@@ -8,6 +8,8 @@ import com.formula.parts.tracker.shared.dto.user.UserResponse;
 import com.formula.parts.tracker.shared.exception.ApiException;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.util.List;
+
 public interface AuthenticationService {
 
     UserLoginResponse login(final UserLoginRequest request);
@@ -19,5 +21,7 @@ public interface AuthenticationService {
     String getAccessTokenOwner(final String accessToken);
 
     boolean isAccessTokenValid(final String accessToken, final UserDetails userDetails);
+
+    List<UserResponse> getAllUsers();
 
 }

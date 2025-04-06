@@ -7,6 +7,7 @@ import com.formula.parts.tracker.dao.model.UserFields;
 import com.formula.parts.tracker.shared.exception.DatabaseException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
 import java.util.Optional;
 import javax.sql.DataSource;
 import org.springframework.stereotype.Repository;
@@ -100,5 +101,16 @@ public class UserRepository extends BaseRepository<User> {
 
         executeUpdateQuery(updateQuery, newPassword, username);
     }
-    
+
+    public List<User> findAll() {
+        final String query = """
+            SELECT u.ID, u.FIRST_NAME, u.LAST_NAME, u.EMAIL, u.PASSWORD, u.USERNAME,
+                   u.PHONE_NUMBER, u.BIRTH_DATE, u.ADDRESS_ID, u.ROLE_ID,
+                   r.ID AS ROLE_ID, r.NAME AS ROLE_NAME
+            FROM NBP_USER u
+            JOIN ROLE r ON u.ROLE_ID = r.ID
+        """;
+
+        return executeListQuery(query, this::mapToEntityWithRole);
+    }
 }
