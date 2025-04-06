@@ -4,6 +4,7 @@ import com.formula.parts.tracker.core.mapper.TransportCompanyMapper;
 import com.formula.parts.tracker.dao.model.TransportCompany;
 import com.formula.parts.tracker.dao.repository.TransportCompanyRepository;
 import com.formula.parts.tracker.shared.dto.Page;
+import com.formula.parts.tracker.shared.dto.transportcompany.TransportCompanyRequest;
 import com.formula.parts.tracker.shared.dto.transportcompany.TransportCompanyResponse;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -25,5 +26,13 @@ public class TransportCompanyServiceImpl implements TransportCompanyService {
 
         return response;
     }
+
+    @Override
+    public TransportCompanyResponse create(final TransportCompanyRequest request) {
+        TransportCompany company = transportCompanyMapper.toEntity(request);
+        company = transportCompanyRepository.persist(company);
+        return transportCompanyMapper.toResponse(company);
+    }
+
 
 }
