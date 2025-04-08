@@ -2,6 +2,7 @@ package com.formula.parts.tracker.configuration;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
+import java.util.Locale;
 import javax.sql.DataSource;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -24,8 +25,9 @@ public class DataSourceConfiguration {
 
     @Bean
     public DataSource dataSource() {
+        Locale.setDefault(Locale.US);
+
         final HikariConfig config = new HikariConfig();
-        
         config.setJdbcUrl(url);
         config.setUsername(username);
         config.setPassword(password);

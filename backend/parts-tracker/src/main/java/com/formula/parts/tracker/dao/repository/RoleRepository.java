@@ -12,7 +12,7 @@ public class RoleRepository extends BaseRepository<Role> {
     }
 
     public boolean existsByUsername(final Long id) {
-        final String query = "SELECT COUNT(*) FROM NBP_ROLE r WHERE r.ID = ?";
+        final String query = "SELECT COUNT(*) FROM NBP.NBP_ROLE r WHERE r.ID = ?";
         return executeExistsQuery(query, id);
     }
 

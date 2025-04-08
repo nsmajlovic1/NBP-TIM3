@@ -30,16 +30,11 @@ public abstract class BaseRepository<T> {
         }
     }
 
-    protected long executeInsertQuery(final String query, final Object... params) {
+    protected void executeInsertQuery(final String query, final Object... params) {
         try (final Connection connection = dataSource.getConnection();
             final PreparedStatement statement = createPreparedStatement(connection, query,
                 params)) {
             statement.executeUpdate();
-
-            final ResultSet resultSet = statement.getGeneratedKeys();
-            resultSet.next();
-
-            return resultSet.getLong(1);
         } catch (final SQLException exception) {
             throw new DatabaseException();
         }
