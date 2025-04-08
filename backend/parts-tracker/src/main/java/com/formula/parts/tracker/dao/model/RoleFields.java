@@ -5,7 +5,8 @@ public class RoleFields {
     private RoleFields() {
     }
 
-    public static final String ID = "r.ID";
-    public static final String NAME = "r.NAME";
+    public static final String ID = "ID";
+    public static final String ROLE_ID = "ROLE_ID";
+    public static final String NAME = "NAME";
 
 }

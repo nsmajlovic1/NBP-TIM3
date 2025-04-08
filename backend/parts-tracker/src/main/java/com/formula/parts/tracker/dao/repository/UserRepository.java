@@ -7,6 +7,7 @@ import com.formula.parts.tracker.dao.model.UserFields;
 import com.formula.parts.tracker.shared.exception.DatabaseException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.Optional;
 import javax.sql.DataSource;
 import org.springframework.stereotype.Repository;
@@ -21,11 +22,11 @@ public class UserRepository extends BaseRepository<User> {
     private User mapToEntityWithRole(final ResultSet resultSet) {
         try {
             final Role role = new Role();
-            role.setId(resultSet.getLong(RoleFields.ID));
+            role.setId(resultSet.getLong(RoleFields.ROLE_ID));
             role.setName(resultSet.getNString(RoleFields.NAME));
 
             final User user = new User();
-            user.setId(resultSet.getLong(UserFields.ID));
+            user.setId(resultSet.getLong(UserFields.USER_ID));
             user.setFirstName(resultSet.getString(UserFields.FIRST_NAME));
             user.setLastName(resultSet.getString(UserFields.LAST_NAME));
             user.setEmail(resultSet.getString(UserFields.EMAIL));
@@ -45,7 +46,7 @@ public class UserRepository extends BaseRepository<User> {
 
     public Optional<User> findByUsername(final String username) {
         final String query = """
-                SELECT * FROM NBP_USER u JOIN NBP_ROLE r ON u.ROLE_ID = r.ID WHERE u.USERNAME = ?
+                SELECT u.ID AS USER_ID, r.ID AS ROLE_ID, u.*, r.* FROM NBP.NBP_USER u JOIN NBP.NBP_ROLE r ON u.ROLE_ID = r.ID WHERE u.USERNAME = ?
             """;
 
         return Optional.ofNullable(
@@ -54,7 +55,7 @@ public class UserRepository extends BaseRepository<User> {
 
     public boolean existsByUsername(final String username) {
         final String query = """
-                SELECT COUNT(*) FROM NBP_USER u WHERE u.USERNAME = ?
+                SELECT COUNT(*) FROM NBP.NBP_USER u WHERE u.USERNAME = ?
             """;
 
         return executeExistsQuery(query, username);
@@ -62,7 +63,7 @@ public class UserRepository extends BaseRepository<User> {
 
     public boolean existsByEmail(final String email) {
         final String query = """
-                SELECT COUNT(*) FROM NBP_USER u WHERE u.EMAIL = ?
+                SELECT COUNT(*) FROM NBP.NBP_USER u WHERE u.EMAIL = ?
             """;
 
         return executeExistsQuery(query, email);
@@ -70,7 +71,8 @@ public class UserRepository extends BaseRepository<User> {
 
     public User persist(final User user) {
         String insertQuery = """
-                INSERT INTO NBP_USER (
+                INSERT INTO NBP.NBP_USER (
+                    ID,
                     FIRST_NAME,
                     LAST_NAME,
                     EMAIL,
@@ -80,25 +82,24 @@ public class UserRepository extends BaseRepository<User> {
                     BIRTH_DATE,
                     ADDRESS_ID,
                     ROLE_ID
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);
+                ) VALUES (NBP.NBP_USER_ID_SEQ.NEXTVAL, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """;
 
-        long id = executeInsertQuery(insertQuery, user.getFirstName(), user.getLastName(),
+        executeInsertQuery(insertQuery, user.getFirstName(), user.getLastName(),
             user.getEmail(), user.getPassword(), user.getUsername(), user.getPhoneNumber(),
-            user.getBirthDate(), user.getAddressId(), user.getRoleId());
+            Timestamp.valueOf(user.getBirthDate()), user.getAddressId(), user.getRoleId());
 
-        user.setId(id);
-        return user;
+        return findByUsername(user.getUsername()).get();
     }
 
     public void updatePassword(final String username, final String newPassword) {
         String updateQuery = """
-                UPDATE NBP_USER
+                UPDATE NBP.NBP_USER
                 SET PASSWORD = ?
-                WHERE USERNAME = ?;
+                WHERE USERNAME = ?
             """;
 
         executeUpdateQuery(updateQuery, newPassword, username);
     }
-    
+
 }
