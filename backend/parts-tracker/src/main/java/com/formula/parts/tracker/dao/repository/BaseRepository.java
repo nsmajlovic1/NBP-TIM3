@@ -6,6 +6,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.List;
 import java.util.function.Function;
 import javax.sql.DataSource;
 import lombok.RequiredArgsConstructor;
@@ -56,6 +57,22 @@ public abstract class BaseRepository<T> {
             final ResultSet resultSet = statement.executeQuery()) {
             resultSet.next();
             return resultSet.getInt(1) > 0;
+        } catch (final SQLException exception) {
+            throw new DatabaseException();
+        }
+    }
+
+    protected List<T> executeListSelectQuery(final String query, final Function<ResultSet, T> mapper, final Object... params) {
+        try (final Connection connection = dataSource.getConnection();
+             final PreparedStatement statement = createPreparedStatement(connection, query, params);
+             final ResultSet resultSet = statement.executeQuery()) {
+
+            final List<T> results = new java.util.ArrayList<>();
+            while (resultSet.next()) {
+                results.add(mapper.apply(resultSet));
+            }
+            return results;
+
         } catch (final SQLException exception) {
             throw new DatabaseException();
         }
