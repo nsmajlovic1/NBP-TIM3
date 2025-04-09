@@ -10,6 +10,7 @@ import {
   Stack,
 } from "@mui/material";
 import { useState } from "react";
+import { registerUser } from "../services/userService";
 
 const AddUserForm = () => {
   const [formData, setFormData] = useState({
@@ -22,29 +23,56 @@ const AddUserForm = () => {
     birthDate: "",
     roleId: "",
   });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Form submitted", formData);
+    setLoading(true);
+    setError("");
+
+    // Konvertovanje birthDate u ISO format
+    const formattedBirthDate = new Date(formData.birthDate).toISOString();
+    const updatedFormData = { ...formData, birthDate: formattedBirthDate };
+
+    try {
+      const response = await registerUser(updatedFormData);
+      setFormData({
+        firstName: "",
+        lastName: "",
+        email: "",
+        password: "",
+        username: "",
+        phoneNumber: "",
+        birthDate: "",
+        roleId: "",
+      });
+      alert("New user successfully added!");
+      console.log(response);
+    } catch (err) {
+      setError(err.message || "Failed to register user");
+      alert("Failed to add new user");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
-      <Box
-        component="form"
-        onSubmit={handleSubmit}
-        sx={{
-          mt: 2,
-          mx: "auto",
-          maxWidth: 1100,
-          px: 2, 
-        }}
-      >
-
+    <Box
+      component="form"
+      onSubmit={handleSubmit}
+      sx={{
+        mt: 2,
+        mx: "auto",
+        maxWidth: 1100,
+        px: 2,
+      }}
+    >
       <Grid container spacing={4}>
         <Grid item xs={12} md={6}>
           <Stack spacing={2}>
@@ -121,9 +149,9 @@ const AddUserForm = () => {
                 onChange={handleChange}
                 label="Role"
               >
-                <MenuItem value={1}>Mechanic</MenuItem>
-                <MenuItem value={2}>Admin</MenuItem>
-                <MenuItem value={3}>Logistic</MenuItem>
+                <MenuItem value={121}>Admin</MenuItem>
+                <MenuItem value={122}>Logistic</MenuItem>
+                <MenuItem value={125}>Mechanic</MenuItem>
               </Select>
             </FormControl>
           </Stack>
@@ -131,8 +159,13 @@ const AddUserForm = () => {
 
         <Grid item xs={12}>
           <Box display="flex" justifyContent="center">
-            <Button variant="contained" type="submit" size="large">
-              Submit
+            <Button
+              variant="contained"
+              type="submit"
+              size="large"
+              disabled={loading}
+            >
+              {loading ? "Submitting..." : "Submit"}
             </Button>
           </Box>
         </Grid>

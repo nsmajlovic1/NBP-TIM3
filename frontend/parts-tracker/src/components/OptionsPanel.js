@@ -1,8 +1,14 @@
-import { Button, List, ListItem, Typography, Box } from "@mui/material";
-import { useState } from "react";
+import { Button, List, ListItem, Box } from "@mui/material";
+import { useState, useEffect } from "react";
 
 const OptionsPanel = ({ onOptionSelect }) => {
   const [selectedOption, setSelectedOption] = useState("Dashboard");
+  const [userRole, setUserRole] = useState(null);
+
+  useEffect(() => {
+    const storedUser = JSON.parse(localStorage.getItem("user"));
+    setUserRole(storedUser?.role); 
+  }, []);
 
   const handleOptionClick = (option) => {
     setSelectedOption(option);
@@ -21,15 +27,18 @@ const OptionsPanel = ({ onOptionSelect }) => {
             Dashboard
           </Button>
         </ListItem>
-        <ListItem>
-          <Button
-            fullWidth
-            variant={selectedOption === "Add User" ? "contained" : "outlined"}
-            onClick={() => handleOptionClick("Add User")}
-          >
-            Add User
-          </Button>
-        </ListItem>
+
+        {userRole === "Admin" && (
+          <ListItem>
+            <Button
+              fullWidth
+              variant={selectedOption === "Add User" ? "contained" : "outlined"}
+              onClick={() => handleOptionClick("Add User")}
+            >
+              Add User
+            </Button>
+          </ListItem>
+        )}
       </List>
     </Box>
   );
