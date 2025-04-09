@@ -1,4 +1,6 @@
 import { Box, Typography } from "@mui/material";
+import AddUserForm from "./AddUserForm";
+
 const DashboardContent = ({ selectedOption }) => {
   return (
     <Box>
@@ -8,6 +10,10 @@ const DashboardContent = ({ selectedOption }) => {
             Welcome to the Dashboard!
           </Typography>
         </div>
+      )}
+
+      {selectedOption === "Add User" && (
+        <AddUserForm />
       )}
     </Box>
   );

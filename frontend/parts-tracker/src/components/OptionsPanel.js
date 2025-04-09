@@ -21,6 +21,15 @@ const OptionsPanel = ({ onOptionSelect }) => {
             Dashboard
           </Button>
         </ListItem>
+        <ListItem>
+          <Button
+            fullWidth
+            variant={selectedOption === "Add User" ? "contained" : "outlined"}
+            onClick={() => handleOptionClick("Add User")}
+          >
+            Add User
+          </Button>
+        </ListItem>
       </List>
     </Box>
   );
