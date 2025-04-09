@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useAuth } from "../context/AuthContext";
-import { Container, TextField, Button, Typography, Box, Paper } from "@mui/material";
+import { Container, TextField, Button, Typography, Paper } from "@mui/material";
 
 const Login = () => {
   const { login } = useAuth();
@@ -10,14 +10,15 @@ const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError("");
     try {
       const credentials = {
         username: usernameInput,
         password: passwordInput
-      }
+      };
       await login(credentials);
     } catch (err) {
-      setError("Invalid username or password");
+      setError(err.message);
     }
   };
 
@@ -32,7 +33,7 @@ const Login = () => {
             {error}
           </Typography>
         )}
-        <Box component="form" onSubmit={handleSubmit} sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+        <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: 16 }}>
           <TextField
             label="Username"
             variant="outlined"
@@ -51,7 +52,7 @@ const Login = () => {
           <Button type="submit" variant="contained" color="primary" fullWidth>
             Login
           </Button>
-        </Box>
+        </form>
       </Paper>
     </Container>
   );

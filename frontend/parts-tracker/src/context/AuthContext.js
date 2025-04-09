@@ -6,32 +6,29 @@ const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
 
   useEffect(() => {
     const token = localStorage.getItem("token");
-    if (token) {
-      const storedUser = JSON.parse(localStorage.getItem("user"));
-      if (storedUser) {
-        setUser(storedUser);
-        navigate("/dashboard");
-      }
+    const storedUser = localStorage.getItem("user");
+
+    if (token && storedUser) {
+      setUser(JSON.parse(storedUser));
     }
+
+    setIsLoading(false);
   }, []);
 
   const login = async (credentials) => {
     try {
       const response = await API.post("/auth/login", credentials);
-      if (response.status === 200) {
-        localStorage.setItem("token", response.data.accessToken);
-        localStorage.setItem("user", JSON.stringify(response.data));
-        setUser(response.data);
-        navigate("/dashboard");
-      } else {
-        throw new Error("Login failed. Unexpected response status.");
-      }
+      localStorage.setItem("token", response.data.accessToken);
+      localStorage.setItem("user", JSON.stringify(response.data));
+      setUser(response.data);
+      navigate("/dashboard");
     } catch (error) {
-      throw new Error(error.response?.data?.message || "Login failed");
+      throw new Error("Login failed");
     }
   };
 
@@ -39,11 +36,11 @@ export const AuthProvider = ({ children }) => {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
     setUser(null);
-    navigate("/login");  
+    navigate("/login");
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, logout }}>
+    <AuthContext.Provider value={{ user, login, logout, isLoading }}>
       {children}
     </AuthContext.Provider>
   );

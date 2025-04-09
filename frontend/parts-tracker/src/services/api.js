@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const API = axios.create({
-  baseURL: "/api", 
+  baseURL: "/api",
   headers: {
     "Content-Type": "application/json",
   },
@@ -15,19 +15,14 @@ API.interceptors.request.use((config) => {
     config.headers.Authorization = `Bearer ${token}`;
   }
   return config;
-}, (error) => {
-  return Promise.reject(error);
-});
+}, (error) => Promise.reject(error));
 
 API.interceptors.response.use(
-  (response) => response, 
+  (response) => response,
   (error) => {
     if (error.response?.status === 401) {
-      console.warn("Token expired or invalid. Logging out...");
-
       localStorage.removeItem("token");
-
-      window.location.href = "/login";
+      localStorage.removeItem("user");
     }
 
     return Promise.reject(error);
