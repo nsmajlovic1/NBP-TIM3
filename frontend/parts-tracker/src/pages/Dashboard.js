@@ -1,14 +1,17 @@
 import { useState } from "react";
-import { useAuth } from "../context/AuthContext";
+import { useAuth } from "../context/AuthContext"; 
 import { AppBar, Toolbar, IconButton, Typography, Menu, MenuItem, Box } from "@mui/material";
 import { FaUserCircle } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import ChangePasswordModal from "../components/ChangePasswordModal";
+import OptionsPanel from "../components/OptionsPanel";
+import AddUserForm from "../components/AddUserForm";
 
 const Dashboard = () => {
-  const { user, logout } = useAuth();
+  const { user, logout } = useAuth(); 
   const [anchorEl, setAnchorEl] = useState(null);
   const [openModal, setOpenModal] = useState(false); 
+  const [selectedOption, setSelectedOption] = useState("Dashboard");
   const navigate = useNavigate();
 
   const handleMenuClick = (event) => {
@@ -36,8 +39,12 @@ const Dashboard = () => {
     alert("Password changed successfully!");
   };
 
+  const handleOptionSelect = (option) => {
+    setSelectedOption(option);
+  };
+
   return (
-    <div>
+    <div style={{ display: "flex", flexDirection: "column", height: "100vh" }}>
       <AppBar position="static">
         <Toolbar>
           <Box sx={{ flexGrow: 1 }} />
@@ -72,10 +79,19 @@ const Dashboard = () => {
         <MenuItem onClick={handleLogout}>Logout</MenuItem>
       </Menu>
 
-      <div style={{ padding: "20px" }}>
-        <Typography variant="h4" sx={{ fontFamily: "'Roboto', 'Arial', sans-serif" }}>
-          Welcome, {user.username}!
-        </Typography>
+      <div style={{ display: "flex", flexGrow: 1 }}>
+
+        <OptionsPanel onOptionSelect={handleOptionSelect} />
+
+        <div style={{ flexGrow: 1, padding: "20px" }}>
+          {selectedOption === "Dashboard" && (
+            <Typography variant="h4" sx={{ fontFamily: "'Roboto', 'Arial', sans-serif" }}>
+              Welcome, {user.username}!
+            </Typography>
+          )}
+
+          {selectedOption === "Add User" && <AddUserForm />}
+        </div>
       </div>
 
       <ChangePasswordModal
