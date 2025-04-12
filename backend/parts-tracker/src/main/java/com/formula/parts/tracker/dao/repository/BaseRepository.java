@@ -78,6 +78,20 @@ public abstract class BaseRepository<T> {
         }
     }
 
+    protected Long executeCountQuery(final String query, final Object... params) {
+        try (final Connection connection = dataSource.getConnection();
+             final PreparedStatement statement = createPreparedStatement(connection, query, params);
+             final ResultSet resultSet = statement.executeQuery()) {
+            if (resultSet.next()) {
+                return resultSet.getLong(1);
+            } else {
+                return 0L;
+            }
+        } catch (final SQLException exception) {
+            throw new DatabaseException();
+        }
+    }
+
     private PreparedStatement createPreparedStatement(final Connection connection,
         final String query,
         Object[] params) throws SQLException {
