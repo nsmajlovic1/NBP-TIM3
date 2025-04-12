@@ -9,10 +9,10 @@ import java.util.List;
 
 public interface TransportCompanyService {
 
-    Page<TransportCompanyResponse> get();
-
     TransportCompanyResponse create(TransportCompanyRequest request) throws ApiException;
 
-    List<TransportCompanyResponse> getAllCompanies(String search);
+    Page<TransportCompanyResponse> getAllCompanies(String search, Long page, Long size);
+
+    void deleteCompany (long id) throws ApiException;
 
 }

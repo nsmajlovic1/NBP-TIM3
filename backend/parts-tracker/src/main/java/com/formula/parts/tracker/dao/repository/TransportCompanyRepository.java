@@ -56,26 +56,64 @@ public class TransportCompanyRepository extends BaseRepository<TransportCompany>
         return executeSingleSelectQuery(selectQuery, this::mapToEntity, company.getName());
     }
 
-    public List<TransportCompany> findAll() {
+    public List<TransportCompany> findAll(Long page, Long size) {
         final String query = """
                 SELECT * FROM NBP02.TRANSPORT_COMPANY
+                OFFSET ? ROWS FETCH NEXT ? ROWS ONLY
             """;
 
-        return executeListSelectQuery(query, this::mapToEntity);
+        long offset = (page - 1) * size;
+
+        return executeListSelectQuery(query, this::mapToEntity, offset, size);
     }
 
-    public List<TransportCompany> findByNameLike(final String keyword) {
+    public List<TransportCompany> findByNameLike(final String keyword, Long page, Long size) {
         final String query = """
             SELECT * FROM NBP02.TRANSPORT_COMPANY
             WHERE LOWER(NAME) LIKE ?
+            OFFSET ? ROWS FETCH NEXT ? ROWS ONLY
         """;
 
         // Using LOWER for case-sensitive cases
         String pattern = "%" + keyword.toLowerCase() + "%";
 
-        return executeListSelectQuery(query, this::mapToEntity, pattern);
+        long offset = (page - 1) * size;
+
+        return executeListSelectQuery(query, this::mapToEntity, pattern, offset, size);
     }
 
+    public Long countAll() {
+        final String query = """
+            SELECT COUNT(*) FROM NBP02.TRANSPORT_COMPANY
+        """;
 
+        return executeCountQuery(query);
+    }
 
+    public Long countByNameLike(final String keyword) {
+        final String query = """
+            SELECT COUNT(*) FROM NBP02.TRANSPORT_COMPANY
+            WHERE LOWER(NAME) LIKE ?
+        """;
+
+        String pattern = "%" + keyword.toLowerCase() + "%";
+
+        return executeCountQuery(query, pattern);
+    }
+
+    public boolean existsById(long id) {
+        final String query = """
+            SELECT COUNT(*) FROM NBP02.TRANSPORT_COMPANY WHERE ID = ?
+        """;
+
+        return executeExistsQuery(query, id);
+    }
+
+    public void deleteById(long id) {
+        final String query = """
+            DELETE FROM NBP02.TRANSPORT_COMPANY WHERE ID = ?
+        """;
+
+        executeUpdateQuery(query, id);
+    }
 }
