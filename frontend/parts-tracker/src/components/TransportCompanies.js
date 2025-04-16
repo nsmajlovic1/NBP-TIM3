@@ -1,15 +1,17 @@
 import { useState, useEffect } from "react";
-import { getTransportCompanies, deleteTransportCompany } from "../services/transportCompanyService";
-import { FaTrash } from "react-icons/fa";
-import { Button, Modal, Box, Typography, CircularProgress } from "@mui/material";
+import { getTransportCompanies, deleteTransportCompany, addTransportCompany } from "../services/transportCompanyService"; 
+import { FaTrash, FaPlus } from "react-icons/fa"; 
+import { Button, Modal, Box, Typography, TextField, CircularProgress } from "@mui/material";
 
 const TransportCompanies = () => {
   const [companies, setCompanies] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(false);
+  const [error, setError] = useState(null);
   const [openModal, setOpenModal] = useState(false);
   const [companyToDelete, setCompanyToDelete] = useState(null);
   const [deleteSuccess, setDeleteSuccess] = useState(null);
+  const [newCompany, setNewCompany] = useState({ name: "", description: "" });
+  const [openAddModal, setOpenAddModal] = useState(false);
 
   useEffect(() => {
     const fetchCompanies = async () => {
@@ -17,7 +19,7 @@ const TransportCompanies = () => {
         const data = await getTransportCompanies();
         setCompanies(data.content);
       } catch (err) {
-        setError(true);
+        setError(err.message);
       } finally {
         setLoading(false);
       }
@@ -27,71 +29,137 @@ const TransportCompanies = () => {
   }, []);
 
   const handleDeleteClick = (company) => {
-    setCompanyToDelete(company);
-    setOpenModal(true);
+    setCompanyToDelete(company); 
+    setOpenModal(true); 
   };
 
   const handleDeleteConfirm = async () => {
     try {
       await deleteTransportCompany(companyToDelete.id);
-      setDeleteSuccess(true);
-      setCompanies(companies.filter((company) => company.id !== companyToDelete.id));
+      setDeleteSuccess(true); 
+      setCompanies(companies.filter((company) => company.id !== companyToDelete.id)); 
+      setOpenModal(false); 
       alert("Transport company successfully deleted!");
     } catch (err) {
+      setOpenModal(false); 
       setDeleteSuccess(false);
       alert("Transport company couldn't be deleted. Try again later");
     } finally {
-      setOpenModal(false);
       setCompanyToDelete(null);
     }
   };
 
   const handleDeleteCancel = () => {
-    setOpenModal(false);
-    setCompanyToDelete(null);
+    setOpenModal(false); 
+    setCompanyToDelete(null); 
   };
+
+  const handleAddCompany = async () => {
+    try {
+      const response = await addTransportCompany(newCompany); 
+      setCompanies([...companies, response]); 
+      setNewCompany({ name: "", description: "" }); 
+      setOpenAddModal(false);
+      alert("Transport company successfully added!");
+    } catch (err) {
+      setOpenAddModal(false); 
+      setNewCompany({ name: "", description: "" }); 
+      alert("Failed to add transport company. Try again later.");
+    }
+  };
+
+  const handleAddModalClose = () => {
+    setOpenAddModal(false);
+    setNewCompany({ name: "", description: "" });
+  };
+
+  if (loading) {
+    return (
+      <Box sx={{ display: "flex", justifyContent: "center", mt: 5 }}>
+        <CircularProgress />
+      </Box>
+    );
+  }
+
+  if (error) return <div style={{ fontFamily: "Roboto" }}>Error: {error}</div>;
 
   return (
     <div style={{ fontFamily: "Roboto" }}>
-      <h2>Transport Companies</h2>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+        <h2>Transport Companies</h2>
+        <Button 
+          variant="contained" 
+          color="primary" 
+          onClick={() => setOpenAddModal(true)} 
+          startIcon={<FaPlus />}
+        >
+          Add Company
+        </Button>
+      </div>
 
-      {loading ? (
-        <Box sx={{ display: "flex", justifyContent: "center", mt: 5 }}>
-          <CircularProgress />
-        </Box>
-      ) : error ? (
-        <Typography variant="body1" sx={{ mt: 2 }}>
-          Unable to load transport companies at the moment. Please try again later.
-        </Typography>
-      ) : companies.length === 0 ? (
-        <Typography variant="body1" sx={{ mt: 2 }}>
+      {companies.length === 0 && (
+        <Typography variant="body1" color="textSecondary">
           There are currently no transport companies to display.
         </Typography>
-      ) : (
-        <ul style={{ listStyleType: "none", padding: 0 }}>
-          {companies.map((company, index) => (
-            <li
-              key={company.id}
-              style={{
-                marginBottom: "10px",
-                display: "flex",
-                justifyContent: "space-between",
-                padding: "10px",
-                border: "1px solid #ddd",
-                borderRadius: "8px"
-              }}
-            >
-              <div>
-                <strong>{index + 1}. {company.name}</strong>
-                <p>{company.description}</p>
-              </div>
-              <Button onClick={() => handleDeleteClick(company)} style={{ color: "red" }}>
-                <FaTrash size={20} />
-              </Button>
-            </li>
-          ))}
-        </ul>
       )}
+
+      <ul style={{ listStyleType: "none", padding: 0 }}>
+        {companies.map((company, index) => (
+          <li
+            key={company.id}
+            style={{
+              marginBottom: "10px",
+              display: "flex",
+              justifyContent: "space-between",
+              padding: "10px",
+              border: "1px solid #ddd",
+              borderRadius: "8px"
+            }}
+          >
+            <div>
+              <strong>{index + 1}. {company.name}</strong>
+              <p>{company.description}</p>
+            </div>
+            <Button onClick={() => handleDeleteClick(company)} style={{ color: "red" }}>
+              <FaTrash size={20} />
+            </Button>
+          </li>
+        ))}
+      </ul>
+
+      <Modal open={openAddModal} onClose={handleAddModalClose}>
+        <Box sx={{
+          width: 300,
+          padding: "20px",
+          margin: "20% auto",
+          backgroundColor: "white",
+          borderRadius: "8px"
+        }}>
+          <Typography variant="h6" gutterBottom>Add Transport Company</Typography>
+          <TextField
+            label="Company Name"
+            fullWidth
+            margin="normal"
+            value={newCompany.name}
+            onChange={(e) => setNewCompany({ ...newCompany, name: e.target.value })}
+          />
+          <TextField
+            label="Description"
+            fullWidth
+            margin="normal"
+            value={newCompany.description}
+            onChange={(e) => setNewCompany({ ...newCompany, description: e.target.value })}
+          />
+          <Box sx={{ display: "flex", justifyContent: "space-between", marginTop: "20px" }}>
+            <Button variant="contained" color="secondary" onClick={handleAddModalClose}>
+              Cancel
+            </Button>
+            <Button variant="contained" color="primary" onClick={handleAddCompany}>
+              Submit
+            </Button>
+          </Box>
+        </Box>
+      </Modal>
 
       <Modal open={openModal} onClose={handleDeleteCancel}>
         <Box sx={{
@@ -99,8 +167,7 @@ const TransportCompanies = () => {
           padding: "20px",
           margin: "20% auto",
           backgroundColor: "white",
-          borderRadius: "8px",
-          fontFamily: "Roboto"
+          borderRadius: "8px"
         }}>
           <Typography variant="h6" gutterBottom>Confirm Deletion</Typography>
           <Typography>Are you sure you want to delete {companyToDelete?.name}?</Typography>

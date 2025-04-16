@@ -29,3 +29,18 @@ export const deleteTransportCompany = async (companyId) => {
 };
 
 
+export const addTransportCompany = async (companyData) => {
+  try {
+    const response = await API.post("/transport-company/create", companyData); 
+
+    if (response.status === 200) {
+      return response.data; 
+    } else {
+      throw new Error("Failed to add transport company. Unexpected response status.");
+    }
+  } catch (error) {
+    throw new Error(error.response?.data?.message || "Failed to add transport company.");
+  }
+};
+
+
