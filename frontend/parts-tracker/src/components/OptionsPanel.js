@@ -7,12 +7,12 @@ const OptionsPanel = ({ onOptionSelect }) => {
 
   useEffect(() => {
     const storedUser = JSON.parse(localStorage.getItem("user"));
-    setUserRole(storedUser?.role); 
+    setUserRole(storedUser?.role);
   }, []);
 
   const handleOptionClick = (option) => {
     setSelectedOption(option);
-    onOptionSelect(option); 
+    onOptionSelect(option);
   };
 
   return (
@@ -36,6 +36,18 @@ const OptionsPanel = ({ onOptionSelect }) => {
               onClick={() => handleOptionClick("Add User")}
             >
               Add User
+            </Button>
+          </ListItem>
+        )}
+
+        {["Admin", "Logistic"].includes(userRole) && (
+          <ListItem>
+            <Button
+              fullWidth
+              variant={selectedOption === "Transport Companies" ? "contained" : "outlined"}
+              onClick={() => handleOptionClick("Transport Companies")}
+            >
+              Transport Companies
             </Button>
           </ListItem>
         )}

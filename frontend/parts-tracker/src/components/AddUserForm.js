@@ -36,7 +36,6 @@ const AddUserForm = () => {
     setLoading(true);
     setError("");
 
-    // Konvertovanje birthDate u ISO format
     const formattedBirthDate = new Date(formData.birthDate).toISOString();
     const updatedFormData = { ...formData, birthDate: formattedBirthDate };
 
