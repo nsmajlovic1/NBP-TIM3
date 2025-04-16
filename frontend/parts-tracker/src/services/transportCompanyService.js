@@ -14,4 +14,18 @@ export const getTransportCompanies = async () => {
   }
 };
 
+export const deleteTransportCompany = async (companyId) => {
+  try {
+    const response = await API.delete(`/transport-company/${companyId}`);
+
+    if (response.status === 200) {
+      return response.data; 
+    } else {
+      throw new Error("Failed to delete transport company. Unexpected response status.");
+    }
+  } catch (error) {
+    throw new Error(error.response?.data?.message || "Failed to delete transport company.");
+  }
+};
+
 
