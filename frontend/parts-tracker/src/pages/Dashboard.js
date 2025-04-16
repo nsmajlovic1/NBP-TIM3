@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 import ChangePasswordModal from "../components/ChangePasswordModal";
 import OptionsPanel from "../components/OptionsPanel";
 import AddUserForm from "../components/AddUserForm";
+import TransportCompanies from "../components/TransportCompanies"; 
 
 const Dashboard = () => {
   const { user, logout } = useAuth(); 
@@ -80,7 +81,6 @@ const Dashboard = () => {
       </Menu>
 
       <div style={{ display: "flex", flexGrow: 1 }}>
-
         <OptionsPanel onOptionSelect={handleOptionSelect} />
 
         <div style={{ flexGrow: 1, padding: "20px" }}>
@@ -91,6 +91,7 @@ const Dashboard = () => {
           )}
 
           {selectedOption === "Add User" && <AddUserForm />}
+          {selectedOption === "Transport Companies" && <TransportCompanies />} 
         </div>
       </div>
 
