@@ -1,9 +1,7 @@
 import { useEffect, useState } from "react";
 import { getStorages } from "../services/storageService";
 import StorageMap from "./StorageMap";
-import StorageCard from "./StorageCard"; 
-
-
+import StorageCard from "./StorageCard";
 import { Box } from "@mui/material";
 
 const Storages = () => {
@@ -24,14 +22,13 @@ const Storages = () => {
 
   return (
     <Box display="flex" height="100%">
-      <Box flex={1} height="100%">
+      <Box flex={3} height="100%">
         <StorageMap
           storages={storages}
           selectedStorage={selectedStorage}
           onMarkerClick={setSelectedStorage}
         />
       </Box>
-
       <Box flex={1} overflow="auto" padding={2}>
         <Box display="flex" flexDirection="column" gap={2}>
           {storages.map((storage) => (
