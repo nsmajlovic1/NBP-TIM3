@@ -9,5 +9,6 @@ public class Team extends Base {
 
     private String name;
     private String description;
+    private String countryIso;
 
 }

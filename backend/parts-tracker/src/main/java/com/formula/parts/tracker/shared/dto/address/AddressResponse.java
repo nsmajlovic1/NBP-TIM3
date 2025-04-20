@@ -16,4 +16,6 @@ public class AddressResponse implements Serializable {
     private String streetName;
     private String cityName;
     private String countryIso;
+    private Double latitude;
+    private Double longitude;
 }

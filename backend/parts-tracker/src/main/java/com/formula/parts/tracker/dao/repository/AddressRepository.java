@@ -23,6 +23,8 @@ public class AddressRepository extends BaseRepository<Address>{
             address.setStreetName(resultSet.getString("STREET_NAME"));
             address.setCityName(resultSet.getString("CITY_NAME"));
             address.setCountryIso(resultSet.getString("COUNTRY_ISO"));
+            address.setLongitude(resultSet.getDouble("LONGITUDE"));
+            address.setLatitude(resultSet.getDouble("LATITUDE"));
             return address;
         } catch (final SQLException exception) {
             throw new DatabaseException();
@@ -42,11 +44,18 @@ public class AddressRepository extends BaseRepository<Address>{
                     ID,
                     STREET_NAME,
                     CITY_NAME,
-                    COUNTRY_ISO
-                ) VALUES (NBP02."ISEQ$$_276597".NEXTVAL, ?, ?, ?)
+                    COUNTRY_ISO,
+                    LONGITUDE,
+                    LATITUDE
+                ) VALUES (NBP02."ISEQ$$_276597".NEXTVAL, ?, ?, ?, ?, ?)
             """;
 
-        executeInsertQuery(insertQuery, address.getStreetName(), address.getCityName(), address.getCountryIso());
+        executeInsertQuery(insertQuery,
+                address.getStreetName(),
+                address.getCityName(),
+                address.getCountryIso(),
+                address.getLongitude(),
+                address.getLatitude());
 
         final String selectQuery = """
                 SELECT * FROM NBP02.ADDRESS WHERE STREET_NAME = ?

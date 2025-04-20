@@ -8,4 +8,6 @@ public class Address extends Base {
     private String streetName;
     private String cityName;
     private String countryIso;
+    private Double longitude;
+    private Double latitude;
 }
