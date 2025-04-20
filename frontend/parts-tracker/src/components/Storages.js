@@ -1,6 +1,6 @@
-import { Box, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
 import { getStorages } from "../services/storageService";
+import StorageMap from "./StorageMap";
 import StorageCard from "./StorageCard"; 
 
 
@@ -21,9 +21,15 @@ const Storages = () => {
   const handleCardClick = (storage) => {
     setSelectedStorage(storage);
   };
+
   return (
     <Box display="flex" height="100%">
       <Box flex={1} height="100%">
+        <StorageMap
+          storages={storages}
+          selectedStorage={selectedStorage}
+          onMarkerClick={setSelectedStorage}
+        />
       </Box>
 
       <Box flex={1} overflow="auto" padding={2}>
