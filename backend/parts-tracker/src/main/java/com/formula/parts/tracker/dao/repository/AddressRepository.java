@@ -108,4 +108,9 @@ public class AddressRepository extends BaseRepository<Address>{
 
         return executeCountQuery(query, pattern);
     }
+
+    public Address findById(Long id) {
+        final String query = "SELECT * FROM NBP02.ADDRESS WHERE ID = ?";
+        return executeSingleSelectQuery(query, this::mapToEntity, id);
+    }
 }
