@@ -78,6 +78,4 @@ public class TransportCompanyServiceImpl implements TransportCompanyService {
                     String.format("Provided %s is already taken.", fieldName));
         }
     }
-
-
 }

@@ -1,6 +1,7 @@
 package com.formula.parts.tracker.shared.dto.storage;
 
 import com.formula.parts.tracker.shared.dto.address.AddressResponse;
+import com.formula.parts.tracker.shared.dto.team.TeamResponse;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -15,6 +16,6 @@ public class StorageResponse implements Serializable {
 
     private Long id;
     private Integer capacity;
-    private Long teamId;
+    private TeamResponse team;
     private AddressResponse location;
 }

@@ -61,4 +61,17 @@ public class StorageRepository extends BaseRepository<Storage>{
             throw new DatabaseException();
         }
     }
+
+    public boolean existsById(long id) {
+        final String query = """
+            SELECT COUNT(*) FROM NBP02.STORAGE WHERE ID = ?
+        """;
+
+        return executeExistsQuery(query, id);
+    }
+
+    public Storage findById(Long id) {
+        final String query = "SELECT * FROM STORAGE WHERE ID = ?";
+        return executeSingleSelectQuery(query, this::mapToEntity, id);
+    }
 }
