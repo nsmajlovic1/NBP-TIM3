@@ -15,6 +15,7 @@ import {
 import { getAddresses } from "../services/addressService";
 import { getTeams } from "../services/teamService";
 import { addStorage } from "../services/storageService";
+import { toast } from "react-toastify";
 
 const AddStorageModal = ({ open, onClose, onStorageAdded }) => {
   const [capacity, setCapacity] = useState("");
@@ -47,9 +48,15 @@ const AddStorageModal = ({ open, onClose, onStorageAdded }) => {
 
     try {
       await addStorage(storageRequest);
+
       onClose();
+      toast.success('Storage added successfully!');
+
       onStorageAdded();
     } catch (error) {
+
+      toast.error('An error occurred! Try again later.');
+
       console.error("Error saving storage:", error);
     }
   };

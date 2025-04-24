@@ -1,8 +1,9 @@
 import { useState } from "react";
 import { Modal, Box, Typography, TextField, Button } from "@mui/material";
 import API from "../services/api";  
+import { toast } from "react-toastify";
 
-const ChangePasswordModal = ({ open, onClose, onPasswordChange }) => {
+const ChangePasswordModal = ({ open, onClose }) => {
   const [newPassword, setNewPassword] = useState("");
   const [error, setError] = useState("");
 
@@ -10,12 +11,15 @@ const ChangePasswordModal = ({ open, onClose, onPasswordChange }) => {
     try {
       const response = await API.patch("/auth/password", { newPassword });
       if (response.status === 200) {
-        onPasswordChange();
         onClose();  
+
+        toast.success('Password changed successfully!');
+
         setNewPassword(""); 
       }
     } catch (err) {
-      alert("Password change was unsuccessful.");
+      
+      toast.error('An error occurred! Try again later.');
     }
   };
 

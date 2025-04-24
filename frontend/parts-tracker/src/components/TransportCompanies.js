@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { getTransportCompanies, deleteTransportCompany, addTransportCompany } from "../services/transportCompanyService"; 
 import { FaTrash, FaPlus } from "react-icons/fa"; 
 import { Button, Modal, Box, Typography, TextField, CircularProgress } from "@mui/material";
+import { toast } from "react-toastify";
 
 const TransportCompanies = () => {
   const [companies, setCompanies] = useState([]);
@@ -39,11 +40,15 @@ const TransportCompanies = () => {
       setDeleteSuccess(true); 
       setCompanies(companies.filter((company) => company.id !== companyToDelete.id)); 
       setOpenModal(false); 
-      alert("Transport company successfully deleted!");
+
+      toast.success('Transport company deleted successfully!');
+
     } catch (err) {
       setOpenModal(false); 
       setDeleteSuccess(false);
-      alert("Transport company couldn't be deleted. Try again later");
+
+      toast.error('An error occurred! Try again later');
+
     } finally {
       setCompanyToDelete(null);
     }
@@ -60,11 +65,15 @@ const TransportCompanies = () => {
       setCompanies([...companies, response]); 
       setNewCompany({ name: "", description: "" }); 
       setOpenAddModal(false);
-      alert("Transport company successfully added!");
+
+      toast.success('Transport company added successfully!');
+
     } catch (err) {
       setOpenAddModal(false); 
       setNewCompany({ name: "", description: "" }); 
-      alert("Failed to add transport company. Try again later.");
+
+      toast.error('An error occurred! Try again later.');
+
     }
   };
 
@@ -81,7 +90,7 @@ const TransportCompanies = () => {
     );
   }
 
-  if (error) return <div style={{ fontFamily: "Roboto" }}>Error: {error}</div>;
+  if (error) return <div style={{ fontFamily: "Roboto" }}>Transport companies couldn't be loaded. Try again later.</div>;
 
   return (
     <div style={{ fontFamily: "Roboto" }}>

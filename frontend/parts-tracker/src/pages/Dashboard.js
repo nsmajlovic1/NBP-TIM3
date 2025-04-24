@@ -37,10 +37,6 @@ const Dashboard = () => {
     setOpenModal(false);
   };
 
-  const handlePasswordChange = () => {
-    alert("Password changed successfully!");
-  };
-
   const handleOptionSelect = (option) => {
     setSelectedOption(option);
   };
@@ -100,7 +96,6 @@ const Dashboard = () => {
       <ChangePasswordModal
         open={openModal}
         onClose={handleCloseModal}
-        onPasswordChange={handlePasswordChange}
       />
     </div>
   );

@@ -11,6 +11,7 @@ import {
 } from "@mui/material";
 import { useState } from "react";
 import { registerUser } from "../services/userService";
+import { toast } from "react-toastify";
 
 const AddUserForm = () => {
   const [formData, setFormData] = useState({
@@ -24,7 +25,6 @@ const AddUserForm = () => {
     roleId: "",
   });
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -34,7 +34,6 @@ const AddUserForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    setError("");
 
     const formattedBirthDate = new Date(formData.birthDate).toISOString();
     const updatedFormData = { ...formData, birthDate: formattedBirthDate };
@@ -51,11 +50,14 @@ const AddUserForm = () => {
         birthDate: "",
         roleId: "",
       });
-      alert("New user successfully added!");
+
+      toast.success('User added successfully!');
+
       console.log(response);
     } catch (err) {
-      setError(err.message || "Failed to register user");
-      alert("Failed to add new user");
+
+      toast.error('An error occurred! Try again later.');
+
     } finally {
       setLoading(false);
     }
