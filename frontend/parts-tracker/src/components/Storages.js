@@ -11,6 +11,7 @@ const Storages = () => {
   const [selectedStorage, setSelectedStorage] = useState(null);
   const [userRole, setUserRole] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [popupOpen, setPopupOpen] = useState(null); 
 
   useEffect(() => {
     const storedUser = JSON.parse(localStorage.getItem("user"));
@@ -27,7 +28,13 @@ const Storages = () => {
   }, []);
 
   const handleCardClick = (storage) => {
-    setSelectedStorage(storage);
+    if (selectedStorage?.id === storage.id) {
+      setSelectedStorage(null);
+      setPopupOpen(null);
+    } else {
+      setSelectedStorage(storage);
+      setPopupOpen(storage.id);
+    }
   };
 
   const handleAddStorageClick = () => {
@@ -37,13 +44,16 @@ const Storages = () => {
   const handleCloseModal = () => {
     setIsModalOpen(false);
   };
+
   return (
     <Box display="flex" height="100%">
       <Box flex={3} height="100%">
         <StorageMap
           storages={storages}
           selectedStorage={selectedStorage}
-          onMarkerClick={setSelectedStorage}
+          onMarkerClick={handleCardClick} 
+          popupOpen={popupOpen}
+          setPopupOpen={setPopupOpen}
         />
       </Box>
 
@@ -54,7 +64,7 @@ const Storages = () => {
         height="100%"
         padding={2}
         overflow="hidden" 
-        sx = {{ marginTop: "-18px"}}
+        sx={{ marginTop: "-18px" }}
       >
         {["Admin", "Logistic"].includes(userRole) && (
           <Box display="flex" justifyContent="flex-end" mb={2}>
