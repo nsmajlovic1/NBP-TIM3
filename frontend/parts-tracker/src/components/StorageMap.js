@@ -1,7 +1,7 @@
 import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
 import L from "leaflet";
 import { useEffect } from "react";
-import { Typography } from "@mui/material";
+import { Typography, Box } from "@mui/material";
 import "leaflet/dist/leaflet.css";
 
 const storageIcon = new L.Icon({
@@ -36,7 +36,6 @@ const StorageMap = ({ storages, selectedStorage, onMarkerClick }) => {
       />
 
       {storages.map((storage) => {
-        const { streetName, cityName, countryIso } = storage.location;
 
         return (
           <Marker
@@ -47,14 +46,34 @@ const StorageMap = ({ storages, selectedStorage, onMarkerClick }) => {
               click: () => onMarkerClick(storage),
             }}
           >
-            <Popup>
-              <Typography variant="subtitle1" sx={{ fontWeight: 500 }}>
-                {streetName}, {cityName}, {countryIso}
+
+          <Popup>
+            <Box>
+              <Typography sx={{ fontSize: "14px" }}>
+                <strong>Address:</strong> {`${storage.location.streetName}, ${storage.location.cityName}, ${storage.location.countryIso}`}
               </Typography>
-              <Typography variant="body2" color="text.secondary">
-                Capacity: {storage.capacity}
+              <Typography sx={{ fontSize: "14px" }}>
+                <strong>Capacity:</strong> {storage.capacity}
               </Typography>
-            </Popup>
+
+              <Box
+                sx={{
+                  mt: 1.5,
+                  p: 1,
+                  backgroundColor: "#f5f5f5",
+                  borderRadius: "4px",
+                }}
+              >
+                <Typography sx={{ fontSize: "14px" }}>
+                  <strong>Team:</strong> {storage.team.name} ({storage.team.countryIso})
+                </Typography>
+                <Typography sx={{ fontSize: "14px" }}>
+                  <strong>Description:</strong> {storage.team.description}
+                </Typography>
+              </Box>
+            </Box>
+          </Popup>
+
           </Marker>
         );
       })}

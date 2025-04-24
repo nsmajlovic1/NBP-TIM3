@@ -5,7 +5,6 @@ import StorageCard from "./StorageCard";
 import { Box, Button } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 
-
 const Storages = () => {
   const [storages, setStorages] = useState([]);
   const [selectedStorage, setSelectedStorage] = useState(null);
@@ -34,6 +33,7 @@ const Storages = () => {
 
   return (
     <Box display="flex" height="100%">
+      {/* Left side: Map container */}
       <Box flex={3} height="100%">
         <StorageMap
           storages={storages}
@@ -42,9 +42,17 @@ const Storages = () => {
         />
       </Box>
 
-      <Box flex={1} overflow="auto" padding={2}>
+      {/* Right side: Storage Cards with Fixed Add Storage Button */}
+      <Box
+        flex={1}
+        display="flex"
+        flexDirection="column"
+        height="100%"
+        padding={2}
+      >
+        {/* Add Storage Button */}
         {["Admin", "Logistic"].includes(userRole) && (
-          <Box display="flex" justifyContent="flex-end" mb={2}>
+          <Box display="flex" justifyContent="flex-end" mb={2} flexShrink={0}>
             <Button
               variant="contained"
               color="primary"
@@ -60,7 +68,14 @@ const Storages = () => {
           </Box>
         )}
 
-        <Box display="flex" flexDirection="column" gap={2}>
+        {/* List of Storage Cards */}
+        <Box
+          flex={1}
+          overflow="auto"
+          display="flex"
+          flexDirection="column"
+          gap={2}
+        >
           {storages.map((storage) => (
             <StorageCard
               key={storage.id}
