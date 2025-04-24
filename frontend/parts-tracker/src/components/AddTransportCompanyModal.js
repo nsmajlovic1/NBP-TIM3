@@ -1,5 +1,13 @@
 import { useState } from "react";
-import { Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField, Box } from "@mui/material";
+import {
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  TextField,
+  Box
+} from "@mui/material";
 import { toast } from "react-toastify";
 
 const AddTransportCompanyModal = ({ open, onClose, onCompanyAdded }) => {
@@ -24,10 +32,10 @@ const AddTransportCompanyModal = ({ open, onClose, onCompanyAdded }) => {
   };
 
   return (
-    <Dialog open={open} onClose={onClose}>
+    <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
       <DialogTitle>Add Transport Company</DialogTitle>
       <DialogContent>
-        <Box component="form" noValidate sx={{ minWidth: 400 }}>
+        <Box component="form" noValidate sx={{ mt: 1 }}>
           <TextField
             label="Company Name"
             fullWidth
@@ -47,8 +55,14 @@ const AddTransportCompanyModal = ({ open, onClose, onCompanyAdded }) => {
         </Box>
       </DialogContent>
       <DialogActions>
-        <Button onClick={onClose} color="primary">Cancel</Button>
-        <Button onClick={handleSave} color="primary">Save</Button>
+        <Button onClick={onClose}>Cancel</Button>
+        <Button
+          onClick={handleSave}
+          variant="contained"
+          color="primary"
+        >
+          Save
+        </Button>
       </DialogActions>
     </Dialog>
   );

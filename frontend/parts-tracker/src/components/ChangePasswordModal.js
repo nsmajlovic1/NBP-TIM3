@@ -43,9 +43,24 @@ const ChangePasswordModal = ({ open, onClose }) => {
           }}
         />
       </DialogContent>
-      <DialogActions>
-        <Button onClick={onClose} color="secondary">Cancel</Button>
-        <Button onClick={handleChangePassword} color="primary">Submit</Button>
+      <DialogActions sx={{ padding: 2 }}>
+        <Button 
+          onClick={onClose}
+          sx={{ mr: 1 }}
+        >
+          Cancel
+        </Button>
+        <Button 
+          onClick={handleChangePassword} 
+          variant="contained" 
+          color="primary"
+          sx={{ 
+            px: 3,
+            py: 1
+          }}
+        >
+          Submit
+        </Button>
       </DialogActions>
     </Dialog>
   );

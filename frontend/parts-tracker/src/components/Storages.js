@@ -3,7 +3,7 @@ import { getStorages } from "../services/storageService";
 import StorageMap from "./StorageMap";
 import StorageCard from "./StorageCard";
 import { Box, Button } from "@mui/material";
-import AddIcon from "@mui/icons-material/Add";
+import { FaPlus } from "react-icons/fa";
 import AddStorageModal from "./AddStorageModal";
 
 const Storages = () => {
@@ -72,7 +72,7 @@ const Storages = () => {
               variant="contained"
               color="primary"
               sx={{ width: "170px", fontSize: "16px" }}
-              startIcon={<AddIcon />}
+              startIcon={<FaPlus />}
               onClick={handleAddStorageClick}
             >
               Add Storage
