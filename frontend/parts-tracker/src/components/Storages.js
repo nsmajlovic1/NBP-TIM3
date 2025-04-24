@@ -19,7 +19,7 @@ const Storages = () => {
   useEffect(() => {
     const fetchData = async () => {
       const data = await getStorages();
-      setStorages(data);
+      setStorages(data.content);
     };
     fetchData();
   }, []);

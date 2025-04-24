@@ -1,6 +1,8 @@
 import { Card, CardContent, Typography } from "@mui/material";
 
 const StorageCard = ({ storage, isSelected, onClick }) => {
+  const { streetName, cityName, countryIso } = storage.location;
+
   return (
     <Card
       onClick={onClick}
@@ -13,7 +15,7 @@ const StorageCard = ({ storage, isSelected, onClick }) => {
     >
       <CardContent>
         <Typography variant="subtitle1" sx={{ fontWeight: 500, color: "black" }}>
-          Address: {storage.address}
+          {streetName}, {cityName}, {countryIso}
         </Typography>
         <Typography variant="body2" color="text.secondary">
           Capacity: {storage.capacity}
