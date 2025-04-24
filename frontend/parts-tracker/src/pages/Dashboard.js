@@ -42,7 +42,7 @@ const Dashboard = () => {
   };
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", height: "100vh" }}>
+    <div style={{ display: "flex", flexDirection: "column", height: "97vh", overflow: "hidden" }}>
       <AppBar position="static">
         <Toolbar>
           <Box sx={{ flexGrow: 1 }} />
@@ -56,7 +56,7 @@ const Dashboard = () => {
           </Box>
         </Toolbar>
       </AppBar>
-
+  
       <Menu
         anchorEl={anchorEl}
         open={Boolean(anchorEl)}
@@ -76,29 +76,26 @@ const Dashboard = () => {
         <MenuItem onClick={handleOpenModal}>Change Password</MenuItem>
         <MenuItem onClick={handleLogout}>Logout</MenuItem>
       </Menu>
-
-      <div style={{ display: "flex", flexGrow: 1 }}>
+  
+      <div style={{ display: "flex", flexGrow: 1, overflow: "hidden" }}>
         <OptionsPanel onOptionSelect={handleOptionSelect} />
-
-        <div style={{ flexGrow: 1, padding: "20px" }}>
+  
+        <div style={{ flexGrow: 1, paddingTop: "20px", paddingLeft: "20px", paddingRight: "20px", overflow: "hidden", paddingBottom: "20px" }}>
           {selectedOption === "Dashboard" && (
             <Typography variant="h4" sx={{ fontFamily: "'Roboto', 'Arial', sans-serif" }}>
               Welcome, {user.username}!
             </Typography>
           )}
-
+  
           {selectedOption === "Add User" && <AddUserForm />}
           {selectedOption === "Transport Companies" && <TransportCompanies />} 
           {selectedOption === "Storages" && <Storages />}
         </div>
       </div>
-
-      <ChangePasswordModal
-        open={openModal}
-        onClose={handleCloseModal}
-      />
+  
+      <ChangePasswordModal open={openModal} onClose={handleCloseModal} />
     </div>
   );
-};
+}
 
 export default Dashboard;

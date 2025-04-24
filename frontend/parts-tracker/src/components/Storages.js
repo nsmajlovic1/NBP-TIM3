@@ -22,11 +22,6 @@ const Storages = () => {
     setStorages(data.content);
   };
 
-  const fetchData = async () => {
-    const data = await getStorages();
-    setStorages(data.content);
-  };
-
   useEffect(() => {
     fetchStorages();
   }, []);
@@ -42,7 +37,6 @@ const Storages = () => {
   const handleCloseModal = () => {
     setIsModalOpen(false);
   };
-
   return (
     <Box display="flex" height="100%">
       <Box flex={3} height="100%">
@@ -59,16 +53,15 @@ const Storages = () => {
         flexDirection="column"
         height="100%"
         padding={2}
+        overflow="hidden" 
+        sx = {{ marginTop: "-18px"}}
       >
         {["Admin", "Logistic"].includes(userRole) && (
-          <Box display="flex" justifyContent="flex-end" mb={2} flexShrink={0}>
+          <Box display="flex" justifyContent="flex-end" mb={2}>
             <Button
               variant="contained"
               color="primary"
-              sx={{
-                width: "170px",
-                fontSize: "16px",
-              }}
+              sx={{ width: "170px", fontSize: "16px" }}
               startIcon={<AddIcon />}
               onClick={handleAddStorageClick}
             >
@@ -78,25 +71,46 @@ const Storages = () => {
         )}
 
         <Box
-          flex={1}
-          overflow="auto"
-          display="flex"
-          flexDirection="column"
-          gap={2}
+          sx={{
+            flexGrow: 1,
+            overflowY: "hidden",
+            '&:hover': {
+              overflowY: "auto",
+            },
+            display: "flex",
+            flexDirection: "column",
+            gap: 2,
+            pr: 1,
+            scrollbarWidth: "thin",
+            "&::-webkit-scrollbar": {
+              width: "6px",
+            },
+            "&::-webkit-scrollbar-thumb": {
+              backgroundColor: "#888",
+              borderRadius: "4px",
+            },
+            "&::-webkit-scrollbar-thumb:hover": {
+              backgroundColor: "#555",
+            },
+          }}
         >
           {storages.map((storage) => (
-            <StorageCard
-              key={storage.id}
-              storage={storage}
-              isSelected={selectedStorage?.id === storage.id}
-              onClick={() => handleCardClick(storage)}
-            />
+            <Box key={storage.id} sx={{ height: 250 }}>
+              <StorageCard
+                storage={storage}
+                isSelected={selectedStorage?.id === storage.id}
+                onClick={() => handleCardClick(storage)}
+              />
+            </Box>
           ))}
         </Box>
       </Box>
 
-      <AddStorageModal open={isModalOpen} onClose={handleCloseModal} onStorageAdded={fetchData} />
-
+      <AddStorageModal
+        open={isModalOpen}
+        onClose={handleCloseModal}
+        onStorageAdded={fetchStorages}
+      />
     </Box>
   );
 };
