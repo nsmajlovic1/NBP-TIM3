@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect } from 'react';
 import {
   Dialog,
   DialogActions,
@@ -11,28 +11,35 @@ import {
   InputLabel,
   FormControl,
   Box,
-} from "@mui/material";
-import { getAddresses } from "../services/addressService";
-import { getTeams } from "../services/teamService";
-import { addStorage } from "../services/storageService";
-import { toast } from "react-toastify";
+  Stack
+} from '@mui/material';
+import { getAddresses } from '../services/addressService';
+import { getTeams } from '../services/teamService';
+import { addStorage } from '../services/storageService';
+import { toast } from 'react-toastify';
+import AddAddressModal from './AddAddressModal';
+import { FaPlus } from 'react-icons/fa';
 
 const AddStorageModal = ({ open, onClose, onStorageAdded }) => {
-  const [capacity, setCapacity] = useState("");
-  const [teamId, setTeamId] = useState("");
-  const [addressId, setAddressId] = useState("");
+  const [capacity, setCapacity] = useState('');
+  const [teamId, setTeamId] = useState('');
+  const [addressId, setAddressId] = useState('');
   const [teams, setTeams] = useState([]);
   const [addresses, setAddresses] = useState([]);
+  const [newTeamOpen, setNewTeamOpen] = useState(false);
+  const [newAddressOpen, setNewAddressOpen] = useState(false);
 
   useEffect(() => {
     const fetchTeamsAndAddresses = async () => {
       try {
-        const teamsData = await getTeams();
-        const addressesData = await getAddresses();
+        const [teamsData, addressesData] = await Promise.all([
+          getTeams(),
+          getAddresses()
+        ]);
         setTeams(teamsData.content);
         setAddresses(addressesData.content);
       } catch (error) {
-        console.error("Error fetching teams and addresses:", error);
+        console.error(error);
       }
     };
 
@@ -40,84 +47,111 @@ const AddStorageModal = ({ open, onClose, onStorageAdded }) => {
   }, []);
 
   const handleSave = async () => {
-    const storageRequest = {
-      capacity: parseInt(capacity),
-      teamId: parseInt(teamId),
-      addressId: parseInt(addressId),
-    };
-
     try {
-      await addStorage(storageRequest);
-
+      await addStorage({
+        capacity: parseInt(capacity),
+        teamId: parseInt(teamId),
+        addressId: parseInt(addressId)
+      });
+      onStorageAdded();
       onClose();
       toast.success('Storage added successfully!');
-
-      onStorageAdded();
     } catch (error) {
-
-      toast.error('An error occurred! Try again later.');
-
-      console.error("Error saving storage:", error);
+      toast.error('Failed to add storage.');
+      console.error(error);
     }
   };
 
+
+  const handleAddressAdded = (newAddress) => {
+    setAddresses([...addresses, newAddress]);
+    setAddressId(newAddress.id);
+  };
+
   return (
-    <Dialog open={open} onClose={onClose}>
-      <DialogTitle>Add New Storage</DialogTitle>
-      <DialogContent>
-        <Box component="form" noValidate sx={{ minWidth: 400 }}>
-          <TextField
-            label="Capacity"
-            type="number"
-            fullWidth
-            value={capacity}
-            onChange={(e) => setCapacity(e.target.value)}
-            margin="normal"
-            required
-          />
+    <>
+      <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
+        <DialogTitle>Add New Storage</DialogTitle>
+        <DialogContent>
+          <Box component="form" noValidate sx={{ mt: 1 }}>
+            <TextField
+              label="Capacity"
+              type="number"
+              fullWidth
+              value={capacity}
+              onChange={(e) => setCapacity(e.target.value)}
+              margin="normal"
+              required
+            />
 
           <FormControl fullWidth margin="normal">
             <InputLabel>Team</InputLabel>
-            <Select
-              value={teamId}
-              onChange={(e) => setTeamId(e.target.value)}
-              label="Team"
-              required
-            >
-              {teams.map((team) => (
-                <MenuItem key={team.id} value={team.id}>
-                  {team.name} ({team.countryIso})
-                </MenuItem>
-              ))}
-            </Select>
+            <Stack direction="row" spacing={1} alignItems="center">
+              <Select
+                value={teamId}
+                onChange={(e) => setTeamId(e.target.value)}
+                label="Team"
+                required
+                sx={{ flexGrow: 1 }}
+              >
+                {teams.map((team) => (
+                  <MenuItem key={team.id} value={team.id}>
+                    {team.name} ({team.countryIso})
+                  </MenuItem>
+                ))}
+              </Select>
+            </Stack>
           </FormControl>
 
           <FormControl fullWidth margin="normal">
             <InputLabel>Address</InputLabel>
-            <Select
-              value={addressId}
-              onChange={(e) => setAddressId(e.target.value)}
-              label="Address"
-              required
-            >
-              {addresses.map((address) => (
-                <MenuItem key={address.id} value={address.id}>
-                  {address.streetName}, {address.cityName}, {address.countryIso}
-                </MenuItem>
-              ))}
-            </Select>
+            <Stack direction="row" spacing={1} alignItems="center">
+              <Select
+                value={addressId}
+                onChange={(e) => setAddressId(e.target.value)}
+                label="Address"
+                required
+                sx={{ flexGrow: 1 }}
+              >
+                {addresses.map((address) => (
+                  <MenuItem key={address.id} value={address.id}>
+                    {address.streetName}, {address.cityName}, {address.countryIso}
+                  </MenuItem>
+                ))}
+              </Select>
+              <Button 
+                size="small" 
+                onClick={() => setNewAddressOpen(true)}
+                sx={{
+                  height: '40px',
+                  whiteSpace: 'nowrap',
+                  border: '1px solid',
+                  borderColor: 'primary.main',
+                  paddingLeft: "10px",
+                  paddingRight: "10px"
+                }}
+                startIcon={<FaPlus />}
+              >
+                New Address
+              </Button>
+            </Stack>
           </FormControl>
-        </Box>
-      </DialogContent>
-      <DialogActions>
-        <Button onClick={onClose} color="primary">
-          Cancel
-        </Button>
-        <Button onClick={handleSave} color="primary">
-          Save
-        </Button>
-      </DialogActions>
-    </Dialog>
+          </Box>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={onClose}>Cancel</Button>
+          <Button onClick={handleSave} variant="contained" color="primary">
+            Save Storage
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      <AddAddressModal
+        open={newAddressOpen}
+        onClose={() => setNewAddressOpen(false)}
+        onAddressAdded={handleAddressAdded}
+      />
+    </>
   );
 };
 
