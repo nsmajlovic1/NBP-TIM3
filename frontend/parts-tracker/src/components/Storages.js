@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { getStorages, addStorage } from "../services/storageService";
+import { getStorages } from "../services/storageService";
 import StorageMap from "./StorageMap";
 import StorageCard from "./StorageCard";
 import { Box, Button } from "@mui/material";

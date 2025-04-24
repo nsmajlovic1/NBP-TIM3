@@ -1,18 +1,17 @@
 import { useState, useEffect } from "react";
-import { getTransportCompanies, deleteTransportCompany, addTransportCompany } from "../services/transportCompanyService"; 
-import { FaTrash, FaPlus } from "react-icons/fa"; 
-import { Button, Modal, Box, Typography, TextField, CircularProgress } from "@mui/material";
+import { getTransportCompanies, deleteTransportCompany, addTransportCompany } from "../services/transportCompanyService";
+import { FaTrash, FaPlus } from "react-icons/fa";
+import { Button, CircularProgress, Box, Typography, Dialog, DialogActions, DialogContent, DialogTitle } from "@mui/material";
 import { toast } from "react-toastify";
+import AddTransportCompanyModal from "./AddTransportCompanyModal";
 
 const TransportCompanies = () => {
   const [companies, setCompanies] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [openModal, setOpenModal] = useState(false);
-  const [companyToDelete, setCompanyToDelete] = useState(null);
-  const [deleteSuccess, setDeleteSuccess] = useState(null);
-  const [newCompany, setNewCompany] = useState({ name: "", description: "" });
   const [openAddModal, setOpenAddModal] = useState(false);
+  const [openDeleteModal, setOpenDeleteModal] = useState(false);
+  const [companyToDelete, setCompanyToDelete] = useState(null);
 
   useEffect(() => {
     const fetchCompanies = async () => {
@@ -30,56 +29,37 @@ const TransportCompanies = () => {
   }, []);
 
   const handleDeleteClick = (company) => {
-    setCompanyToDelete(company); 
-    setOpenModal(true); 
+    setCompanyToDelete(company);
+    setOpenDeleteModal(true);
   };
 
   const handleDeleteConfirm = async () => {
     try {
       await deleteTransportCompany(companyToDelete.id);
-      setDeleteSuccess(true); 
-      setCompanies(companies.filter((company) => company.id !== companyToDelete.id)); 
-      setOpenModal(false); 
-
+      setCompanies(companies.filter((company) => company.id !== companyToDelete.id));
+      setOpenDeleteModal(false);
       toast.success('Transport company deleted successfully!');
-
     } catch (err) {
-      setOpenModal(false); 
-      setDeleteSuccess(false);
-
+      setOpenDeleteModal(false);
       toast.error('An error occurred! Try again later');
-
-    } finally {
-      setCompanyToDelete(null);
     }
   };
 
   const handleDeleteCancel = () => {
-    setOpenModal(false); 
-    setCompanyToDelete(null); 
+    setOpenDeleteModal(false);
+    setCompanyToDelete(null);
   };
 
-  const handleAddCompany = async () => {
+  const handleAddCompany = async (newCompany) => {
     try {
-      const response = await addTransportCompany(newCompany); 
-      setCompanies([...companies, response]); 
-      setNewCompany({ name: "", description: "" }); 
+      const response = await addTransportCompany(newCompany);
+      setCompanies([...companies, response]);
       setOpenAddModal(false);
-
       toast.success('Transport company added successfully!');
-
     } catch (err) {
-      setOpenAddModal(false); 
-      setNewCompany({ name: "", description: "" }); 
-
+      setOpenAddModal(false);
       toast.error('An error occurred! Try again later.');
-
     }
-  };
-
-  const handleAddModalClose = () => {
-    setOpenAddModal(false);
-    setNewCompany({ name: "", description: "" });
   };
 
   if (loading) {
@@ -96,12 +76,7 @@ const TransportCompanies = () => {
     <div style={{ fontFamily: "Roboto" }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
         <h2>Transport Companies</h2>
-        <Button 
-          variant="contained" 
-          color="primary" 
-          onClick={() => setOpenAddModal(true)} 
-          startIcon={<FaPlus />}
-        >
+        <Button variant="contained" color="primary" onClick={() => setOpenAddModal(true)} startIcon={<FaPlus />}>
           Add Company
         </Button>
       </div>
@@ -136,65 +111,18 @@ const TransportCompanies = () => {
         ))}
       </ul>
 
-      <Modal open={openAddModal} onClose={handleAddModalClose}>
-        <Box sx={{
-          width: 300,
-          padding: "20px",
-          margin: "20% auto",
-          backgroundColor: "white",
-          borderRadius: "8px"
-        }}>
-          <Typography variant="h6" gutterBottom>Add Transport Company</Typography>
-          <TextField
-            label="Company Name"
-            fullWidth
-            margin="normal"
-            value={newCompany.name}
-            onChange={(e) => setNewCompany({ ...newCompany, name: e.target.value })}
-          />
-          <TextField
-            label="Description"
-            fullWidth
-            margin="normal"
-            value={newCompany.description}
-            onChange={(e) => setNewCompany({ ...newCompany, description: e.target.value })}
-          />
-          <Box sx={{ display: "flex", justifyContent: "space-between", marginTop: "20px" }}>
-            <Button variant="contained" color="secondary" onClick={handleAddModalClose}>
-              Cancel
-            </Button>
-            <Button variant="contained" color="primary" onClick={handleAddCompany}>
-              Submit
-            </Button>
-          </Box>
-        </Box>
-      </Modal>
+      <AddTransportCompanyModal open={openAddModal} onClose={() => setOpenAddModal(false)} onCompanyAdded={handleAddCompany} />
 
-      <Modal open={openModal} onClose={handleDeleteCancel}>
-        <Box sx={{
-          width: 300,
-          padding: "20px",
-          margin: "20% auto",
-          backgroundColor: "white",
-          borderRadius: "8px"
-        }}>
-          <Typography variant="h6" gutterBottom>Confirm Deletion</Typography>
+      <Dialog open={openDeleteModal} onClose={handleDeleteCancel}>
+        <DialogTitle>Confirm Deletion</DialogTitle>
+        <DialogContent>
           <Typography>Are you sure you want to delete {companyToDelete?.name}?</Typography>
-          <Box sx={{ display: "flex", justifyContent: "space-between", marginTop: "20px" }}>
-            <Button variant="contained" color="secondary" onClick={handleDeleteCancel}>
-              No
-            </Button>
-            <Button variant="contained" color="primary" onClick={handleDeleteConfirm}>
-              Yes
-            </Button>
-          </Box>
-          {deleteSuccess !== null && (
-            <Typography variant="body2" sx={{ marginTop: "10px", color: deleteSuccess ? "green" : "red" }}>
-              {deleteSuccess ? "Company successfully deleted." : "Failed to delete company."}
-            </Typography>
-          )}
-        </Box>
-      </Modal>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleDeleteCancel} color="primary">No</Button>
+          <Button onClick={handleDeleteConfirm} color="primary">Yes</Button>
+        </DialogActions>
+      </Dialog>
     </div>
   );
 };
