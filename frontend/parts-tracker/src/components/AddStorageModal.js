@@ -17,6 +17,7 @@ import { getAddresses } from '../services/addressService';
 import { getTeams } from '../services/teamService';
 import { addStorage } from '../services/storageService';
 import { toast } from 'react-toastify';
+import AddTeamModal from './AddTeamModal';
 import AddAddressModal from './AddAddressModal';
 import { FaPlus } from 'react-icons/fa';
 
@@ -62,6 +63,10 @@ const AddStorageModal = ({ open, onClose, onStorageAdded }) => {
     }
   };
 
+  const handleTeamAdded = (newTeam) => {
+    setTeams([...teams, newTeam]);
+    setTeamId(newTeam.id);
+  };
 
   const handleAddressAdded = (newAddress) => {
     setAddresses([...addresses, newAddress]);
@@ -100,6 +105,21 @@ const AddStorageModal = ({ open, onClose, onStorageAdded }) => {
                   </MenuItem>
                 ))}
               </Select>
+              <Button 
+                size="small" 
+                onClick={() => setNewTeamOpen(true)}
+                sx={{
+                  height: '40px',
+                  whiteSpace: 'nowrap',
+                  border: '1px solid',
+                  borderColor: 'primary.main',
+                  paddingLeft: "10px",
+                  paddingRight: "10px"
+                }}
+                startIcon={<FaPlus />}
+              >
+                New Team
+              </Button>
             </Stack>
           </FormControl>
 
@@ -145,6 +165,12 @@ const AddStorageModal = ({ open, onClose, onStorageAdded }) => {
           </Button>
         </DialogActions>
       </Dialog>
+
+      <AddTeamModal
+        open={newTeamOpen}
+        onClose={() => setNewTeamOpen(false)}
+        onTeamAdded={handleTeamAdded}
+      />
 
       <AddAddressModal
         open={newAddressOpen}
