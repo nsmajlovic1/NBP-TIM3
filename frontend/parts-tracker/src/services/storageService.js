@@ -13,3 +13,17 @@ export const getStorages = async () => {
     throw new Error(error.response?.data?.message || "Failed to fetch storage data.");
   }
 };
+
+export const addStorage = async (storageData) => {
+  try {
+    const response = await API.post("/storage/create", storageData);
+
+    if (response.status === 200) {
+      return response.data;
+    } else {
+      throw new Error("Failed to add storage. Unexpected response status.");
+    }
+  } catch (error) {
+    throw new Error(error.response?.data?.message || "Failed to add storage.");
+  }
+};

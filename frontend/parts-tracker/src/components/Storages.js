@@ -1,26 +1,34 @@
 import { useEffect, useState } from "react";
-import { getStorages } from "../services/storageService";
+import { getStorages, addStorage } from "../services/storageService";
 import StorageMap from "./StorageMap";
 import StorageCard from "./StorageCard";
 import { Box, Button } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
+import AddStorageModal from "./AddStorageModal";
 
 const Storages = () => {
   const [storages, setStorages] = useState([]);
   const [selectedStorage, setSelectedStorage] = useState(null);
   const [userRole, setUserRole] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
     const storedUser = JSON.parse(localStorage.getItem("user"));
     setUserRole(storedUser?.role);
   }, []);
 
+  const fetchStorages = async () => {
+    const data = await getStorages();
+    setStorages(data.content);
+  };
+
+  const fetchData = async () => {
+    const data = await getStorages();
+    setStorages(data.content);
+  };
+
   useEffect(() => {
-    const fetchData = async () => {
-      const data = await getStorages();
-      setStorages(data.content);
-    };
-    fetchData();
+    fetchStorages();
   }, []);
 
   const handleCardClick = (storage) => {
@@ -28,12 +36,15 @@ const Storages = () => {
   };
 
   const handleAddStorageClick = () => {
-    console.log("Add Storage button clicked");
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
   };
 
   return (
     <Box display="flex" height="100%">
-      {/* Left side: Map container */}
       <Box flex={3} height="100%">
         <StorageMap
           storages={storages}
@@ -42,7 +53,6 @@ const Storages = () => {
         />
       </Box>
 
-      {/* Right side: Storage Cards with Fixed Add Storage Button */}
       <Box
         flex={1}
         display="flex"
@@ -50,7 +60,6 @@ const Storages = () => {
         height="100%"
         padding={2}
       >
-        {/* Add Storage Button */}
         {["Admin", "Logistic"].includes(userRole) && (
           <Box display="flex" justifyContent="flex-end" mb={2} flexShrink={0}>
             <Button
@@ -68,7 +77,6 @@ const Storages = () => {
           </Box>
         )}
 
-        {/* List of Storage Cards */}
         <Box
           flex={1}
           overflow="auto"
@@ -86,6 +94,9 @@ const Storages = () => {
           ))}
         </Box>
       </Box>
+
+      <AddStorageModal open={isModalOpen} onClose={handleCloseModal} onStorageAdded={fetchData} />
+
     </Box>
   );
 };
