@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { getTransportCompanies, deleteTransportCompany, addTransportCompany } from "../services/transportCompanyService";
 import { FaTrash, FaPlus } from "react-icons/fa";
-import { Button, CircularProgress, Box, Typography, Dialog, DialogActions, DialogContent, DialogTitle, List, ListItem, ListItemText, ListItemSecondaryAction } from "@mui/material";
+import { Button, CircularProgress, Box, Typography, Dialog, DialogActions, DialogContent, DialogTitle, Card, CardContent, Paper, IconButton } from "@mui/material";
 import { toast } from "react-toastify";
 import AddTransportCompanyModal from "./AddTransportCompanyModal";
 
@@ -95,30 +95,126 @@ const TransportCompanies = () => {
           There are currently no transport companies to display.
         </Typography>
       ) : (
-        <List>
-          {companies.map((company, index) => (
-            <ListItem key={company.id} sx={{ 
-              mb: 1,
-              bgcolor: 'background.paper',
-              borderRadius: 1,
-              boxShadow: 1
-            }}>
-              <ListItemText
-                primary={`${index + 1}. ${company.name}`}
-                secondary={company.description}
-              />
-              <ListItemSecondaryAction>
-                <Button 
-                  onClick={() => handleDeleteClick(company)} 
-                  color="error"
-                  sx={{ minWidth: 'auto' }}
-                >
-                  <FaTrash />
-                </Button>
-              </ListItemSecondaryAction>
-            </ListItem>
+        <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+          {companies.map((company) => (
+            <Box 
+              key={company.id} 
+              sx={{ 
+                display: "flex", 
+                alignItems: "flex-start", 
+                gap: 1,
+                width: "100%"
+              }}
+            >
+              <Card sx={{
+                flex: 1,
+                height: "110px",
+                display: "flex",
+                flexDirection: "column",
+                border: "1px solid #ccc",
+                minWidth: 0, 
+              }}>
+                <CardContent sx={{ 
+                  p: "12px !important",
+                  flexGrow: 1,
+                  display: "flex",
+                  flexDirection: "column",
+                  '&:last-child': { pb: '12px' }
+                }}>
+                  <Box sx={{ 
+                    display: "flex", 
+                    mb: 1,
+                    minWidth: 0 
+                  }}>
+                    <Typography sx={{ 
+                      fontSize: "14px", 
+                      fontWeight: "bold",
+                      color: "black",
+                      mr: 1,
+                      flexShrink: 0 
+                    }}>
+                      Name:
+                    </Typography>
+                    <Typography sx={{ 
+                      fontSize: "14px", 
+                      color: "black",
+                      whiteSpace: 'nowrap',
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                      minWidth: 0 
+                    }}>
+                      {company.name}
+                    </Typography>
+                  </Box>
+
+                  <Paper
+                    elevation={0}
+                    sx={{
+                      flexGrow: 1,
+                      p: 1,
+                      backgroundColor: "#f5f5f5",
+                      borderRadius: "4px",
+                      overflow: "hidden",
+                      "&:hover": {
+                        overflowY: "auto",
+                      },
+                      "&::-webkit-scrollbar": {
+                        width: "0px",
+                      },
+                      minWidth: 0 
+                    }}
+                  >
+                    <Box sx={{ 
+                      display: "flex",
+                      minWidth: 0 
+                    }}>
+                      <Typography sx={{ 
+                        fontSize: "14px", 
+                        fontWeight: "bold",
+                        color: "black",
+                        mr: 1,
+                        flexShrink: 0 
+                      }}>
+                        Description:
+                      </Typography>
+                      <Typography sx={{ 
+                        fontSize: "14px", 
+                        color: "black",
+                        display: '-webkit-box',
+                        WebkitLineClamp: 3,
+                        WebkitBoxOrient: 'vertical',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                        minWidth: 0 
+                      }}>
+                        {company.description}
+                      </Typography>
+                    </Box>
+                  </Paper>
+                </CardContent>
+              </Card>
+
+              <IconButton 
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleDeleteClick(company);
+                }} 
+                color="error"
+                size="medium"
+                sx={{ 
+                  mt: '33px',
+                  backgroundColor: "white",
+                  boxShadow: "none",
+                  '&:hover': {
+                    backgroundColor: "#f5f5f5"
+                  }
+                }}
+              >
+                <FaTrash />
+              </IconButton>
+            </Box>
           ))}
-        </List>
+        </Box>
       )}
 
       <AddTransportCompanyModal 
