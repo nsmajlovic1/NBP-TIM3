@@ -26,7 +26,7 @@ public class StorageRepository extends BaseRepository<Storage>{
 
         executeInsertQuery(insertQuery, storage.getTeamId(), storage.getCapacity(), storage.getAddressId());
 
-        final String selectQuery = "SELECT * FROM NBP02.STORAGE WHERE ROWID = (SELECT MAX(ROWID) FROM NBP02.STORAGE)";
+        final String selectQuery = "SELECT * FROM NBP02.STORAGE ORDER BY ID DESC FETCH FIRST 1 ROWS ONLY";
         return executeSingleSelectQuery(selectQuery, this::mapToEntity);
     }
 
