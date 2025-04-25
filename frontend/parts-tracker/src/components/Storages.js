@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { getStorages } from "../services/storageService";
 import StorageMap from "./StorageMap";
 import StorageCard from "./StorageCard";
-import { Box, Button } from "@mui/material";
+import { Box, Button, Typography, CircularProgress } from "@mui/material";
 import { FaPlus } from "react-icons/fa";
 import AddStorageModal from "./AddStorageModal";
 
@@ -11,7 +11,9 @@ const Storages = () => {
   const [selectedStorage, setSelectedStorage] = useState(null);
   const [userRole, setUserRole] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [popupOpen, setPopupOpen] = useState(null); 
+  const [popupOpen, setPopupOpen] = useState(null);
+  const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const storedUser = JSON.parse(localStorage.getItem("user"));
@@ -19,8 +21,17 @@ const Storages = () => {
   }, []);
 
   const fetchStorages = async () => {
-    const data = await getStorages();
-    setStorages(data.content);
+    try {
+      const data = await getStorages();
+      setStorages(data.content);
+      setError(null);
+    } catch (err) {
+      console.error("Error fetching storages:", err);
+      setError("Failed to load storage data");
+      setStorages([]);
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
@@ -43,7 +54,26 @@ const Storages = () => {
 
   const handleCloseModal = () => {
     setIsModalOpen(false);
+    fetchStorages();
   };
+
+  if (loading) {
+    return (
+      <Box display="flex" height="100%">
+        <Box flex={3} height="100%">
+          <StorageMap storages={[]} />
+        </Box>
+        <Box
+          flex={1}
+          display="flex"
+          justifyContent="center"
+          alignItems="center"
+        >
+          <CircularProgress />
+        </Box>
+      </Box>
+    );
+  }
 
   return (
     <Box display="flex" height="100%">
@@ -51,7 +81,7 @@ const Storages = () => {
         <StorageMap
           storages={storages}
           selectedStorage={selectedStorage}
-          onMarkerClick={handleCardClick} 
+          onMarkerClick={handleCardClick}
           popupOpen={popupOpen}
           setPopupOpen={setPopupOpen}
         />
@@ -63,7 +93,7 @@ const Storages = () => {
         flexDirection="column"
         height="100%"
         padding={2}
-        overflow="hidden" 
+        overflow="hidden"
         sx={{ marginTop: "-18px" }}
       >
         {["Admin", "Logistic"].includes(userRole) && (
@@ -71,7 +101,7 @@ const Storages = () => {
             <Button
               variant="contained"
               color="primary"
-              sx={{ width: "170px", fontSize: "16px" }}
+              sx={{ width: "170px", fontSize: "16px", marginBottom: "15px"}}
               startIcon={<FaPlus />}
               onClick={handleAddStorageClick}
             >
@@ -104,15 +134,33 @@ const Storages = () => {
             },
           }}
         >
-          {storages.map((storage) => (
-            <Box key={storage.id} sx={{ height: 250 }}>
-              <StorageCard
-                storage={storage}
-                isSelected={selectedStorage?.id === storage.id}
-                onClick={() => handleCardClick(storage)}
-              />
-            </Box>
-          ))}
+          {error ? (
+            <Typography
+              variant="body1"
+              color="error"
+              sx={{ textAlign: "center", mt: 3 }}
+            >
+              Storage data is currently not available. Try again later.
+            </Typography>
+          ) : storages.length > 0 ? (
+            storages.map((storage) => (
+              <Box key={storage.id} sx={{ height: 250 }}>
+                <StorageCard
+                  storage={storage}
+                  isSelected={selectedStorage?.id === storage.id}
+                  onClick={() => handleCardClick(storage)}
+                />
+              </Box>
+            ))
+          ) : (
+            <Typography
+              variant="body1"
+              color="textSecondary"
+              sx={{ textAlign: "center", mt: 3 }}
+            >
+              No storage data available
+            </Typography>
+          )}
         </Box>
       </Box>
 

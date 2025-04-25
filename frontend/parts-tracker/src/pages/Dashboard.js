@@ -42,7 +42,7 @@ const Dashboard = () => {
   };
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", height: "98vh", overflow: "hidden" }}>
+    <div style={{ display: "flex", flexDirection: "column", height: "97vh", overflow: "hidden" }}>
       <AppBar position="static">
         <Toolbar>
           <Box sx={{ flexGrow: 1 }} />

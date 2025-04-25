@@ -51,13 +51,10 @@ const AddUserForm = () => {
         roleId: "",
       });
 
-      toast.success('User added successfully!');
-
+      toast.success("User added successfully!");
       console.log(response);
     } catch (err) {
-
-      toast.error('An error occurred! Try again later.');
-
+      toast.error("An error occurred! Try again later.");
     } finally {
       setLoading(false);
     }
@@ -65,112 +62,123 @@ const AddUserForm = () => {
 
   return (
     <Box
-      component="form"
-      onSubmit={handleSubmit}
-      sx={{
-        mt: 2,
-        mx: "auto",
-        maxWidth: 1100,
-        px: 2,
-      }}
+      display="flex"
+      alignItems="flex-start"
+      justifyContent="center"
+      minHeight="100vh"
+      pt={8}
+      sx={{ backgroundColor: "#f9f9f9", px: 2 }}
     >
-      <Grid container spacing={4}>
-        <Grid item xs={12} md={6}>
-          <Stack spacing={2}>
-            <TextField
-              label="First Name"
-              name="firstName"
-              value={formData.firstName}
-              onChange={handleChange}
-              fullWidth
-              required
-            />
-            <TextField
-              label="Birth Date"
-              name="birthDate"
-              type="date"
-              value={formData.birthDate}
-              onChange={handleChange}
-              fullWidth
-              required
-              InputLabelProps={{ shrink: true }}
-            />
-            <TextField
-              label="Username"
-              name="username"
-              value={formData.username}
-              onChange={handleChange}
-              fullWidth
-              required
-            />
-            <TextField
-              label="Phone Number"
-              name="phoneNumber"
-              value={formData.phoneNumber}
-              onChange={handleChange}
-              fullWidth
-              required
-            />
-          </Stack>
-        </Grid>
-
-        <Grid item xs={12} md={6}>
-          <Stack spacing={2}>
-            <TextField
-              label="Last Name"
-              name="lastName"
-              value={formData.lastName}
-              onChange={handleChange}
-              fullWidth
-              required
-            />
-            <TextField
-              label="Email"
-              name="email"
-              value={formData.email}
-              onChange={handleChange}
-              fullWidth
-              required
-              type="email"
-            />
-            <TextField
-              label="Password"
-              name="password"
-              value={formData.password}
-              onChange={handleChange}
-              fullWidth
-              required
-              type="password"
-            />
-            <FormControl fullWidth required>
-              <InputLabel>Role</InputLabel>
-              <Select
-                name="roleId"
-                value={formData.roleId}
+      <Box
+        component="form"
+        onSubmit={handleSubmit}
+        sx={{
+          maxWidth: 440,
+          width: "100%",
+          backgroundColor: "white",
+          p: 4,
+          borderRadius: 1,
+          boxShadow: 3,
+        }}
+      >
+        <Grid container spacing={4}>
+          <Grid item xs={12} md={6}>
+            <Stack spacing={2}>
+              <TextField
+                label="First Name"
+                name="firstName"
+                value={formData.firstName}
                 onChange={handleChange}
-                label="Role"
-              >
-                <MenuItem value={121}>Admin</MenuItem>
-                <MenuItem value={122}>Logistic</MenuItem>
-                <MenuItem value={125}>Mechanic</MenuItem>
-              </Select>
-            </FormControl>
-          </Stack>
-        </Grid>
+                fullWidth
+                required
+              />
+              <TextField
+                label="Birth Date"
+                name="birthDate"
+                type="date"
+                value={formData.birthDate}
+                onChange={handleChange}
+                fullWidth
+                required
+                InputLabelProps={{ shrink: true }}
+              />
+              <TextField
+                label="Username"
+                name="username"
+                value={formData.username}
+                onChange={handleChange}
+                fullWidth
+                required
+              />
+              <TextField
+                label="Phone Number"
+                name="phoneNumber"
+                value={formData.phoneNumber}
+                onChange={handleChange}
+                fullWidth
+                required
+              />
+            </Stack>
+          </Grid>
 
-        <Grid item xs={12}>
-          <Box display="flex" justifyContent="center">
-            <Button
-              variant="contained"
-              type="submit"
-              size="large"
-              disabled={loading}
-            >
-              {loading ? "Submitting..." : "Submit"}
-            </Button>
-          </Box>
+          <Grid item xs={12} md={6}>
+            <Stack spacing={2}>
+              <TextField
+                label="Last Name"
+                name="lastName"
+                value={formData.lastName}
+                onChange={handleChange}
+                fullWidth
+                required
+              />
+              <TextField
+                label="Email"
+                name="email"
+                value={formData.email}
+                onChange={handleChange}
+                fullWidth
+                required
+                type="email"
+              />
+              <TextField
+                label="Password"
+                name="password"
+                value={formData.password}
+                onChange={handleChange}
+                fullWidth
+                required
+                type="password"
+              />
+              <FormControl fullWidth required>
+                <InputLabel>Role</InputLabel>
+                <Select
+                  name="roleId"
+                  value={formData.roleId}
+                  onChange={handleChange}
+                  label="Role"
+                >
+                  <MenuItem value={121}>Admin</MenuItem>
+                  <MenuItem value={122}>Logistic</MenuItem>
+                  <MenuItem value={125}>Mechanic</MenuItem>
+                </Select>
+              </FormControl>
+            </Stack>
+          </Grid>
+
+          <Grid item xs={12}>
+            <Box display="flex" justifyContent="center">
+              <Button
+                variant="contained"
+                type="submit"
+                size="large"
+                disabled={loading}
+              >
+                {loading ? "Submitting..." : "Submit"}
+              </Button>
+            </Box>
+          </Grid>
         </Grid>
-      </Grid>
+      </Box>
     </Box>
   );
 };
