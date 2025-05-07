@@ -16,5 +16,6 @@ public class CarPart extends Base {
     private Long driverId;
     private Long storageId;
     private Long packageId;
+    private Integer weight;
 
 }
