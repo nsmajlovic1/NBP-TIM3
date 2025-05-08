@@ -8,6 +8,7 @@ import OptionsPanel from "../components/OptionsPanel";
 import AddUserForm from "../components/AddUserForm";
 import TransportCompanies from "../components/TransportCompanies"; 
 import Storages from "../components/Storages";
+import Teams from "../components/Teams";
 
 const Dashboard = () => {
   const { user, logout } = useAuth(); 
@@ -90,6 +91,7 @@ const Dashboard = () => {
           {selectedOption === "Add User" && <AddUserForm />}
           {selectedOption === "Transport Companies" && <TransportCompanies />} 
           {selectedOption === "Storages" && <Storages />}
+          {selectedOption === "Teams" && <Teams />}
         </div>
       </div>
   
