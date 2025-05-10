@@ -1,8 +1,8 @@
 import API from "./api";
 
-export const getTransportCompanies = async () => {
+export const getTransportCompanies = async (page = 0, size = 5) => {
   try {
-    const response = await API.get("/transport-company/all"); 
+    const response = await API.get(`/transport-company/all?page=${page}&size=${size}`); 
 
     if (response.status === 200) {
       return response.data;
