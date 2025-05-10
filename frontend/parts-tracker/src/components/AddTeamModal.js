@@ -11,7 +11,7 @@ import {
 import { createTeam } from '../services/teamService';
 import { toast } from 'react-toastify';
 
-const AddTeamModal = ({ open, onClose, onTeamAdded }) => {
+const AddTeamModal = ({ open, onClose, fetchTeams }) => {
   const [team, setTeam] = useState({
     name: '',
     description: '',
@@ -23,15 +23,25 @@ const AddTeamModal = ({ open, onClose, onTeamAdded }) => {
     setTeam(prev => ({ ...prev, [name]: value }));
   };
 
+  const cleanInput = () => {
+    setTeam({
+      name: '',
+      description: '',
+      countryIso: ''
+    })
+  }
+
   const handleSubmit = async () => {
     try {
-      const createdTeam = await createTeam(team);
+      await createTeam(team);
       toast.success('Team created successfully!');
-      onTeamAdded(createdTeam);
+      cleanInput();
+      await fetchTeams();  
       onClose();
-      setTeam({ name: '', description: '', countryIso: '' });
     } catch (error) {
       toast.error(error.response?.data?.message || 'Failed to create team');
+      cleanInput();
+      onClose();
     }
   };
 
@@ -69,23 +79,23 @@ const AddTeamModal = ({ open, onClose, onTeamAdded }) => {
         </Box>
       </DialogContent>
       <DialogActions sx={{ px: 3, pb: 2 }}>
-      <Button 
-        onClick={onClose} 
-        variant="text" 
-        color="primary"
-        sx={{ height: '40px' }}
-      >
-        Cancel
-      </Button>
-      <Button 
-        onClick={handleSubmit} 
-        variant="contained" 
-        color="primary"
-        sx={{ height: '40px' }}
-      >
-        Save
-      </Button>
-    </DialogActions>
+        <Button 
+          onClick={onClose} 
+          variant="text" 
+          color="primary"
+          sx={{ height: '40px' }}
+        >
+          Cancel
+        </Button>
+        <Button 
+          onClick={handleSubmit} 
+          variant="contained" 
+          color="primary"
+          sx={{ height: '40px' }}
+        >
+          Save
+        </Button>
+      </DialogActions>
     </Dialog>
   );
 };

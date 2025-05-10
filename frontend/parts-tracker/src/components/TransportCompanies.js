@@ -95,7 +95,31 @@ const TransportCompanies = () => {
           There are currently no transport companies to display.
         </Typography>
       ) : (
-        <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+        <Box sx={{ 
+          display: "flex", 
+          flexDirection: "column", 
+          gap: 2,
+          maxHeight: "calc(100vh - 200px)",
+          overflowY: "hidden",
+          "&:hover": {
+            overflowY: "auto",
+            paddingRight: "8px",
+            mr: "-8px",
+          },
+          "&::-webkit-scrollbar": {
+            width: "8px",
+          },
+          "&::-webkit-scrollbar-track": {
+            background: "transparent",
+          },
+          "&::-webkit-scrollbar-thumb": {
+            backgroundColor: "rgba(0,0,0,0.2)",
+            borderRadius: "4px",
+          },
+          "&::-webkit-scrollbar-thumb:hover": {
+            backgroundColor: "rgba(0,0,0,0.4)",
+          },
+        }}>
           {companies.map((company) => (
             <Box 
               key={company.id} 
@@ -103,7 +127,8 @@ const TransportCompanies = () => {
                 display: "flex", 
                 alignItems: "flex-start", 
                 gap: 1,
-                width: "100%"
+                width: "100%",
+                minHeight: "110px",
               }}
             >
               <Card sx={{
@@ -155,18 +180,15 @@ const TransportCompanies = () => {
                       backgroundColor: "#f5f5f5",
                       borderRadius: "4px",
                       overflow: "hidden",
-                      "&:hover": {
-                        overflowY: "auto",
-                      },
-                      "&::-webkit-scrollbar": {
-                        width: "0px",
-                      },
-                      minWidth: 0 
+                      display: "flex",
+                      flexDirection: "column",
                     }}
                   >
                     <Box sx={{ 
                       display: "flex",
-                      minWidth: 0 
+                      minWidth: 0,
+                      flexGrow: 1,
+                      overflow: "hidden",
                     }}>
                       <Typography sx={{ 
                         fontSize: "14px", 
@@ -180,12 +202,15 @@ const TransportCompanies = () => {
                       <Typography sx={{ 
                         fontSize: "14px", 
                         color: "black",
-                        display: '-webkit-box',
-                        WebkitLineClamp: 3,
-                        WebkitBoxOrient: 'vertical',
-                        overflow: 'hidden',
-                        textOverflow: 'ellipsis',
-                        minWidth: 0 
+                        overflow: "auto",
+                        "&::-webkit-scrollbar": {
+                          width: "6px",
+                          height: "6px",
+                        },
+                        "&::-webkit-scrollbar-thumb": {
+                          backgroundColor: "rgba(0,0,0,0.2)",
+                          borderRadius: "3px",
+                        },
                       }}>
                         {company.description}
                       </Typography>
