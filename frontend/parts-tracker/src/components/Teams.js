@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { getTeams, createTeam } from "../services/teamService";
+import { getTeams } from "../services/teamService";
 import { FaPlus } from "react-icons/fa";
 import {
   Button,
@@ -9,6 +9,11 @@ import {
   Card,
   CardContent,
   Paper,
+  Pagination,
+  Select,
+  MenuItem,
+  FormControl,
+  InputLabel,
 } from "@mui/material";
 import AddTeamModal from "./AddTeamModal";
 
@@ -17,11 +22,25 @@ const Teams = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [openAddModal, setOpenAddModal] = useState(false);
+  const [pagination, setPagination] = useState({
+    page: 0, 
+    size: 5, 
+    totalElements: 0,
+    totalPages: 1,
+  });
 
-  const fetchTeams = async () => {
+  const fetchTeams = async (page = 0, size = pagination.size) => {
     try {
-      const data = await getTeams();
+      setLoading(true);
+      const data = await getTeams(page, size);
       setTeams(data.content);
+      setPagination(prev => ({
+        ...prev,
+        page: data.pageNumber,
+        size: data.pageSize,
+        totalElements: data.totalElements,
+        totalPages: data.totalPages,
+      }));
       setError(null);
     } catch (err) {
       console.error("Error fetching teams:", err);
@@ -36,7 +55,17 @@ const Teams = () => {
     fetchTeams();
   }, []);
 
-  if (loading) {
+  const handlePageChange = (event, newPage) => {
+    fetchTeams(newPage - 1); 
+  };
+
+  const handleSizeChange = (event) => {
+    const newSize = event.target.value;
+    setPagination(prev => ({ ...prev, size: newSize }));
+    fetchTeams(0, newSize); 
+  };
+
+  if (loading && pagination.page === 0) {
     return (
       <Box sx={{ display: "flex", justifyContent: "center", mt: 5 }}>
         <CircularProgress />
@@ -44,17 +73,24 @@ const Teams = () => {
     );
   }
 
+
   return (
-    <Box sx={{ p: 3 }}>
+    <Box sx={{ 
+      p: 3, 
+      height: '100vh', 
+      display: 'flex', 
+      flexDirection: 'column',
+    }}>
       <Box
         sx={{
           display: "flex",
           justifyContent: "space-between",
           alignItems: "center",
-          mb: 3,
+          mb: 2,
+          flexShrink: 0,
         }}
       >
-        <Typography variant="h4">Teams</Typography>
+        <Typography variant="h4">Teams ({pagination.totalElements})</Typography>
         <Button
           variant="contained"
           color="primary"
@@ -65,156 +101,172 @@ const Teams = () => {
         </Button>
       </Box>
 
-      {error ? (
-        <Typography
-          variant="body1"
-          color="error"
-          sx={{ textAlign: "center", mt: 3 }}
-        >
-          Teams couldn't be loaded. Try again later.
-        </Typography>
-      ) : teams.length === 0 ? (
-        <Typography
-          variant="body1"
-          color="textSecondary"
-          sx={{ textAlign: "center", mt: 3 }}
-        >
-          There are currently no teams to display.
-        </Typography>
-      ) : (
-        <Box
-          sx={{
-            display: "flex",
-            flexDirection: "column",
+      <Box sx={{ mb: 2, display: 'flex', justifyContent: 'flex-end', flexShrink: 0 }}>
+        <FormControl size="small" sx={{ minWidth: 120 }}>
+          <InputLabel>Items per page</InputLabel>
+          <Select
+            value={pagination.size}
+            label="Items per page"
+            onChange={handleSizeChange}
+          >
+            <MenuItem value={5}>5</MenuItem>
+            <MenuItem value={10}>10</MenuItem>
+            <MenuItem value={20}>20</MenuItem>
+          </Select>
+        </FormControl>
+      </Box>
+
+      <Box
+        sx={{
+          flex: 1,
+          overflowY: 'auto',
+          mb: 2,
+          py: 1, 
+          pr: 1,
+          '&::-webkit-scrollbar': {
+            width: '8px',
+          },
+          '&::-webkit-scrollbar-track': {
+            background: '#f1f1f1',
+          },
+          '&::-webkit-scrollbar-thumb': {
+            backgroundColor: '#888',
+            borderRadius: '4px',
+          },
+          '&::-webkit-scrollbar-thumb:hover': {
+            backgroundColor: '#555',
+          },
+        }}
+      >
+        {error ? (
+          <Typography
+            variant="body1"
+            color="error"
+            sx={{ textAlign: "center", mt: 3 }}
+          >
+            Teams couldn't be loaded. Try again later.
+          </Typography>
+        ) : teams.length === 0 ? (
+          <Typography
+            variant="body1"
+            color="textSecondary"
+            sx={{ textAlign: "center", mt: 3 }}
+          >
+            There are currently no teams to display.
+          </Typography>
+        ) : (
+          <Box sx={{ 
+            display: "flex", 
+            flexDirection: "column", 
             gap: 2,
-            maxHeight: "calc(100vh - 200px)",
-            overflowY: "hidden",
-            "&:hover": {
-              overflowY: "auto",
-              paddingRight: "8px",
-              mr: "-8px",
-            },
-            "&::-webkit-scrollbar": {
-              width: "8px",
-            },
-            "&::-webkit-scrollbar-track": {
-              background: "transparent",
-            },
-            "&::-webkit-scrollbar-thumb": {
-              backgroundColor: "rgba(0,0,0,0.2)",
-              borderRadius: "4px",
-            },
-            "&::-webkit-scrollbar-thumb:hover": {
-              backgroundColor: "rgba(0,0,0,0.4)",
-            },
-          }}
-        >
-          {teams.map((team) => (
-            <Card
-              key={team.id}
-              sx={{
-                display: "flex",
-                flexDirection: "column",
-                border: "1px solid #ccc",
-                minHeight: "130px",
-                flexShrink: 0,
-              }}
-            >
-              <CardContent
+            pb: 2 
+          }}>
+            {teams.map((team) => (
+              <Card
+                key={team.id}
                 sx={{
-                  p: "12px !important",
                   display: "flex",
                   flexDirection: "column",
-                  gap: 1,
-                  height: "100%",
-                  '&:last-child': { pb: '12px' },
+                  border: "1px solid #ccc",
+                  minHeight: "130px",
                 }}
               >
-                <Box sx={{ display: "flex" }}>
-                  <Typography
-                    sx={{
-                      fontSize: "14px",
-                      fontWeight: "bold",
-                      color: "black",
-                      mr: 1,
-                    }}
-                  >
-                    Name:
-                  </Typography>
-                  <Typography sx={{ fontSize: "14px", color: "black" }}>
-                    {team.name}
-                  </Typography>
-                </Box>
-
-                <Box sx={{ display: "flex" }}>
-                  <Typography
-                    sx={{
-                      fontSize: "14px",
-                      fontWeight: "bold",
-                      color: "black",
-                      mr: 1,
-                    }}
-                  >
-                    Country:
-                  </Typography>
-                  <Typography sx={{ fontSize: "14px", color: "black" }}>
-                    {team.countryIso}
-                  </Typography>
-                </Box>
-
-                <Paper
-                  elevation={0}
-                  sx={{
-                    p: 1,
-                    backgroundColor: "#f5f5f5",
-                    borderRadius: "4px",
-                    flexGrow: 1,
-                    overflow: "hidden",
-                    display: "flex",
-                    flexDirection: "column",
-                  }}
-                >
-                  <Box sx={{ display: "flex", flexGrow: 1 }}>
+                <CardContent sx={{ p: "12px !important" }}>
+                  <Box sx={{ display: "flex", mb: 1 }}>
                     <Typography
                       sx={{
                         fontSize: "14px",
                         fontWeight: "bold",
                         color: "black",
                         mr: 1,
-                        flexShrink: 0,
+                      }}
+                    >
+                      Name:
+                    </Typography>
+                    <Typography sx={{ fontSize: "14px", color: "black" }}>
+                      {team.name}
+                    </Typography>
+                  </Box>
+
+                  <Box sx={{ display: "flex", mb: 1 }}>
+                    <Typography
+                      sx={{
+                        fontSize: "14px",
+                        fontWeight: "bold",
+                        color: "black",
+                        mr: 1,
+                      }}
+                    >
+                      Country:
+                    </Typography>
+                    <Typography sx={{ fontSize: "14px", color: "black" }}>
+                      {team.countryIso}
+                    </Typography>
+                  </Box>
+
+                  <Paper
+                    elevation={0}
+                    sx={{
+                      p: 1,
+                      backgroundColor: "#f5f5f5",
+                      borderRadius: "4px",
+                    }}
+                  >
+                    <Typography
+                      sx={{
+                        fontSize: "14px",
+                        fontWeight: "bold",
+                        color: "black",
+                        mb: 0.5,
                       }}
                     >
                       Description:
                     </Typography>
-                    <Typography
-                      sx={{
-                        fontSize: "14px",
-                        color: "black",
-                        overflow: "auto",
-                        "&::-webkit-scrollbar": {
-                          width: "6px",
-                          height: "6px",
-                        },
-                        "&::-webkit-scrollbar-thumb": {
-                          backgroundColor: "rgba(0,0,0,0.2)",
-                          borderRadius: "3px",
-                        },
-                      }}
-                    >
-                      {team.description}
+                    <Typography sx={{ fontSize: "14px", color: "black" }}>
+                      {team.description || "No description provided"}
                     </Typography>
-                  </Box>
-                </Paper>
-              </CardContent>
-            </Card>
-          ))}
-        </Box>
-      )}
+                  </Paper>
+                </CardContent>
+              </Card>
+            ))}
+            <Box sx={{ height: "200px" }} />
+          </Box>
+        )}
+      </Box>
+
+      <Box
+      sx={{
+        position: 'fixed',
+        bottom: 0,
+        left: 0,
+        right: 0,
+        width: '100%',
+        display: 'flex',
+        justifyContent: 'center',
+        pt: 2,
+        pb: 1,
+        backgroundColor: 'background.paper',
+        borderTop: '1px solid',
+        borderColor: 'divider',
+        paddingBottom: "30px",
+        paddingTop: "30px",
+        zIndex: 10, 
+      }}
+    >
+      <Pagination
+        count={pagination.totalPages}
+        page={pagination.page + 1}
+        onChange={handlePageChange}
+        color="primary"
+        showFirstButton
+        showLastButton
+      />
+    </Box>
 
       <AddTeamModal
         open={openAddModal}
         onClose={() => setOpenAddModal(false)}
-        fetchTeams={fetchTeams}  
+        fetchTeams={() => fetchTeams(pagination.page, pagination.size)}
       />
     </Box>
   );

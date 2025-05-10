@@ -1,8 +1,8 @@
 import API from "./api";
 
-export const getTeams = async () => {
+export const getTeams = async (page = 0, size = 5) => {
   try {
-    const response = await API.get("/team/all");
+    const response = await API.get(`/team/all?page=${page}&size=${size}`);
     if (response.status === 200) {
       return response.data; 
     } else {
