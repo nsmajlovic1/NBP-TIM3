@@ -2,6 +2,8 @@ package com.formula.parts.tracker.rest;
 
 import com.formula.parts.tracker.core.service.team.TeamService;
 import com.formula.parts.tracker.shared.dto.Page;
+import com.formula.parts.tracker.shared.dto.storage.StorageResponse;
+import com.formula.parts.tracker.shared.dto.team.TeamMemberResponse;
 import com.formula.parts.tracker.shared.dto.team.TeamRequest;
 import com.formula.parts.tracker.shared.dto.team.TeamResponse;
 import com.formula.parts.tracker.shared.exception.ApiException;
@@ -12,6 +14,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @Tag(name = "Team API")
@@ -34,10 +38,40 @@ public class TeamRestService {
         return ResponseEntity.ok(teamService.getAllTeams(search, page, size));
     }
 
-    /*@DeleteMapping("{team_id}/remove/{user_id}")
-    public ResponseEntity<ApiSuccessResponse> removeTeamMember(@PathVariable long id) throws ApiException {
-        teamService.removeTeamMember(team_id,user_id);
-        ApiSuccessResponse successResponse = new ApiSuccessResponse(HttpStatus.OK, "Company with ID " + id + " has been successfully deleted.");
+    @GetMapping("{id}")
+    public ResponseEntity<TeamResponse> getTeam(@PathVariable long id) throws ApiException {
+        return ResponseEntity.ok(teamService.getTeam(id));
+    }
+
+    @PostMapping("{team_id}/assign/{user_id}")
+    public ResponseEntity<ApiSuccessResponse> assignMemberToTeam(
+            @PathVariable("team_id") long teamId,
+            @PathVariable("user_id") long userId) throws ApiException {
+
+        teamService.assignMember(teamId, userId);
+        ApiSuccessResponse successResponse = new ApiSuccessResponse(HttpStatus.OK,
+                "User assigned to team successfully.");
         return ResponseEntity.ok(successResponse);
-    }*/
+    }
+
+    @DeleteMapping("{team_id}/remove/{user_id}")
+    public ResponseEntity<ApiSuccessResponse> removeTeamMember(
+            @PathVariable("team_id") long teamId,
+            @PathVariable("user_id") long userId) throws ApiException {
+
+        teamService.removeTeamMember(teamId, userId);
+        ApiSuccessResponse successResponse = new ApiSuccessResponse(HttpStatus.OK,
+                "User removed from team successfully.");
+        return ResponseEntity.ok(successResponse);
+    }
+
+    @GetMapping("/logistics/available")
+    public ResponseEntity<List<TeamMemberResponse>> getAvailableLogisticUsers() {
+        return ResponseEntity.ok(teamService.getAvailableLogisticUsers());
+    }
+
+    @GetMapping("/mechanics/available")
+    public ResponseEntity<List<TeamMemberResponse>> getAvailableMechanicUsers() {
+        return ResponseEntity.ok(teamService.getAvailableMechanicUsers());
+    }
 }
