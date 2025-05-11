@@ -42,7 +42,7 @@ public class AuthenticationRestService {
     }
 
     @GetMapping("all")
-    public ResponseEntity<Page<UserResponse>> getAllCompanies(
+    public ResponseEntity<Page<UserResponse>> getAllUsers(
             @RequestParam(value = "search", required = false) String search,
             @RequestParam(value = "page", defaultValue = "1") Long page,
             @RequestParam(value = "size", defaultValue = "10") Long size){
