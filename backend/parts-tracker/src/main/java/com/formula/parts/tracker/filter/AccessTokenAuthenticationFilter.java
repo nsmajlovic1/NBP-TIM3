@@ -61,7 +61,18 @@ public class AccessTokenAuthenticationFilter extends OncePerRequestFilter {
         @NonNull final HttpServletResponse response,
         @NonNull final FilterChain chain)
         throws ServletException, IOException {
-        if (request.getServletPath().contains("/auth/login")
+
+        String path = request.getServletPath();
+
+        if (path.startsWith("/swagger-ui")
+                || path.startsWith("/v3/api-docs")
+                || path.startsWith("/api-docs")
+                || path.startsWith("/swagger-resources")) {
+            chain.doFilter(request, response);
+            return;
+        }
+
+        if (path.contains("/auth/login")
             || SecurityContextHolder.getContext().getAuthentication() != null) {
             chain.doFilter(request, response);
             return;
