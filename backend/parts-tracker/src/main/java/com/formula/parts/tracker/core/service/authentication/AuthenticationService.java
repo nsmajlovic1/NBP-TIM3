@@ -1,5 +1,7 @@
 package com.formula.parts.tracker.core.service.authentication;
 
+import com.formula.parts.tracker.shared.dto.Page;
+import com.formula.parts.tracker.shared.dto.transportcompany.TransportCompanyResponse;
 import com.formula.parts.tracker.shared.dto.user.PasswordChangeRequest;
 import com.formula.parts.tracker.shared.dto.user.UserLoginRequest;
 import com.formula.parts.tracker.shared.dto.user.UserLoginResponse;
@@ -19,5 +21,7 @@ public interface AuthenticationService {
     String getAccessTokenOwner(final String accessToken);
 
     boolean isAccessTokenValid(final String accessToken, final UserDetails userDetails);
+
+    Page<UserResponse> getAllUsers(String search, Long page, Long size);
 
 }
