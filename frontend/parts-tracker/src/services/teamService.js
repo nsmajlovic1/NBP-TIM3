@@ -44,3 +44,42 @@ export const getTeamById = async (teamId) => {
     throw new Error(error.response?.data?.message || "Failed to fetch team.");
   }
 };
+
+export const getAvailableMechanics = async () => {
+  try {
+    const response = await API.get('/team/mechanics/available');
+    if (response.status === 200) {
+      return response.data;
+    } else {
+      throw new Error("Failed to fetch available mechanics.");
+    }
+  } catch (error) {
+    throw new Error(error.response?.data?.message || "Failed to fetch available mechanics.");
+  }
+};
+
+export const getAvailableLogistics = async () => {
+  try {
+    const response = await API.get('/team/logistics/available');
+    if (response.status === 200) {
+      return response.data;
+    } else {
+      throw new Error("Failed to fetch available logistics.");
+    }
+  } catch (error) {
+    throw new Error(error.response?.data?.message || "Failed to fetch available logistics.");
+  }
+};
+
+export const assignUserToTeam = async (teamId, userId) => {
+  try {
+    const response = await API.post(`/team/${teamId}/assign/${userId}`);
+    if (response.status === 200) {
+      return response.data;
+    } else {
+      throw new Error("Failed to assign user to team.");
+    }
+  } catch (error) {
+    throw new Error(error.response?.data?.message || "Failed to assign user to team.");
+  }
+};
