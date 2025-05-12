@@ -42,19 +42,22 @@ const Teams = () => {
     }
   };
 
+  const fetchTeamData = async (teamId) => {
+    try {
+      const team = await getTeamById(teamId);
+      setSelectedTeam(team);
+    } catch (err) {
+      console.error("Failed to fetch team data:", err);
+    }
+  };
 
   useEffect(() => {
     fetchTeams();
   }, [pagination.page, pagination.size]);
 
   const handleViewMembers = async (teamId) => {
-    try {
-      const team = await getTeamById(teamId);
-      setSelectedTeam(team);
-      setOpenMembersModal(true);
-    } catch (err) {
-      console.error("Failed to fetch team members", err);
-    }
+    await fetchTeamData(teamId);
+    setOpenMembersModal(true);
   };
 
   if (loading && pagination.page === 0) {
@@ -115,6 +118,7 @@ const Teams = () => {
         open={openMembersModal}
         onClose={() => setOpenMembersModal(false)}
         team={selectedTeam}
+        fetchTeamData={fetchTeamData}
       />
       <Box sx={{ height: '300px', opacity: 0 }} />
     </Box>

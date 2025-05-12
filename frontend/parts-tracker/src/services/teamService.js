@@ -83,3 +83,17 @@ export const assignUserToTeam = async (teamId, userId) => {
     throw new Error(error.response?.data?.message || "Failed to assign user to team.");
   }
 };
+
+export const removeTeamMember = async (teamId, userId) => {
+  try {
+    const response = await API.delete(`/team/${teamId}/remove/${userId}`);
+
+    if (response.status === 200) {
+      return response.data; 
+    } else {
+      throw new Error("Failed to delete member. Unexpected response status.");
+    }
+  } catch (error) {
+    throw new Error(error.response?.data?.message || "Failed to delete member.");
+  }
+};
