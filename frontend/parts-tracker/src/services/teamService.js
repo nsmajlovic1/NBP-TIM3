@@ -2,7 +2,12 @@ import API from "./api";
 
 export const getTeams = async (page = 0, size = 5) => {
   try {
-    const response = await API.get(`/team/all?page=${page}&size=${size}`);
+    const response = await API.get(`/team/all`, {
+      params: {
+        page: page, 
+        size: size   
+      }
+    });
     if (response.status === 200) {
       return response.data; 
     } else {
@@ -12,6 +17,7 @@ export const getTeams = async (page = 0, size = 5) => {
     throw new Error(error.response?.data?.message || "Failed to fetch team data.");
   }
 };
+
 
 export const createTeam = async (teamData) => {
   try {
@@ -23,5 +29,18 @@ export const createTeam = async (teamData) => {
     }
   } catch (error) {
     throw error;
+  }
+};
+
+export const getTeamById = async (teamId) => {
+  try {
+    const response = await API.get(`/team/${teamId}`);
+    if (response.status === 200) {
+      return response.data;
+    } else {
+      throw new Error("Failed to fetch team data.");
+    }
+  } catch (error) {
+    throw new Error(error.response?.data?.message || "Failed to fetch team.");
   }
 };
