@@ -6,6 +6,7 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -34,7 +35,11 @@ public class SecurityConfiguration {
                     .hasAuthority(Role.ADMIN.getValue())
                     .requestMatchers("/api/auth/password")
                     .authenticated()
-                    .anyRequest().permitAll()
+                    .requestMatchers(HttpMethod.POST, "/api/transport")
+                    .hasAuthority(Role.ADMIN.getValue())
+                    .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "api/auth/login")
+                    .permitAll()
+                    .anyRequest().authenticated()
             )
             .sessionManagement(
                 session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -66,4 +71,5 @@ public class SecurityConfiguration {
         source.registerCorsConfiguration("/**", config);
         return source;
     }
+
 }

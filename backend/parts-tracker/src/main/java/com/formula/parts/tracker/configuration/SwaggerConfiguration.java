@@ -20,17 +20,17 @@ public class SwaggerConfiguration {
     public OpenAPI customOpenAPI() {
         final String securitySchemeName = "bearerAuth";
         return new OpenAPI()
-                .info(new Info()
-                        .title("Parts Tracker API")
-                        .version("1.0.0"))
-                .addSecurityItem(new SecurityRequirement().addList(securitySchemeName))
-                .components(new Components()
-                        .addSecuritySchemes(securitySchemeName,
-                                new SecurityScheme()
-                                        .name(securitySchemeName)
-                                        .type(SecurityScheme.Type.HTTP)
-                                        .scheme("bearer")
-                                        .bearerFormat("JWT")));
+            .info(new Info()
+                .title("Parts Tracker API")
+                .version("1.0.0"))
+            .addSecurityItem(new SecurityRequirement().addList(securitySchemeName))
+            .components(new Components()
+                .addSecuritySchemes(securitySchemeName,
+                    new SecurityScheme()
+                        .name(securitySchemeName)
+                        .type(SecurityScheme.Type.HTTP)
+                        .scheme("bearer")
+                        .bearerFormat("JWT")));
     }
 
     @Bean
@@ -54,37 +54,46 @@ public class SwaggerConfiguration {
     @Bean
     public GroupedOpenApi teamApi() {
         return GroupedOpenApi.builder()
-                .group("team-api")
-                .packagesToScan("com.formula.parts.tracker.rest")
-                .pathsToMatch("/api/team/**")
-                .build();
+            .group("team-api")
+            .packagesToScan("com.formula.parts.tracker.rest")
+            .pathsToMatch("/api/team/**")
+            .build();
     }
 
     @Bean
     public GroupedOpenApi addressApi() {
         return GroupedOpenApi.builder()
-                .group("address-api")
-                .packagesToScan("com.formula.parts.tracker.rest")
-                .pathsToMatch("/api/address/**")
-                .build();
+            .group("address-api")
+            .packagesToScan("com.formula.parts.tracker.rest")
+            .pathsToMatch("/api/address/**")
+            .build();
     }
 
     @Bean
     public GroupedOpenApi storageApi() {
         return GroupedOpenApi.builder()
-                .group("storage-api")
-                .packagesToScan("com.formula.parts.tracker.rest")
-                .pathsToMatch("/api/storage/**")
-                .build();
+            .group("storage-api")
+            .packagesToScan("com.formula.parts.tracker.rest")
+            .pathsToMatch("/api/storage/**")
+            .build();
     }
 
     @Bean
     public GroupedOpenApi carPartApi() {
         return GroupedOpenApi.builder()
-                .group("car-part-api")
-                .packagesToScan("com.formula.parts.tracker.rest")
-                .pathsToMatch("/api/car-part/**")
-                .build();
+            .group("car-part-api")
+            .packagesToScan("com.formula.parts.tracker.rest")
+            .pathsToMatch("/api/car-part/**")
+            .build();
+    }
+
+    @Bean
+    public GroupedOpenApi transportApi() {
+        return GroupedOpenApi.builder()
+            .group("transport-api")
+            .packagesToScan("com.formula.parts.tracker.rest")
+            .pathsToMatch("/api/transport/**")
+            .build();
     }
 
 }

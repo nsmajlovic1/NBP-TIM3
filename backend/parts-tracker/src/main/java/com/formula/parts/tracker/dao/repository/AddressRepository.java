@@ -1,17 +1,16 @@
 package com.formula.parts.tracker.dao.repository;
 
 import com.formula.parts.tracker.dao.model.Address;
-import com.formula.parts.tracker.dao.model.TransportCompany;
 import com.formula.parts.tracker.shared.exception.DatabaseException;
-import org.springframework.stereotype.Repository;
-
-import javax.sql.DataSource;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
+import javax.sql.DataSource;
+import org.springframework.stereotype.Repository;
 
 @Repository
-public class AddressRepository extends BaseRepository<Address>{
+public class AddressRepository extends BaseRepository<Address> {
+
     public AddressRepository(final DataSource dataSource) {
         super(dataSource);
     }
@@ -38,6 +37,13 @@ public class AddressRepository extends BaseRepository<Address>{
         return executeExistsQuery(query, street_name);
     }
 
+    public boolean existsById(final Long id) {
+        final String query = """
+                SELECT COUNT(*) FROM NBP02.ADDRESS WHERE ID = ?
+            """;
+        return executeExistsQuery(query, id);
+    }
+
     public Address persist(final Address address) {
         final String insertQuery = """
                 INSERT INTO NBP02.ADDRESS (
@@ -51,11 +57,11 @@ public class AddressRepository extends BaseRepository<Address>{
             """;
 
         executeInsertQuery(insertQuery,
-                address.getStreetName(),
-                address.getCityName(),
-                address.getCountryIso(),
-                address.getLongitude(),
-                address.getLatitude());
+            address.getStreetName(),
+            address.getCityName(),
+            address.getCountryIso(),
+            address.getLongitude(),
+            address.getLatitude());
 
         final String selectQuery = """
                 SELECT * FROM NBP02.ADDRESS WHERE STREET_NAME = ?
@@ -77,10 +83,10 @@ public class AddressRepository extends BaseRepository<Address>{
 
     public List<Address> findByNameLike(final String keyword, Long page, Long size) {
         final String query = """
-            SELECT * FROM NBP02.ADDRESS
-            WHERE LOWER(STREET_NAME) LIKE ?
-            OFFSET ? ROWS FETCH NEXT ? ROWS ONLY
-        """;
+                SELECT * FROM NBP02.ADDRESS
+                WHERE LOWER(STREET_NAME) LIKE ?
+                OFFSET ? ROWS FETCH NEXT ? ROWS ONLY
+            """;
 
         // Using LOWER for case-sensitive cases
         String pattern = "%" + keyword.toLowerCase() + "%";
@@ -92,17 +98,17 @@ public class AddressRepository extends BaseRepository<Address>{
 
     public Long countAll() {
         final String query = """
-            SELECT COUNT(*) FROM NBP02.ADDRESS
-        """;
+                SELECT COUNT(*) FROM NBP02.ADDRESS
+            """;
 
         return executeCountQuery(query);
     }
 
     public Long countByNameLike(final String keyword) {
         final String query = """
-            SELECT COUNT(*) FROM NBP02.ADDRESS
-            WHERE LOWER(STREET_NAME) LIKE ?
-        """;
+                SELECT COUNT(*) FROM NBP02.ADDRESS
+                WHERE LOWER(STREET_NAME) LIKE ?
+            """;
 
         String pattern = "%" + keyword.toLowerCase() + "%";
 
