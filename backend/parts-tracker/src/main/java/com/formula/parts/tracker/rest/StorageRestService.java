@@ -38,4 +38,13 @@ public class StorageRestService {
     public ResponseEntity<StorageResponse> getStorage(@PathVariable long id) throws ApiException {
         return ResponseEntity.ok(storageService.getStorage(id));
     }
+
+    @GetMapping("team")
+    public ResponseEntity<Page<StorageResponse>> getStoragesByTeamId(
+            @RequestParam("teamId") Long teamId,
+            @RequestParam(value = "page", defaultValue = "1") Long page,
+            @RequestParam(value = "size", defaultValue = "10") Long size) {
+        return ResponseEntity.ok(storageService.getStoragesByTeamId(teamId, page, size));
+    }
+
 }
