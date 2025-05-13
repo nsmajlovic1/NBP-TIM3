@@ -1,15 +1,14 @@
 package com.formula.parts.tracker.dao.repository;
 
 import com.formula.parts.tracker.dao.model.Team;
-import com.formula.parts.tracker.dao.model.TransportCompany;
 import com.formula.parts.tracker.shared.dto.team.TeamMemberResponse;
 import com.formula.parts.tracker.shared.exception.DatabaseException;
-import org.springframework.stereotype.Repository;
-
-import javax.sql.DataSource;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Optional;
+import javax.sql.DataSource;
+import org.springframework.stereotype.Repository;
 
 @Repository
 public class TeamRepository extends BaseRepository<Team> {
@@ -48,7 +47,8 @@ public class TeamRepository extends BaseRepository<Team> {
                 ) VALUES (NBP02."ISEQ$$_276605".NEXTVAL, ?, ?, ?)
             """;
 
-        executeInsertQuery(insertQuery, team.getName(), team.getDescription(), team.getCountryIso());
+        executeInsertQuery(insertQuery, team.getName(), team.getDescription(),
+            team.getCountryIso());
 
         final String selectQuery = """
                 SELECT * FROM NBP02.TEAM WHERE NAME = ?
@@ -70,10 +70,10 @@ public class TeamRepository extends BaseRepository<Team> {
 
     public List<Team> findByNameLike(final String keyword, Long page, Long size) {
         final String query = """
-            SELECT * FROM NBP02.TEAM
-            WHERE LOWER(NAME) LIKE ?
-            OFFSET ? ROWS FETCH NEXT ? ROWS ONLY
-        """;
+                SELECT * FROM NBP02.TEAM
+                WHERE LOWER(NAME) LIKE ?
+                OFFSET ? ROWS FETCH NEXT ? ROWS ONLY
+            """;
 
         // Using LOWER for case-sensitive cases
         String pattern = "%" + keyword.toLowerCase() + "%";
@@ -85,17 +85,17 @@ public class TeamRepository extends BaseRepository<Team> {
 
     public List<TeamMemberResponse> findTeamMembersByTeamId(Long teamId) {
         final String query = """
-            SELECT 
-                tm.USER_ID,
-                u.FIRST_NAME,
-                u.LAST_NAME,
-                u.EMAIL,
-                r.NAME AS ROLE
-            FROM TEAM_MEMBER tm
-            JOIN NBP.NBP_USER u ON tm.USER_ID = u.ID
-            JOIN NBP.NBP_ROLE r ON u.ROLE_ID = r.ID
-            WHERE tm.TEAM_ID = ?
-        """;
+                SELECT 
+                    tm.USER_ID,
+                    u.FIRST_NAME,
+                    u.LAST_NAME,
+                    u.EMAIL,
+                    r.NAME AS ROLE
+                FROM TEAM_MEMBER tm
+                JOIN NBP.NBP_USER u ON tm.USER_ID = u.ID
+                JOIN NBP.NBP_ROLE r ON u.ROLE_ID = r.ID
+                WHERE tm.TEAM_ID = ?
+            """;
 
         return this.<TeamMemberResponse>executeListSelectQuery(query, resultSet -> {
             try {
@@ -114,17 +114,17 @@ public class TeamRepository extends BaseRepository<Team> {
 
     public List<TeamMemberResponse> findAvailableLogisticUsers() {
         final String query = """
-            SELECT 
-                u.ID AS USER_ID,
-                u.FIRST_NAME,
-                u.LAST_NAME,
-                u.EMAIL,
-                r.NAME AS ROLE
-            FROM NBP.NBP_USER u
-            JOIN NBP.NBP_ROLE r ON u.ROLE_ID = r.ID
-            LEFT JOIN TEAM_MEMBER tm ON tm.USER_ID = u.ID
-            WHERE LOWER(r.NAME) = 'logistic' AND tm.TEAM_ID IS NULL
-        """;
+                SELECT 
+                    u.ID AS USER_ID,
+                    u.FIRST_NAME,
+                    u.LAST_NAME,
+                    u.EMAIL,
+                    r.NAME AS ROLE
+                FROM NBP.NBP_USER u
+                JOIN NBP.NBP_ROLE r ON u.ROLE_ID = r.ID
+                LEFT JOIN TEAM_MEMBER tm ON tm.USER_ID = u.ID
+                WHERE LOWER(r.NAME) = 'logistic' AND tm.TEAM_ID IS NULL
+            """;
 
         return this.<TeamMemberResponse>executeListSelectQuery(query, resultSet -> {
             try {
@@ -143,17 +143,17 @@ public class TeamRepository extends BaseRepository<Team> {
 
     public List<TeamMemberResponse> findAvailableMechanicUsers() {
         final String query = """
-            SELECT 
-                u.ID AS USER_ID,
-                u.FIRST_NAME,
-                u.LAST_NAME,
-                u.EMAIL,
-                r.NAME AS ROLE
-            FROM NBP.NBP_USER u
-            JOIN NBP.NBP_ROLE r ON u.ROLE_ID = r.ID
-            LEFT JOIN TEAM_MEMBER tm ON tm.USER_ID = u.ID
-            WHERE LOWER(r.NAME) = 'mechanic' AND tm.TEAM_ID IS NULL
-        """;
+                SELECT 
+                    u.ID AS USER_ID,
+                    u.FIRST_NAME,
+                    u.LAST_NAME,
+                    u.EMAIL,
+                    r.NAME AS ROLE
+                FROM NBP.NBP_USER u
+                JOIN NBP.NBP_ROLE r ON u.ROLE_ID = r.ID
+                LEFT JOIN TEAM_MEMBER tm ON tm.USER_ID = u.ID
+                WHERE LOWER(r.NAME) = 'mechanic' AND tm.TEAM_ID IS NULL
+            """;
 
         return this.<TeamMemberResponse>executeListSelectQuery(query, resultSet -> {
             try {
@@ -172,17 +172,17 @@ public class TeamRepository extends BaseRepository<Team> {
 
     public Long countAll() {
         final String query = """
-            SELECT COUNT(*) FROM NBP02.TEAM
-        """;
+                SELECT COUNT(*) FROM NBP02.TEAM
+            """;
 
         return executeCountQuery(query);
     }
 
     public Long countByNameLike(final String keyword) {
         final String query = """
-            SELECT COUNT(*) FROM NBP02.TEAM
-            WHERE LOWER(NAME) LIKE ?
-        """;
+                SELECT COUNT(*) FROM NBP02.TEAM
+                WHERE LOWER(NAME) LIKE ?
+            """;
 
         String pattern = "%" + keyword.toLowerCase() + "%";
 
@@ -196,9 +196,20 @@ public class TeamRepository extends BaseRepository<Team> {
 
     public boolean existsById(long id) {
         final String query = """
-            SELECT COUNT(*) FROM NBP02.TEAM WHERE ID = ?
-        """;
+                SELECT COUNT(*) FROM NBP02.TEAM WHERE ID = ?
+            """;
 
         return executeExistsQuery(query, id);
     }
+
+    public Optional<Team> findByUserId(final Long userId) {
+        final String query = """
+                SELECT t.*
+                FROM NBP02.TEAM_MEMBER tm JOIN NBP02.TEAM t ON tm.TEAM_ID = t.ID
+                WHERE tm.USER_ID = ?
+            """;
+
+        return Optional.ofNullable(executeSingleSelectQuery(query, this::mapToEntity, userId));
+    }
+
 }

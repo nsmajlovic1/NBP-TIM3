@@ -3,12 +3,12 @@ package com.formula.parts.tracker.core.service.authentication;
 import com.formula.parts.tracker.core.mapper.UserMapper;
 import com.formula.parts.tracker.core.service.email.EmailService;
 import com.formula.parts.tracker.core.utility.JwtUtils;
-import com.formula.parts.tracker.dao.model.TransportCompany;
+import com.formula.parts.tracker.dao.model.Team;
 import com.formula.parts.tracker.dao.model.User;
 import com.formula.parts.tracker.dao.repository.RoleRepository;
+import com.formula.parts.tracker.dao.repository.TeamRepository;
 import com.formula.parts.tracker.dao.repository.UserRepository;
 import com.formula.parts.tracker.shared.dto.Page;
-import com.formula.parts.tracker.shared.dto.transportcompany.TransportCompanyResponse;
 import com.formula.parts.tracker.shared.dto.user.PasswordChangeRequest;
 import com.formula.parts.tracker.shared.dto.user.UserLoginRequest;
 import com.formula.parts.tracker.shared.dto.user.UserLoginResponse;
@@ -18,7 +18,6 @@ import com.formula.parts.tracker.shared.enums.EmailSubject;
 import com.formula.parts.tracker.shared.exception.ApiException;
 import com.formula.parts.tracker.shared.exception.BadRequestException;
 import com.formula.parts.tracker.shared.exception.NotFoundException;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -42,6 +41,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private final AuthenticationManager authenticationManager;
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
+    private final TeamRepository teamRepository;
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
     private final EmailService emailService;
@@ -85,6 +85,9 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             .findFirst()
             .map(GrantedAuthority::getAuthority)
             .orElse(null));
+
+        response.setTeamId(
+            teamRepository.findByUserId(authenticatedUser.getId()).map(Team::getId).orElse(null));
 
         return response;
     }
@@ -158,8 +161,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
         Page<UserResponse> pageResponse = new Page<>();
         pageResponse.setContent(users.stream()
-                .map(userMapper::toUserResponse)
-                .toList());
+            .map(userMapper::toUserResponse)
+            .toList());
         pageResponse.setPageNumber(page);
         pageResponse.setPageSize(size);
         pageResponse.setTotalElements(totalElements);

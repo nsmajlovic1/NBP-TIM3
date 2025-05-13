@@ -15,5 +15,6 @@ public class UserLoginResponse implements Serializable {
     private String accessToken;
     private String role;
     private String username;
+    private Long teamId;
 
 }
