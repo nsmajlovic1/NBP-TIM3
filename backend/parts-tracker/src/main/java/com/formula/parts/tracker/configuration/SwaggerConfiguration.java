@@ -96,4 +96,13 @@ public class SwaggerConfiguration {
             .build();
     }
 
+    @Bean
+    public GroupedOpenApi driverApi() {
+        return GroupedOpenApi.builder()
+            .group("driver-api")
+            .packagesToScan("com.formula.parts.tracker.rest")
+            .pathsToMatch("/api/driver/**")
+            .build();
+    }
+
 }
