@@ -5,6 +5,7 @@ import lombok.Setter;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.util.List;
 
 @Getter
 @Setter
@@ -16,4 +17,5 @@ public class TeamResponse implements Serializable {
     private String name;
     private String description;
     private String countryIso;
+    private List<TeamMemberResponse> teamMembers;
 }

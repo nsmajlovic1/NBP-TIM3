@@ -3,9 +3,12 @@ package com.formula.parts.tracker.core.service.authentication;
 import com.formula.parts.tracker.core.mapper.UserMapper;
 import com.formula.parts.tracker.core.service.email.EmailService;
 import com.formula.parts.tracker.core.utility.JwtUtils;
+import com.formula.parts.tracker.dao.model.TransportCompany;
 import com.formula.parts.tracker.dao.model.User;
 import com.formula.parts.tracker.dao.repository.RoleRepository;
 import com.formula.parts.tracker.dao.repository.UserRepository;
+import com.formula.parts.tracker.shared.dto.Page;
+import com.formula.parts.tracker.shared.dto.transportcompany.TransportCompanyResponse;
 import com.formula.parts.tracker.shared.dto.user.PasswordChangeRequest;
 import com.formula.parts.tracker.shared.dto.user.UserLoginRequest;
 import com.formula.parts.tracker.shared.dto.user.UserLoginResponse;
@@ -15,7 +18,10 @@ import com.formula.parts.tracker.shared.enums.EmailSubject;
 import com.formula.parts.tracker.shared.exception.ApiException;
 import com.formula.parts.tracker.shared.exception.BadRequestException;
 import com.formula.parts.tracker.shared.exception.NotFoundException;
+
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
 import lombok.RequiredArgsConstructor;
@@ -136,6 +142,30 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         final String username = JwtUtils.extractSubject(accessToken, accessTokenSecret);
         return username.equals(userDetails.getUsername()) && !JwtUtils.isJwtExpired(accessToken,
             accessTokenSecret);
+    }
+
+    @Override
+    public Page<UserResponse> getAllUsers(String search, Long page, Long size) {
+        List<User> users = new ArrayList<>();
+        Long totalElements = 0L;
+
+        if (search != null && !search.trim().isEmpty()) {
+            users = userRepository.findByRoleName(search, page, size);
+            totalElements = userRepository.countByRoleName(search);
+        }
+
+        Long totalPages = (totalElements + size - 1) / size;
+
+        Page<UserResponse> pageResponse = new Page<>();
+        pageResponse.setContent(users.stream()
+                .map(userMapper::toUserResponse)
+                .toList());
+        pageResponse.setPageNumber(page);
+        pageResponse.setPageSize(size);
+        pageResponse.setTotalElements(totalElements);
+        pageResponse.setTotalPages(totalPages);
+
+        return pageResponse;
     }
 
 }

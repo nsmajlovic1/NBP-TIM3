@@ -96,4 +96,35 @@ public class StorageServiceImpl implements StorageService{
         return response;
     }
 
+    @Override
+    public Page<StorageResponse> getStoragesByTeamId(Long teamId, Long page, Long size) {
+        List<Storage> storages = storageRepository.findByTeamId(teamId, page, size);
+        Long totalElements = storageRepository.countByTeamId(teamId);
+        Long totalPages = (totalElements + size - 1) / size;
+
+        List<StorageResponse> content = storages.stream().map(storage -> {
+            StorageResponse response = new StorageResponse();
+            response.setId(storage.getId());
+            response.setCapacity(storage.getCapacity());
+
+            Team team = teamRepository.findById(storage.getTeamId());
+            response.setTeam(teamMapper.toResponse(team));
+
+            Address address = addressRepository.findById(storage.getAddressId());
+            response.setLocation(addressMapper.toAddressResponse(address));
+
+            return response;
+        }).toList();
+
+        Page<StorageResponse> pageResponse = new Page<>();
+        pageResponse.setContent(content);
+        pageResponse.setPageNumber(page);
+        pageResponse.setPageSize(size);
+        pageResponse.setTotalElements(totalElements);
+        pageResponse.setTotalPages(totalPages);
+
+        return pageResponse;
+    }
+
+
 }

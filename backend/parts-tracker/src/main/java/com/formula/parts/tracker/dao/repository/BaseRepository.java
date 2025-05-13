@@ -62,12 +62,12 @@ public abstract class BaseRepository<T> {
         }
     }
 
-    protected List<T> executeListSelectQuery(final String query, final Function<ResultSet, T> mapper, final Object... params) {
+    protected <R> List<R> executeListSelectQuery(final String query, final Function<ResultSet, R> mapper, final Object... params) {
         try (final Connection connection = dataSource.getConnection();
              final PreparedStatement statement = createPreparedStatement(connection, query, params);
              final ResultSet resultSet = statement.executeQuery()) {
 
-            final List<T> results = new java.util.ArrayList<>();
+            final List<R> results = new java.util.ArrayList<>();
             while (resultSet.next()) {
                 results.add(mapper.apply(resultSet));
             }

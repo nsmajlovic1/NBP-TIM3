@@ -1,13 +1,11 @@
 package com.formula.parts.tracker.dao.repository;
 
-import com.formula.parts.tracker.dao.model.Role;
-import com.formula.parts.tracker.dao.model.RoleFields;
-import com.formula.parts.tracker.dao.model.User;
-import com.formula.parts.tracker.dao.model.UserFields;
+import com.formula.parts.tracker.dao.model.*;
 import com.formula.parts.tracker.shared.exception.DatabaseException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.util.List;
 import java.util.Optional;
 import javax.sql.DataSource;
 import org.springframework.stereotype.Repository;
@@ -100,6 +98,35 @@ public class UserRepository extends BaseRepository<User> {
             """;
 
         executeUpdateQuery(updateQuery, newPassword, username);
+    }
+
+    public List<User> findByRoleName(final String keyword, Long page, Long size) {
+        final String query = """
+            SELECT u.ID AS USER_ID, r.ID AS ROLE_ID, u.*, r.*
+            FROM NBP.NBP_USER u
+            JOIN NBP.NBP_ROLE r ON u.ROLE_ID = r.ID
+            WHERE LOWER(r.NAME) LIKE ?
+            OFFSET ? ROWS FETCH NEXT ? ROWS ONLY
+        """;
+
+        // Using LOWER for case-sensitive cases
+        String pattern = "%" + keyword.toLowerCase() + "%";
+
+        long offset = (page - 1) * size;
+
+        return executeListSelectQuery(query, this::mapToEntityWithRole, pattern, offset, size);
+    }
+
+    public Long countByRoleName(final String keyword) {
+        final String query = """
+            SELECT COUNT(*) FROM NBP.NBP_USER u
+            JOIN NBP.NBP_ROLE r ON u.ROLE_ID = r.ID
+            WHERE LOWER(r.NAME) LIKE ?
+        """;
+
+        String pattern = "%" + keyword.toLowerCase() + "%";
+
+        return executeCountQuery(query, pattern);
     }
 
 }

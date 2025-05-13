@@ -2,6 +2,7 @@ package com.formula.parts.tracker.dao.repository;
 
 import com.formula.parts.tracker.dao.model.Team;
 import com.formula.parts.tracker.dao.model.TransportCompany;
+import com.formula.parts.tracker.shared.dto.team.TeamMemberResponse;
 import com.formula.parts.tracker.shared.exception.DatabaseException;
 import org.springframework.stereotype.Repository;
 
@@ -82,6 +83,93 @@ public class TeamRepository extends BaseRepository<Team> {
         return executeListSelectQuery(query, this::mapToEntity, pattern, offset, size);
     }
 
+    public List<TeamMemberResponse> findTeamMembersByTeamId(Long teamId) {
+        final String query = """
+            SELECT 
+                tm.USER_ID,
+                u.FIRST_NAME,
+                u.LAST_NAME,
+                u.EMAIL,
+                r.NAME AS ROLE
+            FROM TEAM_MEMBER tm
+            JOIN NBP.NBP_USER u ON tm.USER_ID = u.ID
+            JOIN NBP.NBP_ROLE r ON u.ROLE_ID = r.ID
+            WHERE tm.TEAM_ID = ?
+        """;
+
+        return this.<TeamMemberResponse>executeListSelectQuery(query, resultSet -> {
+            try {
+                TeamMemberResponse member = new TeamMemberResponse();
+                member.setUserId(resultSet.getLong("USER_ID"));
+                member.setFirstName(resultSet.getString("FIRST_NAME"));
+                member.setLastName(resultSet.getString("LAST_NAME"));
+                member.setEmail(resultSet.getString("EMAIL"));
+                member.setRole(resultSet.getString("ROLE"));
+                return member;
+            } catch (SQLException e) {
+                throw new RuntimeException("Failed to map team member from result set", e);
+            }
+        }, teamId);
+    }
+
+    public List<TeamMemberResponse> findAvailableLogisticUsers() {
+        final String query = """
+            SELECT 
+                u.ID AS USER_ID,
+                u.FIRST_NAME,
+                u.LAST_NAME,
+                u.EMAIL,
+                r.NAME AS ROLE
+            FROM NBP.NBP_USER u
+            JOIN NBP.NBP_ROLE r ON u.ROLE_ID = r.ID
+            LEFT JOIN TEAM_MEMBER tm ON tm.USER_ID = u.ID
+            WHERE LOWER(r.NAME) = 'logistic' AND tm.TEAM_ID IS NULL
+        """;
+
+        return this.<TeamMemberResponse>executeListSelectQuery(query, resultSet -> {
+            try {
+                TeamMemberResponse member = new TeamMemberResponse();
+                member.setUserId(resultSet.getLong("USER_ID"));
+                member.setFirstName(resultSet.getString("FIRST_NAME"));
+                member.setLastName(resultSet.getString("LAST_NAME"));
+                member.setEmail(resultSet.getString("EMAIL"));
+                member.setRole(resultSet.getString("ROLE"));
+                return member;
+            } catch (SQLException e) {
+                throw new RuntimeException("Failed to map available logistic user", e);
+            }
+        });
+    }
+
+    public List<TeamMemberResponse> findAvailableMechanicUsers() {
+        final String query = """
+            SELECT 
+                u.ID AS USER_ID,
+                u.FIRST_NAME,
+                u.LAST_NAME,
+                u.EMAIL,
+                r.NAME AS ROLE
+            FROM NBP.NBP_USER u
+            JOIN NBP.NBP_ROLE r ON u.ROLE_ID = r.ID
+            LEFT JOIN TEAM_MEMBER tm ON tm.USER_ID = u.ID
+            WHERE LOWER(r.NAME) = 'mechanic' AND tm.TEAM_ID IS NULL
+        """;
+
+        return this.<TeamMemberResponse>executeListSelectQuery(query, resultSet -> {
+            try {
+                TeamMemberResponse member = new TeamMemberResponse();
+                member.setUserId(resultSet.getLong("USER_ID"));
+                member.setFirstName(resultSet.getString("FIRST_NAME"));
+                member.setLastName(resultSet.getString("LAST_NAME"));
+                member.setEmail(resultSet.getString("EMAIL"));
+                member.setRole(resultSet.getString("ROLE"));
+                return member;
+            } catch (SQLException e) {
+                throw new RuntimeException("Failed to map available mechanic user", e);
+            }
+        });
+    }
+
     public Long countAll() {
         final String query = """
             SELECT COUNT(*) FROM NBP02.TEAM
@@ -102,7 +190,15 @@ public class TeamRepository extends BaseRepository<Team> {
     }
 
     public Team findById(Long id) {
-        final String query = "SELECT * FROM TEAM WHERE ID = ?";
+        final String query = "SELECT * FROM NBP02.TEAM WHERE ID = ?";
         return executeSingleSelectQuery(query, this::mapToEntity, id);
+    }
+
+    public boolean existsById(long id) {
+        final String query = """
+            SELECT COUNT(*) FROM NBP02.TEAM WHERE ID = ?
+        """;
+
+        return executeExistsQuery(query, id);
     }
 }

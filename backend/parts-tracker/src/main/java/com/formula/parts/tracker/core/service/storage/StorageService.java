@@ -12,4 +12,5 @@ public interface StorageService {
     StorageResponse create(StorageRequest request) throws ApiException;;
     Page<StorageResponse> getAllStorages(Long page, Long size);
     StorageResponse getStorage (long id) throws ApiException;
+    Page<StorageResponse> getStoragesByTeamId(Long teamId, Long page, Long size);
 }

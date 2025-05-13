@@ -17,7 +17,6 @@ import { getAddresses } from '../services/addressService';
 import { getTeams } from '../services/teamService';
 import { addStorage } from '../services/storageService';
 import { toast } from 'react-toastify';
-import AddTeamModal from './AddTeamModal';
 import AddAddressModal from './AddAddressModal';
 import { FaPlus } from 'react-icons/fa';
 
@@ -27,7 +26,6 @@ const AddStorageModal = ({ open, onClose, onStorageAdded }) => {
   const [addressId, setAddressId] = useState('');
   const [teams, setTeams] = useState([]);
   const [addresses, setAddresses] = useState([]);
-  const [newTeamOpen, setNewTeamOpen] = useState(false);
   const [newAddressOpen, setNewAddressOpen] = useState(false);
 
   useEffect(() => {
@@ -63,11 +61,6 @@ const AddStorageModal = ({ open, onClose, onStorageAdded }) => {
     }
   };
 
-  const handleTeamAdded = (newTeam) => {
-    setTeams([...teams, newTeam]);
-    setTeamId(newTeam.id);
-  };
-
   const handleAddressAdded = (newAddress) => {
     setAddresses([...addresses, newAddress]);
     setAddressId(newAddress.id);
@@ -89,15 +82,13 @@ const AddStorageModal = ({ open, onClose, onStorageAdded }) => {
               required
             />
 
-          <FormControl fullWidth margin="normal">
-            <InputLabel>Team</InputLabel>
-            <Stack direction="row" spacing={1} alignItems="center">
+            <FormControl fullWidth margin="normal">
+              <InputLabel>Team</InputLabel>
               <Select
                 value={teamId}
                 onChange={(e) => setTeamId(e.target.value)}
                 label="Team"
                 required
-                sx={{ flexGrow: 1 }}
               >
                 {teams.map((team) => (
                   <MenuItem key={team.id} value={team.id}>
@@ -105,57 +96,41 @@ const AddStorageModal = ({ open, onClose, onStorageAdded }) => {
                   </MenuItem>
                 ))}
               </Select>
-              <Button 
-                size="small" 
-                onClick={() => setNewTeamOpen(true)}
-                sx={{
-                  height: '40px',
-                  whiteSpace: 'nowrap',
-                  border: '1px solid',
-                  borderColor: 'primary.main',
-                  paddingLeft: "10px",
-                  paddingRight: "10px"
-                }}
-                startIcon={<FaPlus />}
-              >
-                New Team
-              </Button>
-            </Stack>
-          </FormControl>
+            </FormControl>
 
-          <FormControl fullWidth margin="normal">
-            <InputLabel>Address</InputLabel>
-            <Stack direction="row" spacing={1} alignItems="center">
-              <Select
-                value={addressId}
-                onChange={(e) => setAddressId(e.target.value)}
-                label="Address"
-                required
-                sx={{ flexGrow: 1 }}
-              >
-                {addresses.map((address) => (
-                  <MenuItem key={address.id} value={address.id}>
-                    {address.streetName}, {address.cityName}, {address.countryIso}
-                  </MenuItem>
-                ))}
-              </Select>
-              <Button 
-                size="small" 
-                onClick={() => setNewAddressOpen(true)}
-                sx={{
-                  height: '40px',
-                  whiteSpace: 'nowrap',
-                  border: '1px solid',
-                  borderColor: 'primary.main',
-                  paddingLeft: "10px",
-                  paddingRight: "10px"
-                }}
-                startIcon={<FaPlus />}
-              >
-                New Address
-              </Button>
-            </Stack>
-          </FormControl>
+            <FormControl fullWidth margin="normal">
+              <InputLabel>Address</InputLabel>
+              <Stack direction="row" spacing={1} alignItems="center">
+                <Select
+                  value={addressId}
+                  onChange={(e) => setAddressId(e.target.value)}
+                  label="Address"
+                  required
+                  sx={{ flexGrow: 1 }}
+                >
+                  {addresses.map((address) => (
+                    <MenuItem key={address.id} value={address.id}>
+                      {address.streetName}, {address.cityName}, {address.countryIso}
+                    </MenuItem>
+                  ))}
+                </Select>
+                <Button
+                  size="small"
+                  onClick={() => setNewAddressOpen(true)}
+                  sx={{
+                    height: '40px',
+                    whiteSpace: 'nowrap',
+                    border: '1px solid',
+                    borderColor: 'primary.main',
+                    paddingLeft: "10px",
+                    paddingRight: "10px"
+                  }}
+                  startIcon={<FaPlus />}
+                >
+                  New Address
+                </Button>
+              </Stack>
+            </FormControl>
           </Box>
         </DialogContent>
         <DialogActions>
@@ -165,12 +140,6 @@ const AddStorageModal = ({ open, onClose, onStorageAdded }) => {
           </Button>
         </DialogActions>
       </Dialog>
-
-      <AddTeamModal
-        open={newTeamOpen}
-        onClose={() => setNewTeamOpen(false)}
-        onTeamAdded={handleTeamAdded}
-      />
 
       <AddAddressModal
         open={newAddressOpen}

@@ -74,4 +74,26 @@ public class StorageRepository extends BaseRepository<Storage>{
         final String query = "SELECT * FROM STORAGE WHERE ID = ?";
         return executeSingleSelectQuery(query, this::mapToEntity, id);
     }
+
+    public List<Storage> findByTeamId(Long teamId, Long page, Long size) {
+        final String query = """
+            SELECT * FROM NBP02.STORAGE
+            WHERE TEAM_ID = ?
+            OFFSET ? ROWS FETCH NEXT ? ROWS ONLY
+        """;
+
+        long offset = (page - 1) * size;
+
+        return executeListSelectQuery(query, this::mapToEntity, teamId, offset, size);
+    }
+
+    public Long countByTeamId(Long teamId) {
+        final String query = """
+            SELECT COUNT(*) FROM NBP02.STORAGE
+            WHERE TEAM_ID = ?
+        """;
+
+        return executeCountQuery(query, teamId);
+    }
+
 }

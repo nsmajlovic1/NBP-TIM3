@@ -6,7 +6,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class Transport {
+public class Transport extends Base {
 
     private String type;
     private String vehicleNumber;
@@ -19,5 +19,8 @@ public class Transport {
     private Long departureAddressId;
     private Long destinationAddressId;
 
-
+    private Address departureAddress;
+    private Address destinationAddress;
+    private TransportCompany company;
+    
 }
