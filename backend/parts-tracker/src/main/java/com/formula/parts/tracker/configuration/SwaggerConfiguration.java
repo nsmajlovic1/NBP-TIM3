@@ -105,4 +105,13 @@ public class SwaggerConfiguration {
             .build();
     }
 
+    @Bean
+    public GroupedOpenApi packageApi() {
+        return GroupedOpenApi.builder()
+            .group("package-api")
+            .packagesToScan("com.formula.parts.tracker.rest")
+            .pathsToMatch("/api/package/**")
+            .build();
+    }
+
 }

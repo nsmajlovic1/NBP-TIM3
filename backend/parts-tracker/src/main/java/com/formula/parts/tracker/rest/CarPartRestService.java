@@ -49,5 +49,4 @@ public class CarPartRestService {
         return ResponseEntity.ok(carPartService.getAll(search, page, size));
     }
 
-
 }

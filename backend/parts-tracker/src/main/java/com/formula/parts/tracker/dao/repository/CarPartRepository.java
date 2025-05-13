@@ -4,7 +4,9 @@ import com.formula.parts.tracker.dao.model.CarPart;
 import com.formula.parts.tracker.shared.exception.DatabaseException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 import javax.sql.DataSource;
 import org.springframework.stereotype.Repository;
 
@@ -69,6 +71,32 @@ public class CarPartRepository extends BaseRepository<CarPart> {
         return executeListSelectQuery(query, this::mapToEntity, pattern, teamId, offset, size);
     }
 
+    public List<CarPart> findByIdsAndTeamIdAndStatus(final List<Long> ids, final Long teamId,
+        final String status, final Long storageAddressId) {
+        if (ids == null || ids.isEmpty()) {
+            return List.of();
+        }
+
+        final String placeholders = ids.stream()
+            .map(id -> "?")
+            .collect(Collectors.joining(", "));
+
+        final String query = String.format("""
+                SELECT cp.* FROM NBP02.CAR_PART cp
+                JOIN NBP02.DRIVER d ON cp.DRIVER_ID = d.ID
+                JOIN NBP02.TEAM t ON d.TEAM_ID = t.ID
+                JOIN NBP02.STORAGE s ON cp.STORAGE_ID = s.ID
+                WHERE cp.ID IN (%s) AND s.ADDRESS_ID = ? AND t.ID = ? AND cp.STATUS = ?
+            """, placeholders);
+
+        final List<Object> parameters = new ArrayList<>(ids);
+        parameters.add(storageAddressId);
+        parameters.add(teamId);
+        parameters.add(status);
+
+        return executeListSelectQuery(query, this::mapToEntity, parameters.toArray());
+    }
+
     public Long countByNameLike(final String keyword, final Long teamId) {
         final String query = """
                 SELECT COUNT(cp.ID) FROM NBP02.CAR_PART cp
@@ -123,6 +151,30 @@ public class CarPartRepository extends BaseRepository<CarPart> {
     public CarPart findById(Long id) {
         final String query = "SELECT * FROM NBP02.CAR_PART WHERE ID = ?";
         return executeSingleSelectQuery(query, this::mapToEntity, id);
+    }
+
+    public void updatePackageIdAndStatusSetStorageIdNull(final List<Long> ids, final Long packageId,
+        final String status) {
+        if (ids == null || ids.isEmpty()) {
+            return;
+        }
+
+        final String placeholders = ids.stream()
+            .map(id -> "?")
+            .collect(Collectors.joining(", "));
+
+        final String query = String.format("""
+                UPDATE NBP02.CAR_PART
+                SET PACKAGE_ID = ?, STORAGE_ID = NULL, STATUS = ?
+                WHERE ID IN (%s)
+            """, placeholders);
+
+        final List<Object> parameters = new ArrayList<>();
+        parameters.add(packageId);
+        parameters.add(status);
+        parameters.addAll(ids);
+
+        executeUpdateQuery(query, parameters.toArray());
     }
 
 }

@@ -11,6 +11,7 @@ import com.formula.parts.tracker.dao.repository.TeamRepository;
 import com.formula.parts.tracker.shared.dto.Page;
 import com.formula.parts.tracker.shared.dto.carpart.CarPartRequest;
 import com.formula.parts.tracker.shared.dto.carpart.CarPartResponse;
+import com.formula.parts.tracker.shared.enums.Status;
 import com.formula.parts.tracker.shared.exception.ApiException;
 import com.formula.parts.tracker.shared.exception.BadRequestException;
 import com.formula.parts.tracker.shared.exception.NotFoundException;
@@ -49,7 +50,7 @@ public class CarPartServiceImpl implements CarPartService {
                 "Authenticated user is unauthorized to create this car part.");
         }
 
-        request.setStatus("PENDING");
+        request.setStatus(Status.IN_STORAGE.getValue());
         CarPart entity = carPartMapper.toEntity(request);
         carPartRepository.persist(entity);
     }

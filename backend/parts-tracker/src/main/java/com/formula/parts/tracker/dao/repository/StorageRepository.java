@@ -2,29 +2,32 @@ package com.formula.parts.tracker.dao.repository;
 
 import com.formula.parts.tracker.dao.model.Storage;
 import com.formula.parts.tracker.shared.exception.DatabaseException;
-import org.springframework.stereotype.Repository;
-
-import javax.sql.DataSource;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Optional;
+import javax.sql.DataSource;
+import org.springframework.stereotype.Repository;
 
 @Repository
-public class StorageRepository extends BaseRepository<Storage>{
+public class StorageRepository extends BaseRepository<Storage> {
 
-    public StorageRepository(final DataSource dataSource) {super(dataSource);}
+    public StorageRepository(final DataSource dataSource) {
+        super(dataSource);
+    }
 
     public Storage persist(final Storage storage) {
         final String insertQuery = """
-                    INSERT INTO NBP02.STORAGE (
-                        ID,
-                        TEAM_ID,
-                        CAPACITY,
-                        ADDRESS_ID
-                    ) VALUES (NBP02."ISEQ$$_276610".NEXTVAL, ?, ?, ?)
-                """;
+                INSERT INTO NBP02.STORAGE (
+                    ID,
+                    TEAM_ID,
+                    CAPACITY,
+                    ADDRESS_ID
+                ) VALUES (NBP02."ISEQ$$_276610".NEXTVAL, ?, ?, ?)
+            """;
 
-        executeInsertQuery(insertQuery, storage.getTeamId(), storage.getCapacity(), storage.getAddressId());
+        executeInsertQuery(insertQuery, storage.getTeamId(), storage.getCapacity(),
+            storage.getAddressId());
 
         final String selectQuery = "SELECT * FROM NBP02.STORAGE ORDER BY ID DESC FETCH FIRST 1 ROWS ONLY";
         return executeSingleSelectQuery(selectQuery, this::mapToEntity);
@@ -32,9 +35,9 @@ public class StorageRepository extends BaseRepository<Storage>{
 
     public List<Storage> findAll(Long page, Long size) {
         final String query = """
-            SELECT * FROM NBP02.STORAGE
-            OFFSET ? ROWS FETCH NEXT ? ROWS ONLY
-        """;
+                SELECT * FROM NBP02.STORAGE
+                OFFSET ? ROWS FETCH NEXT ? ROWS ONLY
+            """;
 
         long offset = (page - 1) * size;
 
@@ -43,8 +46,8 @@ public class StorageRepository extends BaseRepository<Storage>{
 
     public Long countAll() {
         final String query = """
-            SELECT COUNT(*) FROM NBP02.STORAGE
-        """;
+                SELECT COUNT(*) FROM NBP02.STORAGE
+            """;
 
         return executeCountQuery(query);
     }
@@ -64,8 +67,8 @@ public class StorageRepository extends BaseRepository<Storage>{
 
     public boolean existsById(long id) {
         final String query = """
-            SELECT COUNT(*) FROM NBP02.STORAGE WHERE ID = ?
-        """;
+                SELECT COUNT(*) FROM NBP02.STORAGE WHERE ID = ?
+            """;
 
         return executeExistsQuery(query, id);
     }
@@ -77,21 +80,40 @@ public class StorageRepository extends BaseRepository<Storage>{
 
     public List<Storage> findByTeamId(Long teamId, Long page, Long size) {
         final String query = """
-            SELECT * FROM NBP02.STORAGE
-            WHERE TEAM_ID = ?
-            OFFSET ? ROWS FETCH NEXT ? ROWS ONLY
-        """;
+                SELECT * FROM NBP02.STORAGE
+                WHERE TEAM_ID = ?
+                OFFSET ? ROWS FETCH NEXT ? ROWS ONLY
+            """;
 
         long offset = (page - 1) * size;
 
         return executeListSelectQuery(query, this::mapToEntity, teamId, offset, size);
     }
 
+    public Optional<Storage> findByTeamIdAndAddressId(final Long teamId, final Long addressId) {
+        final String query = """
+                SELECT * FROM NBP02.STORAGE
+                WHERE TEAM_ID = ? AND ADDRESS_ID = ?
+            """;
+
+        return Optional.ofNullable(
+            executeSingleSelectQuery(query, this::mapToEntity, teamId, addressId));
+    }
+
+    public boolean existsByTeamIdAndAddressId(final Long teamId, final Long addressId) {
+        final String query = """
+                SELECT COUNT(*) FROM NBP02.STORAGE
+                WHERE TEAM_ID = ? AND ADDRESS_ID = ?
+            """;
+
+        return executeExistsQuery(query, teamId, addressId);
+    }
+
     public Long countByTeamId(Long teamId) {
         final String query = """
-            SELECT COUNT(*) FROM NBP02.STORAGE
-            WHERE TEAM_ID = ?
-        """;
+                SELECT COUNT(*) FROM NBP02.STORAGE
+                WHERE TEAM_ID = ?
+            """;
 
         return executeCountQuery(query, teamId);
     }

@@ -7,6 +7,7 @@ public enum Status {
 
     PENDING("Pending"),
     IN_TRANSIT("In Transit"),
+    IN_STORAGE("In Storage"),
     FINISHED("Finished");
 
     private final String value;
