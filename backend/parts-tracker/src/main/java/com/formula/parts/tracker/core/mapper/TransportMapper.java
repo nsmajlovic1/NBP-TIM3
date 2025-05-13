@@ -11,7 +11,7 @@ import org.mapstruct.Mapping;
 public interface TransportMapper {
 
     @Mapping(target = "expectedArrivalDate", source = "arrivalDate")
-    Transport toEntity(final TransportCreateRequest transportCreateRequestRequest);
+    Transport toEntity(final TransportCreateRequest transportCreateRequest);
 
     @Mapping(target = "arrivalDate", source = "expectedArrivalDate")
     TransportResponse toResponse(final Transport transportEntity);
