@@ -1,55 +1,96 @@
 package com.formula.parts.tracker.dao.repository;
 
 import com.formula.parts.tracker.dao.model.CarPart;
-import com.formula.parts.tracker.dao.model.Storage;
 import com.formula.parts.tracker.shared.exception.DatabaseException;
-import org.springframework.stereotype.Repository;
-
-import javax.sql.DataSource;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
+import javax.sql.DataSource;
+import org.springframework.stereotype.Repository;
+
 @Repository
-public class CarPartRepository extends BaseRepository<CarPart>{
-    public CarPartRepository(final DataSource dataSource) {super(dataSource);}
+public class CarPartRepository extends BaseRepository<CarPart> {
+
+    public CarPartRepository(final DataSource dataSource) {
+        super(dataSource);
+    }
 
     public void persist(final CarPart carPart) {
         final String insertQuery = """
-                    INSERT INTO NBP02.CAR_PART (
-                        ID,
-                        DRIVER_ID,
-                        STORAGE_ID,
-                        NAME,
-                        DESCRIPTION,
-                        HOMOLOGATION_NUMBER,
-                        STATUS,
-                        PACKAGE_ID,
-                        WEIGHT,
-                        MANUFACTURED_AT
-                    ) VALUES (NBP02."ISEQ$$_276628".NEXTVAL, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-                """;
+                INSERT INTO NBP02.CAR_PART (
+                    ID,
+                    DRIVER_ID,
+                    STORAGE_ID,
+                    NAME,
+                    DESCRIPTION,
+                    HOMOLOGATION_NUMBER,
+                    STATUS,
+                    PACKAGE_ID,
+                    WEIGHT,
+                    MANUFACTURED_AT
+                ) VALUES (NBP02."ISEQ$$_276628".NEXTVAL, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            """;
 
-        executeInsertQuery(insertQuery, carPart.getDriverId(), carPart.getStorageId(), carPart.getName(), carPart.getDescription(), carPart.getHomologationNumber(), carPart.getStatus(), carPart.getPackageId(), carPart.getWeight(), carPart.getManufacturedAt());
+        executeInsertQuery(insertQuery, carPart.getDriverId(), carPart.getStorageId(),
+            carPart.getName(), carPart.getDescription(), carPart.getHomologationNumber(),
+            carPart.getStatus(), carPart.getPackageId(), carPart.getWeight(),
+            carPart.getManufacturedAt());
 
     }
 
-    public List<CarPart> findAll(Long page, Long size) {
+    public List<CarPart> findAll(final Long page, final Long size, final Long teamId) {
         final String query = """
-            SELECT * FROM NBP02.CAR_PART
-            OFFSET ? ROWS FETCH NEXT ? ROWS ONLY
-        """;
+                SELECT cp.* FROM NBP02.CAR_PART cp
+                JOIN NBP02.DRIVER d ON cp.DRIVER_ID = d.ID
+                JOIN NBP02.TEAM t ON d.TEAM_ID = t.ID
+                WHERE t.ID = ?
+                OFFSET ? ROWS FETCH NEXT ? ROWS ONLY
+            """;
 
         long offset = (page - 1) * size;
 
-        return executeListSelectQuery(query, this::mapToEntity, offset, size);
+        return executeListSelectQuery(query, this::mapToEntity, teamId, offset, size);
     }
 
-    public Long countAll() {
+    public List<CarPart> findByNameLike(final String keyword, final Long page, final Long size,
+        final Long teamId) {
         final String query = """
-            SELECT COUNT(*) FROM NBP02.CAR_PART
-        """;
+                SELECT cp.* FROM NBP02.CAR_PART cp
+                JOIN NBP02.DRIVER d ON cp.DRIVER_ID = d.ID
+                JOIN NBP02.TEAM t ON d.TEAM_ID = t.ID
+                WHERE LOWER(cp.NAME) LIKE ? AND t.ID = ?
+                OFFSET ? ROWS FETCH NEXT ? ROWS ONLY
+            """;
 
-        return executeCountQuery(query);
+        final String pattern = "%" + keyword.toLowerCase() + "%";
+
+        long offset = (page - 1) * size;
+
+        return executeListSelectQuery(query, this::mapToEntity, pattern, teamId, offset, size);
+    }
+
+    public Long countByNameLike(final String keyword, final Long teamId) {
+        final String query = """
+                SELECT COUNT(cp.ID) FROM NBP02.CAR_PART cp
+                JOIN NBP02.DRIVER d ON cp.DRIVER_ID = d.ID
+                JOIN NBP02.TEAM t ON d.TEAM_ID = t.ID
+                WHERE LOWER(cp.NAME) LIKE ? AND t.ID = ?
+            """;
+
+        final String pattern = "%" + keyword.toLowerCase() + "%";
+
+        return executeCountQuery(query, pattern, teamId);
+    }
+
+    public Long countAll(final Long teamId) {
+        final String query = """
+                SELECT COUNT(cp.ID) FROM NBP02.CAR_PART cp
+                JOIN NBP02.DRIVER d ON cp.DRIVER_ID = d.ID
+                JOIN NBP02.TEAM t ON d.TEAM_ID = t.ID
+                WHERE t.ID = ?
+            """;
+
+        return executeCountQuery(query, teamId);
     }
 
     private CarPart mapToEntity(final ResultSet resultSet) {
@@ -73,8 +114,8 @@ public class CarPartRepository extends BaseRepository<CarPart>{
 
     public boolean existsById(long id) {
         final String query = """
-            SELECT COUNT(*) FROM NBP02.CAR_PART WHERE ID = ?
-        """;
+                SELECT COUNT(*) FROM NBP02.CAR_PART WHERE ID = ?
+            """;
 
         return executeExistsQuery(query, id);
     }
@@ -83,4 +124,5 @@ public class CarPartRepository extends BaseRepository<CarPart>{
         final String query = "SELECT * FROM NBP02.CAR_PART WHERE ID = ?";
         return executeSingleSelectQuery(query, this::mapToEntity, id);
     }
+
 }
