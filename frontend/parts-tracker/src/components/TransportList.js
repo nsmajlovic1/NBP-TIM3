@@ -54,7 +54,7 @@ const TransportList = ({ transports }) => {
             border: "1px solid #ccc",
             display: "flex",
             flexDirection: "column",
-            height: "260px",
+            height: "280px",
             flexShrink: 0,
           }}
         >
@@ -77,6 +77,9 @@ const TransportList = ({ transports }) => {
             <Typography color="black">
               <strong>Capacity:</strong> {transport.capacity}
             </Typography>
+            <Typography color="black">
+              <strong>Status:</strong> {transport.status}
+            </Typography>
             <Paper
               elevation={0}
               sx={{
@@ -98,7 +101,7 @@ const TransportList = ({ transports }) => {
           </CardContent>
         </Card>
       ))}
-      <Box sx={{ height: "50px", opacity: 0 }} />
+      <Box sx={{ height: "80px", opacity: 0 }} />
     </ScrollableBox>
   );
 };

@@ -45,3 +45,17 @@ export const getStoragesByTeam = async (teamId) => {
 };
 
 
+export const getStorageById = async (storageId) => {
+  try {
+    const response = await API.get(`/storage/${storageId}`);
+    if (response.status === 200) {
+      return response.data;
+    } else {
+      throw new Error("Failed to fetch storage data.");
+    }
+  } catch (error) {
+    throw new Error(error.response?.data?.message || "Failed to fetch storage.");
+  }
+};
+
+

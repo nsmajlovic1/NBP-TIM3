@@ -12,6 +12,7 @@ import Teams from "../components/Teams";
 import Transport from "../components/Transport";
 import Drivers from "../components/Drivers";
 import MyTeam from "../components/MyTeam";
+import CarParts from "../components/CarParts";
 
 const Dashboard = () => {
   const { user, logout } = useAuth(); 
@@ -98,6 +99,7 @@ const Dashboard = () => {
           {selectedOption === "Transport" && <Transport />} 
           {selectedOption === "Drivers" && <Drivers />}
           {selectedOption === "My Team" && <MyTeam />}
+          {selectedOption === "Car Parts" && <CarParts />}
         </div>
       </div>
   

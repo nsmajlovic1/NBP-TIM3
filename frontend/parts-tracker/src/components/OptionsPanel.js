@@ -64,6 +64,18 @@ const OptionsPanel = ({ onOptionSelect }) => {
           </ListItem>
         )}
 
+        {["Logistic", "Mechanic"].includes(userRole) && (
+          <ListItem>
+            <Button
+              fullWidth
+              variant={selectedOption === "Car Parts" ? "contained" : "outlined"}
+              onClick={() => handleOptionClick("Car Parts")}
+            >
+              Car Parts
+            </Button>
+          </ListItem>
+        )}
+
         {["Admin", "Logistic", "Mechanic"].includes(userRole) && (
           <ListItem>
             <Button
