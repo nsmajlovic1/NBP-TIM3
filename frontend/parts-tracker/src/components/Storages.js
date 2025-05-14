@@ -135,26 +135,24 @@ const Storages = () => {
 
         <Box
           sx={{
-            flexGrow: 1,
-            overflowY: "hidden",
-            '&:hover': {
-              overflowY: "auto",
-            },
-            display: "flex",
-            flexDirection: "column",
-            gap: 2,
-            pr: 1,
-            scrollbarWidth: "thin",
-            "&::-webkit-scrollbar": {
-              width: "6px",
-            },
-            "&::-webkit-scrollbar-thumb": {
-              backgroundColor: "#888",
-              borderRadius: "4px",
-            },
-            "&::-webkit-scrollbar-thumb:hover": {
-              backgroundColor: "#555",
-            },
+          flexGrow: 1,
+           overflowY: "auto",
+
+          "&::-webkit-scrollbar": {
+            width: "0px",
+            height: "0px",
+          },
+
+          "&::-webkit-scrollbar-track": {
+            background: "transparent",
+          },
+
+          "&::-webkit-scrollbar-thumb": {
+            background: "transparent",
+          },
+
+          scrollbarWidth: "none",
+          scrollbarColor: "transparent transparent",
           }}
         >
           {error ? (
@@ -167,7 +165,7 @@ const Storages = () => {
             </Typography>
           ) : storages.length > 0 ? (
             storages.map((storage) => (
-              <Box key={storage.id} sx={{ height: 250 }}>
+              <Box marginRight={3} key={storage.id} sx={{ height: 250 }}>
                 <StorageCard
                   storage={storage}
                   isSelected={selectedStorage?.id === storage.id}

@@ -4,13 +4,12 @@ import {
   Box,
   Typography,
   CircularProgress,
-  Card,
   Button,
 } from "@mui/material";
 import TransportList from "./TransportList";
 import AddTransportModal from "./AddTransportModal";
+import PaginationControls from "./PaginationControls";
 import { FaPlus } from "react-icons/fa";
-
 
 const Transport = () => {
   const [transports, setTransports] = useState([]);
@@ -18,6 +17,11 @@ const Transport = () => {
   const [error, setError] = useState(null);
   const [userRole, setUserRole] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
+  const [pagination, setPagination] = useState({
+    page: 0,
+    size: 5,
+    totalPages: 1,
+  });
 
   useEffect(() => {
     const storedUser = JSON.parse(localStorage.getItem("user"));
@@ -29,6 +33,7 @@ const Transport = () => {
       setLoading(true);
       const data = await getTransports();
       setTransports(data);
+
       setError(null);
     } catch (err) {
       console.error("Error fetching transports:", err);
@@ -44,8 +49,9 @@ const Transport = () => {
 
   const handleAddTransport = (newTransport) => {
     setTransports((prev) => [...prev, newTransport]);
-    fetchTransports();
+    fetchTransports(); 
   };
+
 
   if (loading) {
     return (
@@ -77,6 +83,7 @@ const Transport = () => {
         </Typography>
       )}
 
+
       <TransportList transports={transports} />
 
       <AddTransportModal
@@ -84,6 +91,7 @@ const Transport = () => {
         onClose={() => setModalOpen(false)}
         onTransportAdded={handleAddTransport}
       />
+
       <Box sx={{ height: "300px", opacity: 0 }} />
     </Box>
   );

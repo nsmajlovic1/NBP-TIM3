@@ -1,6 +1,6 @@
 import API from "./api";
 
-export const getTransportCompanies = async (page = 0, size = 5) => {
+export const getTransportCompanies = async (page = 0, size = 100) => {
   try {
     const response = await API.get(`/transport-company/all?page=${page}&size=${size}`); 
 

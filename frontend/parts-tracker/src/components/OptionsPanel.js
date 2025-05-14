@@ -1,4 +1,4 @@
-import { Button, List, ListItem, Box } from "@mui/material";
+import { List, ListItem, ListItemButton, ListItemText, Box } from "@mui/material";
 import { useState, useEffect } from "react";
 
 const OptionsPanel = ({ onOptionSelect }) => {
@@ -15,115 +15,43 @@ const OptionsPanel = ({ onOptionSelect }) => {
     onOptionSelect(option);
   };
 
+  const menuItems = [
+    { label: "Dashboard", roles: ["Admin", "Logistic", "Mechanic"] },
+    { label: "My Team", roles: ["Mechanic", "Logistic"] },
+    { label: "Drivers", roles: ["Admin", "Logistic"] },
+    { label: "Add User", roles: ["Admin"] },
+    { label: "Car Parts", roles: ["Logistic", "Mechanic"] },
+    { label: "Storages", roles: ["Admin", "Logistic", "Mechanic"] },
+    { label: "Transport Companies", roles: ["Admin", "Logistic"] },
+    { label: "Teams", roles: ["Admin"] },
+    { label: "Transport", roles: ["Admin", "Logistic", "Mechanic"] },
+  ];
+
   return (
-    <Box sx={{ width: 200, padding: "10px", borderRight: "1px solid #ddd" }}>
-      <List>
-        <ListItem>
-          <Button
-            fullWidth
-            variant={selectedOption === "Dashboard" ? "contained" : "outlined"}
-            onClick={() => handleOptionClick("Dashboard")}
-          >
-            Dashboard
-          </Button>
-        </ListItem>
+    <Box sx={{ width: 300, paddingTop: 0, borderRight: "1px solid #ddd" }}>
+      <List disablePadding>
+        {menuItems
+          .filter((item) => item.roles.includes(userRole))
+          .map((item) => (
+            <ListItem disablePadding key={item.label}>
+              <ListItemButton
+                onClick={() => handleOptionClick(item.label)}
+                sx={{
+                  borderRadius: 0,
+                  paddingY: 1,
+                  paddingX: 2,
+                  backgroundColor: selectedOption === item.label ? "#003366" : "transparent",
+                  color: selectedOption === item.label ? "white" : "black",
+                  "&:hover": {
+                    backgroundColor: selectedOption === item.label ? "#003366" : "#f0f0f0",
+                  },
+                }}
+              >
+                <ListItemText primary={item.label} />
+              </ListItemButton>
 
-        {["Mechanic", "Logistic"].includes(userRole) && (
-          <ListItem>
-            <Button
-              fullWidth
-              variant={selectedOption === "My Team" ? "contained" : "outlined"}
-              onClick={() => handleOptionClick("My Team")}
-            >
-              My Team
-            </Button>
-          </ListItem>
-        )}
-
-        {["Admin", "Logistic"].includes(userRole) && (
-          <ListItem>
-            <Button
-              fullWidth
-              variant={selectedOption === "Drivers" ? "contained" : "outlined"}
-              onClick={() => handleOptionClick("Drivers")}
-            >
-              Drivers
-            </Button>
-          </ListItem>
-        )}
-
-        {userRole === "Admin" && (
-          <ListItem>
-            <Button
-              fullWidth
-              variant={selectedOption === "Add User" ? "contained" : "outlined"}
-              onClick={() => handleOptionClick("Add User")}
-            >
-              Add User
-            </Button>
-          </ListItem>
-        )}
-
-        {["Logistic", "Mechanic"].includes(userRole) && (
-          <ListItem>
-            <Button
-              fullWidth
-              variant={selectedOption === "Car Parts" ? "contained" : "outlined"}
-              onClick={() => handleOptionClick("Car Parts")}
-            >
-              Car Parts
-            </Button>
-          </ListItem>
-        )}
-
-        {["Admin", "Logistic", "Mechanic"].includes(userRole) && (
-          <ListItem>
-            <Button
-              fullWidth
-              variant={selectedOption === "Storages" ? "contained" : "outlined"}
-              onClick={() => handleOptionClick("Storages")}
-            >
-              Storages
-            </Button>
-          </ListItem>
-        )}
-
-        {["Admin", "Logistic"].includes(userRole) && (
-          <ListItem>
-            <Button
-              fullWidth
-              variant={selectedOption === "Transport Companies" ? "contained" : "outlined"}
-              onClick={() => handleOptionClick("Transport Companies")}
-            >
-              Transport Companies
-            </Button>
-          </ListItem>
-        )}
-
-        {["Admin"].includes(userRole) && (
-          <ListItem>
-            <Button
-              fullWidth
-              variant={selectedOption === "Teams" ? "contained" : "outlined"}
-              onClick={() => handleOptionClick("Teams")}
-            >
-              Teams
-            </Button>
-          </ListItem>
-        )}
-
-        {["Admin", "Logistic", "Mechanic"].includes(userRole) && (
-          <ListItem>
-            <Button
-              fullWidth
-              variant={selectedOption === "Transport" ? "contained" : "outlined"}
-              onClick={() => handleOptionClick("Transport")}
-            >
-              Transport
-            </Button>
-          </ListItem>
-        )}
-
+            </ListItem>
+          ))}
       </List>
     </Box>
   );

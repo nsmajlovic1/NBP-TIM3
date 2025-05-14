@@ -37,10 +37,10 @@ const TransportCompanies = () => {
     totalPages: 1,
   });
 
-  const fetchCompanies = async (page = 0, size = pagination.size) => {
+  const fetchCompanies = async () => {
     try {
       setLoading(true);
-      const data = await getTransportCompanies(page, size);
+      const data = await getTransportCompanies();
       setCompanies(data.content);
       setPagination(prev => ({
         ...prev,
@@ -81,7 +81,7 @@ const TransportCompanies = () => {
   const handleDeleteConfirm = async () => {
     try {
       await deleteTransportCompany(companyToDelete.id);
-      fetchCompanies(pagination.page, pagination.size);
+      fetchCompanies();
       setOpenDeleteModal(false);
       toast.success('Transport company deleted successfully!');
     } catch (err) {
@@ -98,7 +98,7 @@ const TransportCompanies = () => {
   const handleAddCompany = async (newCompany) => {
     try {
       await addTransportCompany(newCompany);
-      fetchCompanies(pagination.page, pagination.size);
+      fetchCompanies();
       setOpenAddModal(false);
       toast.success('Transport company added successfully!');
     } catch (err) {
@@ -122,7 +122,7 @@ const TransportCompanies = () => {
       flexDirection: 'column',
     }}>
       <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 3 }}>
-        <Typography variant="h4">Transport Companies ({pagination.totalElements})</Typography>
+        <Typography variant="h4">Transport Companies ({companies.length})</Typography>
         <Button 
           variant="contained" 
           color="primary" 
@@ -133,41 +133,26 @@ const TransportCompanies = () => {
         </Button>
       </Box>
 
-      <Box sx={{ mb: 2, display: 'flex', justifyContent: 'flex-end' }}>
-        <FormControl size="small" sx={{ minWidth: 120 }}>
-          <InputLabel>Items per page</InputLabel>
-          <Select
-            value={pagination.size}
-            label="Items per page"
-            onChange={handleSizeChange}
-          >
-            <MenuItem value={5}>5</MenuItem>
-            <MenuItem value={10}>10</MenuItem>
-            <MenuItem value={20}>20</MenuItem>
-          </Select>
-        </FormControl>
-      </Box>
-
       <Box
         sx={{
           flex: 1,
-          overflowY: 'auto',
-          mb: 2,
-          py: 1,
-          pr: 1,
-          '&::-webkit-scrollbar': {
-            width: '8px',
+           overflowY: "auto",
+
+          "&::-webkit-scrollbar": {
+            width: "0px",
+            height: "0px",
           },
-          '&::-webkit-scrollbar-track': {
-            background: '#f1f1f1',
+
+          "&::-webkit-scrollbar-track": {
+            background: "transparent",
           },
-          '&::-webkit-scrollbar-thumb': {
-            backgroundColor: '#888',
-            borderRadius: '4px',
+
+          "&::-webkit-scrollbar-thumb": {
+            background: "transparent",
           },
-          '&::-webkit-scrollbar-thumb:hover': {
-            backgroundColor: '#555',
-          },
+
+          scrollbarWidth: "none",
+          scrollbarColor: "transparent transparent",
         }}
       >
         {error ? (
@@ -329,38 +314,9 @@ const TransportCompanies = () => {
                 </IconButton>
               </Box>
             ))}
-            <Box sx={{ height: "200px" }} />
           </Box>
         )}
-      </Box>
-
-      <Box
-        sx={{
-          position: 'fixed',
-          bottom: 0,
-          left: 0,
-          right: 0,
-          width: '100%',
-          display: 'flex',
-          justifyContent: 'center',
-          pt: 2,
-          pb: 1,
-          backgroundColor: 'background.paper',
-          borderTop: '1px solid',
-          borderColor: 'divider',
-          paddingBottom: "30px",
-          paddingTop: "30px",
-          zIndex: 10, 
-        }}
-      >
-        <Pagination
-          count={pagination.totalPages}
-          page={pagination.page + 1}
-          onChange={handlePageChange}
-          color="primary"
-          showFirstButton
-          showLastButton
-        />
+        <Box sx={{ height: "150px" }} />
       </Box>
 
       <AddTransportCompanyModal 

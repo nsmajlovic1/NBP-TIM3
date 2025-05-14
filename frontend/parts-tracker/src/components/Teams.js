@@ -21,17 +21,12 @@ const Teams = () => {
   const [selectedTeam, setSelectedTeam] = useState(null);
   const [openMembersModal, setOpenMembersModal] = useState(false);
 
-  const fetchTeams = async (page = pagination.page, size = pagination.size) => {
+  const fetchTeams = async () => {
     try {
       setLoading(true);
-      const data = await getTeams(page, size);
+      const data = await getTeams();
       setTeams(data.content);
-      setPagination({
-        page: data.pageNumber,
-        size: data.pageSize,
-        totalElements: data.totalElements,
-        totalPages: data.totalPages,
-      });
+
       setError(null);
     } catch (err) {
       console.error("Error fetching teams:", err);
@@ -86,7 +81,7 @@ const Teams = () => {
           flexShrink: 0,
         }}
       >
-        <Typography variant="h4">Teams ({pagination.totalElements})</Typography>
+        <Typography variant="h4">Teams ({teams.length})</Typography>
         <Button
           variant="contained"
           color="primary"
@@ -97,12 +92,6 @@ const Teams = () => {
         </Button>
       </Box>
 
-      <PaginationControls
-        pagination={pagination}
-        onPageChange={(newPage) => setPagination(prev => ({...prev, page: newPage - 1}))}
-        onSizeChange={(newSize) => setPagination(prev => ({...prev, size: newSize, page: 0}))}
-      />
-
       <TeamList 
         teams={teams} 
         error={error} 
@@ -112,7 +101,7 @@ const Teams = () => {
       <AddTeamModal
         open={openAddModal}
         onClose={() => setOpenAddModal(false)}
-        fetchTeams={() => fetchTeams(pagination.page, pagination.size)}
+        fetchTeams={() => fetchTeams()}
       />
       <TeamMembersModal
         open={openMembersModal}
