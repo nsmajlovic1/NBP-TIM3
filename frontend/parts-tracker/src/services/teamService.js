@@ -18,7 +18,6 @@ export const getTeams = async (page = 0, size = 5) => {
   }
 };
 
-
 export const createTeam = async (teamData) => {
   try {
     const response = await API.post("/team/create", teamData);

@@ -28,3 +28,16 @@ export const getDriversByTeam = async () => {
   }
 };
 
+export const createDriver = async (driverData) => {
+  try {
+    const response = await API.post("/driver", driverData);
+    if (response.status === 200 || response.status === 201) {
+      return response.data;
+    } else {
+      throw new Error("Failed to create driver. Unexpected response status.");
+    }
+  } catch (error) {
+    throw error;
+  }
+};
+
