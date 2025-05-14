@@ -27,3 +27,21 @@ export const addStorage = async (storageData) => {
     throw new Error(error.response?.data?.message || "Failed to add storage.");
   }
 };
+
+export const getStoragesByTeam = async (teamId) => {
+  try {
+    const response = await API.get("/storage/team", {
+      params: { teamId },
+    });
+
+    if (response.status === 200) {
+      return response.data;
+    } else {
+      throw new Error("Failed to fetch storages. Unexpected response status.");
+    }
+  } catch (error) {
+    throw new Error(error.response?.data?.message || "Failed to fetch storage data.");
+  }
+};
+
+

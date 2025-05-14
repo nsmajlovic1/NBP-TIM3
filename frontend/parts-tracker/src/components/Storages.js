@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { getStorages } from "../services/storageService";
+import { getStoragesByTeam } from "../services/storageService";
 import StorageMap from "./StorageMap";
 import StorageCard from "./StorageCard";
 import { Box, Button, Typography, CircularProgress } from "@mui/material";
@@ -10,6 +11,7 @@ const Storages = () => {
   const [storages, setStorages] = useState([]);
   const [selectedStorage, setSelectedStorage] = useState(null);
   const [userRole, setUserRole] = useState(null);
+  const [userTeamId, setUserTeamId] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [popupOpen, setPopupOpen] = useState(null);
   const [error, setError] = useState(null);
@@ -18,13 +20,32 @@ const Storages = () => {
   useEffect(() => {
     const storedUser = JSON.parse(localStorage.getItem("user"));
     setUserRole(storedUser?.role);
+    setUserTeamId(storedUser?.teamId);
   }, []);
 
   const fetchStorages = async () => {
     try {
-      const data = await getStorages();
-      setStorages(data.content);
-      setError(null);
+      let data;
+
+      if (["Mechanic", "Logistic"].includes(userRole)) {
+        if (!userTeamId) {
+          throw new Error("Team ID not found.");
+        }
+
+        const teamStorages = await getStoragesByTeam(userTeamId);
+        data = teamStorages.content;
+        if (!teamStorages || teamStorages.length === 0) {
+          setError("Your team currently does not have any storage units.");
+        } else {
+          setError(null);
+        }
+      } else {
+        const response = await getStorages();
+        data = response.content;
+        setError(null);
+      }
+
+      setStorages(data || []);
     } catch (err) {
       console.error("Error fetching storages:", err);
       setError("Failed to load storage data");
@@ -35,8 +56,10 @@ const Storages = () => {
   };
 
   useEffect(() => {
-    fetchStorages();
-  }, []);
+    if (userRole) {
+      fetchStorages();
+    }
+  }, [userRole]);
 
   const handleCardClick = (storage) => {
     if (selectedStorage?.id === storage.id) {
@@ -101,7 +124,7 @@ const Storages = () => {
             <Button
               variant="contained"
               color="primary"
-              sx={{ width: "170px", fontSize: "16px", marginBottom: "15px"}}
+              sx={{ width: "170px", fontSize: "16px", marginBottom: "15px" }}
               startIcon={<FaPlus />}
               onClick={handleAddStorageClick}
             >
@@ -140,7 +163,7 @@ const Storages = () => {
               color="error"
               sx={{ textAlign: "center", mt: 3 }}
             >
-              Storage data is currently not available. Try again later.
+              {error}
             </Typography>
           ) : storages.length > 0 ? (
             storages.map((storage) => (
