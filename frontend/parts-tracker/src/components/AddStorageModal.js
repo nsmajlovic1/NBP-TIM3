@@ -14,7 +14,7 @@ import {
   Stack
 } from '@mui/material';
 import { getAddresses } from '../services/addressService';
-import { getTeams } from '../services/teamService';
+import { getTeams, getTeamById } from '../services/teamService';
 import { addStorage } from '../services/storageService';
 import { toast } from 'react-toastify';
 import AddAddressModal from './AddAddressModal';
@@ -27,22 +27,35 @@ const AddStorageModal = ({ open, onClose, onStorageAdded }) => {
   const [teams, setTeams] = useState([]);
   const [addresses, setAddresses] = useState([]);
   const [newAddressOpen, setNewAddressOpen] = useState(false);
+  const [isLogistic, setIsLogistic] = useState(false);
+  const [userTeam, setUserTeam] = useState(null);
 
   useEffect(() => {
-    const fetchTeamsAndAddresses = async () => {
+    const fetchInitialData = async () => {
       try {
-        const [teamsData, addressesData] = await Promise.all([
-          getTeams(),
-          getAddresses()
-        ]);
-        setTeams(teamsData.content);
+        const user = JSON.parse(localStorage.getItem('user'));
+        const role = user?.role;
+        const userTeamId = user?.teamId;
+
+        if (role === 'Logistic') {
+          setIsLogistic(true);
+          const team = await getTeamById(userTeamId);
+          setUserTeam(team);
+          setTeamId(team.id); 
+        } else {
+          const teamsData = await getTeams();
+          setTeams(teamsData.content);
+        }
+
+        const addressesData = await getAddresses();
         setAddresses(addressesData.content);
       } catch (error) {
         console.error(error);
+        toast.error("Failed to load data.");
       }
     };
 
-    fetchTeamsAndAddresses();
+    fetchInitialData();
   }, []);
 
   const handleSave = async () => {
@@ -89,12 +102,19 @@ const AddStorageModal = ({ open, onClose, onStorageAdded }) => {
                 onChange={(e) => setTeamId(e.target.value)}
                 label="Team"
                 required
+                disabled={isLogistic}
               >
-                {teams.map((team) => (
-                  <MenuItem key={team.id} value={team.id}>
-                    {team.name} ({team.countryIso})
+                {isLogistic && userTeam ? (
+                  <MenuItem value={userTeam.id}>
+                    {userTeam.name} ({userTeam.countryIso})
                   </MenuItem>
-                ))}
+                ) : (
+                  teams.map((team) => (
+                    <MenuItem key={team.id} value={team.id}>
+                      {team.name} ({team.countryIso})
+                    </MenuItem>
+                  ))
+                )}
               </Select>
             </FormControl>
 
