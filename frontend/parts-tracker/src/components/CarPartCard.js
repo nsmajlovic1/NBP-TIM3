@@ -32,6 +32,11 @@ const CarPartCard = ({ carPart }) => {
     <Card sx={{ display: "flex", flexDirection: "column", border: "1px solid #ccc", minHeight: "150px", marginBottom: "16px" }}>
       <CardContent sx={{ p: "12px !important" }}>
         <Box sx={{ display: "flex", mb: 1 }}>
+          <Typography sx={{ fontSize: "14px", fontWeight: "bold", color: "black", mr: 1 }}>ID:</Typography>
+          <Typography sx={{ fontSize: "14px", color: "black" }}>{carPart.id}</Typography>
+        </Box>
+
+        <Box sx={{ display: "flex", mb: 1 }}>
           <Typography sx={{ fontSize: "14px", fontWeight: "bold", color: "black", mr: 1 }}>Name:</Typography>
           <Typography sx={{ fontSize: "14px", color: "black" }}>{carPart.name}</Typography>
         </Box>

@@ -16,7 +16,7 @@ export const getCarParts = async () => {
 
 export const createCarPart = async (carPartData) => {
   try {
-    const response = await API.post("/car-part", carPartData);
+    const response = await API.post("/car-part/create", carPartData);
 
     if (response.status === 200) {
       return response.data;

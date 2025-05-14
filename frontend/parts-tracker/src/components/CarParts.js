@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
-import { getCarParts } from "../services/carPartService"; // Metoda za dobijanje car parts
+import { getCarParts } from "../services/carPartService"; 
 import { FaPlus } from "react-icons/fa";
 import CarPartList from "./CarPartList";
+import AddCarPartModal from "./AddCarPartModal";
 import { Button, CircularProgress, Box, Typography } from "@mui/material";
 import PaginationControls from "./PaginationControls";
 
@@ -9,6 +10,7 @@ const CarParts = () => {
   const [carParts, setCarParts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [openAddModal, setOpenAddModal] = useState(false);
   const [pagination, setPagination] = useState({
     page: 0,
     size: 5,
@@ -68,6 +70,14 @@ const CarParts = () => {
         }}
       >
         <Typography variant="h4">Car Parts ({pagination.totalElements})</Typography>
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={() => setOpenAddModal(true)}
+          startIcon={<FaPlus />}
+        >
+          Add Car Part
+        </Button>
       </Box>
 
       <PaginationControls
@@ -79,6 +89,12 @@ const CarParts = () => {
       <CarPartList 
         carParts={carParts} 
         error={error} 
+      />
+
+      <AddCarPartModal
+        open={openAddModal}
+        onClose={() => setOpenAddModal(false)}
+        onCarPartAdded={() => fetchCarParts(pagination.page, pagination.size)}
       />
       <Box sx={{ height: '300px', opacity: 0 }} />
     </Box>
