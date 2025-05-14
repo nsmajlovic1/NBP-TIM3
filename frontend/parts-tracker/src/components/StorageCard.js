@@ -17,7 +17,7 @@ const StorageCard = ({ storage, isSelected, onClick }) => {
         transition: "0.3s",
         "&:hover": { boxShadow: 3 },
         width: "100%",
-        height: "200px", 
+        height: "220px", 
         display: "flex",
         flexDirection: "column",
       }}
@@ -31,6 +31,9 @@ const StorageCard = ({ storage, isSelected, onClick }) => {
         }}
       >
         <div>
+          <Typography sx={{ fontSize: "14px", color: "black" }}>
+            <strong>ID:</strong> {storage.id}
+          </Typography>
           <Typography sx={{ fontSize: "14px", color: "black" }}>
             <strong>Address:</strong> {`${streetName}, ${cityName}, ${countryIso}`}
           </Typography>

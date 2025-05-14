@@ -55,6 +55,10 @@ const MyTeam = () => {
       </Typography>
 
       <Typography sx={{ mb: 1 }}>
+        <strong>Team ID:</strong> {team.id}
+      </Typography>
+
+      <Typography sx={{ mb: 1 }}>
         <strong>Team Name:</strong> {team.name}
       </Typography>
 

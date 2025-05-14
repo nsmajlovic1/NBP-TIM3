@@ -20,10 +20,19 @@ const TeamCard = ({ team, onViewMembers }) => {
           display: "flex",
           flexDirection: "column",
           border: "1px solid #ccc",
-          minHeight: "130px",
+          minHeight: "160px",
         }}
       >
         <CardContent sx={{ p: "12px !important" }}>
+          <Box sx={{ display: "flex", mb: 1 }}>
+            <Typography
+              sx={{ fontSize: "14px", fontWeight: "bold", color: "black", mr: 1 }}
+            >
+              ID:
+            </Typography>
+            <Typography sx={{ fontSize: "14px", color: "black" }}>{team.id}</Typography>
+          </Box> 
+
           <Box sx={{ display: "flex", mb: 1 }}>
             <Typography
               sx={{ fontSize: "14px", fontWeight: "bold", color: "black", mr: 1 }}

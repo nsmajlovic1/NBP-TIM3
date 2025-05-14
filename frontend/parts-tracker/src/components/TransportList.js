@@ -54,11 +54,14 @@ const TransportList = ({ transports }) => {
             border: "1px solid #ccc",
             display: "flex",
             flexDirection: "column",
-            height: "280px",
+            height: "305px",
             flexShrink: 0,
           }}
         >
           <CardContent sx={{ p: 2, height: "100%", overflow: "auto" }}>
+            <Typography color="black">
+              <strong>ID:</strong> {transport.id}
+            </Typography>
             <Typography color="black">
               <strong>Type:</strong> {transport.type}
             </Typography>

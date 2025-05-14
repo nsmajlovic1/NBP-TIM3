@@ -38,6 +38,15 @@ const DriverCard = ({ driver }) => {
         }}
       >
         <CardContent sx={{ p: "12px !important" }}>
+            <Box sx={{ display: "flex", mb: 1 }}>
+            <Typography
+              sx={{ fontSize: "14px", fontWeight: "bold", color: "black", mr: 1 }}
+            >
+              ID:
+            </Typography>
+            <Typography sx={{ fontSize: "14px", color: "black" }}>{driver.id}</Typography>
+          </Box>
+
           <Box sx={{ display: "flex", mb: 1 }}>
             <Typography
               sx={{ fontSize: "14px", fontWeight: "bold", color: "black", mr: 1 }}

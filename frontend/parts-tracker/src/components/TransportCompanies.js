@@ -198,7 +198,7 @@ const TransportCompanies = () => {
               >
                 <Card sx={{
                   flex: 1,
-                  height: "110px",
+                  height: "130px",
                   display: "flex",
                   flexDirection: "column",
                   border: "1px solid #ccc",
@@ -211,6 +211,31 @@ const TransportCompanies = () => {
                     flexDirection: "column",
                     '&:last-child': { pb: '12px' }
                   }}>
+                    <Box sx={{ 
+                      display: "flex", 
+                      mb: 1,
+                      minWidth: 0 
+                    }}>
+                      <Typography sx={{ 
+                        fontSize: "14px", 
+                        fontWeight: "bold",
+                        color: "black",
+                        mr: 1,
+                        flexShrink: 0 
+                      }}>
+                        ID:
+                      </Typography>
+                      <Typography sx={{ 
+                        fontSize: "14px", 
+                        color: "black",
+                        whiteSpace: 'nowrap',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                        minWidth: 0 
+                      }}>
+                        {company.id}
+                      </Typography>
+                    </Box>
                     <Box sx={{ 
                       display: "flex", 
                       mb: 1,
