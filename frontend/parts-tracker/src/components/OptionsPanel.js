@@ -28,6 +28,30 @@ const OptionsPanel = ({ onOptionSelect }) => {
           </Button>
         </ListItem>
 
+        {["Mechanic", "Logistic"].includes(userRole) && (
+          <ListItem>
+            <Button
+              fullWidth
+              variant={selectedOption === "My Team" ? "contained" : "outlined"}
+              onClick={() => handleOptionClick("My Team")}
+            >
+              My Team
+            </Button>
+          </ListItem>
+        )}
+
+        {["Admin", "Logistic"].includes(userRole) && (
+          <ListItem>
+            <Button
+              fullWidth
+              variant={selectedOption === "Drivers" ? "contained" : "outlined"}
+              onClick={() => handleOptionClick("Drivers")}
+            >
+              Drivers
+            </Button>
+          </ListItem>
+        )}
+
         {userRole === "Admin" && (
           <ListItem>
             <Button
@@ -36,30 +60,6 @@ const OptionsPanel = ({ onOptionSelect }) => {
               onClick={() => handleOptionClick("Add User")}
             >
               Add User
-            </Button>
-          </ListItem>
-        )}
-
-        {["Admin", "Logistic"].includes(userRole) && (
-          <ListItem>
-            <Button
-              fullWidth
-              variant={selectedOption === "Transport Companies" ? "contained" : "outlined"}
-              onClick={() => handleOptionClick("Transport Companies")}
-            >
-              Transport Companies
-            </Button>
-          </ListItem>
-        )}
-
-        {["Admin", "Logistic"].includes(userRole) && (
-          <ListItem>
-            <Button
-              fullWidth
-              variant={selectedOption === "Teams" ? "contained" : "outlined"}
-              onClick={() => handleOptionClick("Teams")}
-            >
-              Teams
             </Button>
           </ListItem>
         )}
@@ -76,6 +76,30 @@ const OptionsPanel = ({ onOptionSelect }) => {
           </ListItem>
         )}
 
+        {["Admin", "Logistic"].includes(userRole) && (
+          <ListItem>
+            <Button
+              fullWidth
+              variant={selectedOption === "Transport Companies" ? "contained" : "outlined"}
+              onClick={() => handleOptionClick("Transport Companies")}
+            >
+              Transport Companies
+            </Button>
+          </ListItem>
+        )}
+
+        {["Admin"].includes(userRole) && (
+          <ListItem>
+            <Button
+              fullWidth
+              variant={selectedOption === "Teams" ? "contained" : "outlined"}
+              onClick={() => handleOptionClick("Teams")}
+            >
+              Teams
+            </Button>
+          </ListItem>
+        )}
+
         {["Admin", "Logistic", "Mechanic"].includes(userRole) && (
           <ListItem>
             <Button
@@ -88,17 +112,6 @@ const OptionsPanel = ({ onOptionSelect }) => {
           </ListItem>
         )}
 
-        {["Admin", "Logistic"].includes(userRole) && (
-          <ListItem>
-            <Button
-              fullWidth
-              variant={selectedOption === "Drivers" ? "contained" : "outlined"}
-              onClick={() => handleOptionClick("Drivers")}
-            >
-              Drivers
-            </Button>
-          </ListItem>
-        )}
       </List>
     </Box>
   );
