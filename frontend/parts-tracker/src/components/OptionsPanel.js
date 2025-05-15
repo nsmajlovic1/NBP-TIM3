@@ -25,6 +25,7 @@ const OptionsPanel = ({ onOptionSelect }) => {
     { label: "Transport Companies", roles: ["Admin", "Logistic"] },
     { label: "Teams", roles: ["Admin"] },
     { label: "Transport", roles: ["Admin", "Logistic", "Mechanic"] },
+    { label: "Report", roles: ["Admin", "Logistic", "Mechanic"]}
   ];
 
   return (
