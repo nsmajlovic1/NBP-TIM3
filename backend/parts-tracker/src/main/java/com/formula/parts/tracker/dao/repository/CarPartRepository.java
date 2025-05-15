@@ -177,4 +177,13 @@ public class CarPartRepository extends BaseRepository<CarPart> {
         executeUpdateQuery(query, parameters.toArray());
     }
 
+    public List<CarPart> findByPackageId(final Long packageId) {
+        final String query = """
+                SELECT cp.* FROM NBP02.CAR_PART cp
+                WHERE cp.PACKAGE_ID = ?
+            """;
+
+        return executeListSelectQuery(query, this::mapToEntity, packageId);
+    }
+
 }

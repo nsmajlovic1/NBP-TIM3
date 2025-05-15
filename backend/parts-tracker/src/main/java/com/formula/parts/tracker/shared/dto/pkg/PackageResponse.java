@@ -1,7 +1,9 @@
 package com.formula.parts.tracker.shared.dto.pkg;
 
+import com.formula.parts.tracker.shared.dto.carpart.CarPartResponse;
 import java.io.Serial;
 import java.io.Serializable;
+import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -18,5 +20,7 @@ public class PackageResponse implements Serializable {
     private Long shipmentId;
     private Long departureStorageId;
     private Long destinationStorageId;
+
+    private List<CarPartResponse> carParts;
 
 }

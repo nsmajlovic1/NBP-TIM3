@@ -6,6 +6,7 @@ public class TransportFields {
     }
 
     public static final String ID = "ID";
+    public static final String TRANSPORT_ID = "TRANSPORT_ID";
     public static final String TYPE = "TYPE";
     public static final String VEHICLE_NUMBER = "VEHICLE_NUMBER";
     public static final String COMPANY_ID = "COMPANY_ID";

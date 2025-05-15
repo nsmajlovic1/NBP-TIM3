@@ -171,7 +171,7 @@ public class TransportRepository extends BaseRepository<Transport> {
                 JOIN NBP02.ADDRESS dep ON t.DEPARTURE_ADDRESS_ID = dep.ID
                 JOIN NBP02.ADDRESS destination ON t.DESTINATION_ADDRESS_ID = destination.ID
                 JOIN NBP02.TRANSPORT_COMPANY c ON t.COMPANY_ID = c.ID
-                ORDER BY t.DEPARTURE_DATE DESC
+                ORDER BY t.ID DESC
             """;
 
         return executeListSelectQuery(query, this::mapToEntity);
