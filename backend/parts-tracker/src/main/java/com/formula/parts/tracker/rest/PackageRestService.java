@@ -4,12 +4,15 @@ package com.formula.parts.tracker.rest;
 import com.formula.parts.tracker.core.service.pkg.PackageService;
 import com.formula.parts.tracker.shared.dto.pkg.PackageCreateRequest;
 import com.formula.parts.tracker.shared.dto.pkg.PackageResponse;
+import com.formula.parts.tracker.shared.dto.statistic.StatisticResponse;
 import com.formula.parts.tracker.shared.exception.ApiException;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -29,5 +32,9 @@ public class PackageRestService {
         return ResponseEntity.ok(packageService.create(request));
     }
 
+    @GetMapping("statistic")
+    public ResponseEntity<List<StatisticResponse>> getStatistic() throws ApiException {
+        return ResponseEntity.ok(packageService.countByStatus());
+    }
 
 }

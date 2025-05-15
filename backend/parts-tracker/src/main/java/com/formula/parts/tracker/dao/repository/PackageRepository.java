@@ -89,6 +89,33 @@ public class PackageRepository extends BaseRepository<Package> {
         return executeListSelectQuery(query, this::mapToEntity, transportId, teamId);
     }
 
+    public long countByTeamIdAndStatus(final Long teamId, final String status) {
+        final String query = """
+                SELECT DISTINCT COUNT(p.ID)
+                FROM NBP02."PACKAGE" p
+                INNER JOIN NBP02.SHIPMENT s ON s.ID = p.SHIPMENT_ID
+                INNER JOIN NBP02.CAR_PART cp ON p.ID = cp.PACKAGE_ID
+                INNER JOIN NBP02.DRIVER d ON cP.DRIVER_ID = d.ID
+                WHERE p.STATUS = ? AND d.TEAM_ID = ?
+            """;
+
+        return executeCountQuery(query, status, teamId);
+    }
+
+    public long countByStatus(final String status) {
+        final String query = """
+                SELECT DISTINCT COUNT(p.ID)
+                FROM NBP02."PACKAGE" p
+                INNER JOIN NBP02.SHIPMENT s ON s.ID = p.SHIPMENT_ID
+                INNER JOIN NBP02.CAR_PART cp ON p.ID = cp.PACKAGE_ID
+                INNER JOIN NBP02.DRIVER d ON cP.DRIVER_ID = d.ID
+                WHERE p.STATUS = ?
+            """;
+
+        return executeCountQuery(query, status);
+    }
+
+
     public Map<Long, List<Package>> findByTeamIdGroupedByTransport(final Long teamId) {
         final String query = """
                 SELECT DISTINCT p.*, s.TRANSPORT_ID

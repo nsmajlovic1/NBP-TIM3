@@ -16,11 +16,13 @@ import com.formula.parts.tracker.dao.repository.TeamRepository;
 import com.formula.parts.tracker.dao.repository.TransportRepository;
 import com.formula.parts.tracker.shared.dto.pkg.PackageCreateRequest;
 import com.formula.parts.tracker.shared.dto.pkg.PackageResponse;
+import com.formula.parts.tracker.shared.dto.statistic.StatisticResponse;
 import com.formula.parts.tracker.shared.enums.Status;
 import com.formula.parts.tracker.shared.exception.ApiException;
 import com.formula.parts.tracker.shared.exception.BadRequestException;
 import com.formula.parts.tracker.shared.exception.UnauthorizedException;
 import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -93,6 +95,35 @@ public class PackageServiceImpl implements PackageService {
             transport.getStatus());
 
         return packageMapper.toResponse(newPackage);
+    }
+
+    @Override
+    public List<StatisticResponse> countByStatus() throws ApiException {
+        final Optional<Team> userTeam = teamRepository.findByUserId(
+            ((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getId());
+
+        final StatisticResponse pendingCount = new StatisticResponse();
+        pendingCount.setLabel(Status.PENDING.getValue());
+        pendingCount.setCount(
+            userTeam.map(team -> packageRepository.countByTeamIdAndStatus(team
+                    .getId(), Status.PENDING.getValue()))
+                .orElseGet(() -> packageRepository.countByStatus(Status.PENDING.getValue())));
+
+        final StatisticResponse inTransitCount = new StatisticResponse();
+        inTransitCount.setLabel(Status.IN_TRANSIT.getValue());
+        inTransitCount.setCount(
+            userTeam.map(team -> packageRepository.countByTeamIdAndStatus(team
+                    .getId(), Status.IN_TRANSIT.getValue()))
+                .orElseGet(() -> packageRepository.countByStatus(Status.IN_TRANSIT.getValue())));
+
+        final StatisticResponse finishedCount = new StatisticResponse();
+        finishedCount.setLabel(Status.FINISHED.getValue());
+        finishedCount.setCount(
+            userTeam.map(team -> packageRepository.countByTeamIdAndStatus(team
+                    .getId(), Status.FINISHED.getValue()))
+                .orElseGet(() -> packageRepository.countByStatus(Status.IN_TRANSIT.getValue())));
+
+        return List.of(pendingCount, inTransitCount, finishedCount);
     }
 
 }
