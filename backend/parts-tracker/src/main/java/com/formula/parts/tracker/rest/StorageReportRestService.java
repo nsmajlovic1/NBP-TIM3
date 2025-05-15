@@ -8,8 +8,9 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.format.DateTimeFormatter;
 import java.util.List;
-
+import java.time.LocalDateTime;
 @RestController
 @Tag(name = "Report API")
 @RequestMapping("/api/reports/storage")
@@ -36,9 +37,11 @@ public class StorageReportRestService {
                 : service.getAllReports();
 
         byte[] pdfBytes = service.generatePdfReport(reports);
-
+        LocalDateTime now = LocalDateTime.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("ddMMyyyy_HHmm");
+        String filename = "StorageReport_" + now.format(formatter) + ".pdf";
         return ResponseEntity.ok()
-                .header("Content-Disposition", "attachment; filename=storage_report.pdf")
+                .header("Content-Disposition", "attachment; filename=" + filename)
                 .contentType(MediaType.APPLICATION_PDF)
                 .body(pdfBytes);
     }
