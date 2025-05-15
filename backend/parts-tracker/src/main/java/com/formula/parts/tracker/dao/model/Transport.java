@@ -1,6 +1,7 @@
 package com.formula.parts.tracker.dao.model;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -22,5 +23,6 @@ public class Transport extends Base {
     private Address departureAddress;
     private Address destinationAddress;
     private TransportCompany company;
-    
+    private List<Package> packages;
+
 }

@@ -7,7 +7,8 @@ import java.util.List;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
-@Mapper(componentModel = "spring", uses = {AddressMapper.class, TransportCompanyMapper.class})
+@Mapper(componentModel = "spring", uses = {AddressMapper.class, TransportCompanyMapper.class,
+    PackageMapper.class})
 public interface TransportMapper {
 
     @Mapping(target = "expectedArrivalDate", source = "arrivalDate")

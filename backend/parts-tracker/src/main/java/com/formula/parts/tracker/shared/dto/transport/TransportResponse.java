@@ -1,10 +1,12 @@
 package com.formula.parts.tracker.shared.dto.transport;
 
 import com.formula.parts.tracker.shared.dto.address.AddressResponse;
+import com.formula.parts.tracker.shared.dto.pkg.PackageResponse;
 import com.formula.parts.tracker.shared.dto.transportcompany.TransportCompanyResponse;
 import java.io.Serial;
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -25,5 +27,7 @@ public class TransportResponse implements Serializable {
     private String status;
     private AddressResponse departureAddress;
     private AddressResponse destinationAddress;
+
+    private List<PackageResponse> packages;
 
 }

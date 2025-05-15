@@ -1,5 +1,6 @@
 package com.formula.parts.tracker.dao.model;
 
+import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -12,5 +13,7 @@ public class Package extends Base {
     private Long shipmentId;
     private Long departureStorageId;
     private Long destinationStorageId;
+
+    private List<CarPart> carParts;
 
 }

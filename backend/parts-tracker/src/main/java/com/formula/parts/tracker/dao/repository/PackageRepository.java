@@ -2,10 +2,13 @@ package com.formula.parts.tracker.dao.repository;
 
 import com.formula.parts.tracker.dao.model.Package;
 import com.formula.parts.tracker.dao.model.PackageFields;
+import com.formula.parts.tracker.dao.model.TransportFields;
 import com.formula.parts.tracker.shared.exception.DatabaseException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 import javax.sql.DataSource;
 import org.springframework.stereotype.Repository;
 
@@ -33,9 +36,19 @@ public class PackageRepository extends BaseRepository<Package> {
         }
     }
 
+    private Map.Entry<Long, Package> mapToTransportGroup(final ResultSet resultSet) {
+        try {
+            return Map.entry(resultSet.getLong(TransportFields.TRANSPORT_ID),
+                mapToEntity(resultSet));
+        } catch (final SQLException exception) {
+            throw new DatabaseException();
+        }
+    }
+
+
     public Package persist(final Package pkg) {
         final String insertQuery = """
-                INSERT INTO PACKAGE (
+                INSERT INTO NBP02."PACKAGE" (
                     ID,
                     CODE,
                     STATUS,
@@ -55,8 +68,8 @@ public class PackageRepository extends BaseRepository<Package> {
         );
 
         final String selectQuery = """
-                SELECT *
-                FROM NBP02.PACKAGE
+                SELECT p.*
+                FROM NBP02."PACKAGE" p
                 ORDER BY ID DESC FETCH FIRST 1 ROWS ONLY
             """;
 
@@ -66,7 +79,7 @@ public class PackageRepository extends BaseRepository<Package> {
     public List<Package> findByTransportIdAndTeamId(final Long transportId, final Long teamId) {
         final String query = """
                 SELECT DISTINCT p.*
-                FROM NBP02.PACKAGE p
+                FROM NBP02."PACKAGE" p
                 INNER JOIN NBP02.SHIPMENT s ON s.ID = p.SHIPMENT_ID
                 INNER JOIN NBP02.CAR_PART cp ON p.ID = cp.PACKAGE_ID
                 INNER JOIN NBP02.DRIVER d ON cP.DRIVER_ID = d.ID
@@ -74,6 +87,41 @@ public class PackageRepository extends BaseRepository<Package> {
             """;
 
         return executeListSelectQuery(query, this::mapToEntity, transportId, teamId);
+    }
+
+    public Map<Long, List<Package>> findByTeamIdGroupedByTransport(final Long teamId) {
+        final String query = """
+                SELECT DISTINCT p.*, s.TRANSPORT_ID
+                FROM NBP02."PACKAGE" p
+                INNER JOIN NBP02.SHIPMENT s ON s.ID = p.SHIPMENT_ID
+                INNER JOIN NBP02.CAR_PART cp ON p.ID = cp.PACKAGE_ID
+                INNER JOIN NBP02.DRIVER d ON cp.DRIVER_ID = d.ID
+                WHERE d.TEAM_ID = ?
+                ORDER BY s.TRANSPORT_ID DESC
+            """;
+
+        return executeListSelectQuery(query, this::mapToTransportGroup, teamId).stream()
+            .collect(Collectors.groupingBy(
+                Map.Entry::getKey,
+                Collectors.mapping(Map.Entry::getValue, Collectors.toList())
+            ));
+    }
+
+    public Map<Long, List<Package>> findGroupedByTransport() {
+        final String query = """
+                SELECT DISTINCT p.*, s.TRANSPORT_ID
+                FROM NBP02."PACKAGE" p
+                INNER JOIN NBP02.SHIPMENT s ON s.ID = p.SHIPMENT_ID
+                INNER JOIN NBP02.CAR_PART cp ON p.ID = cp.PACKAGE_ID
+                INNER JOIN NBP02.DRIVER d ON cp.DRIVER_ID = d.ID
+                ORDER BY s.TRANSPORT_ID DESC
+            """;
+
+        return executeListSelectQuery(query, this::mapToTransportGroup).stream()
+            .collect(Collectors.groupingBy(
+                Map.Entry::getKey,
+                Collectors.mapping(Map.Entry::getValue, Collectors.toList())
+            ));
     }
 
 }
