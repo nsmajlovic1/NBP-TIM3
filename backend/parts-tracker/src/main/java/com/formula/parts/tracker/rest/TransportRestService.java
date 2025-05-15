@@ -1,6 +1,7 @@
 package com.formula.parts.tracker.rest;
 
 import com.formula.parts.tracker.core.service.transport.TransportService;
+import com.formula.parts.tracker.shared.dto.statistic.StatisticResponse;
 import com.formula.parts.tracker.shared.dto.transport.TransportCreateRequest;
 import com.formula.parts.tracker.shared.dto.transport.TransportResponse;
 import com.formula.parts.tracker.shared.exception.ApiException;
@@ -32,6 +33,11 @@ public class TransportRestService {
     @GetMapping
     public ResponseEntity<List<TransportResponse>> get() throws ApiException {
         return ResponseEntity.ok(transportService.getAll());
+    }
+
+    @GetMapping("statistic")
+    public ResponseEntity<List<StatisticResponse>> getStatistic() throws ApiException {
+        return ResponseEntity.ok(transportService.countByStatus());
     }
 
 }

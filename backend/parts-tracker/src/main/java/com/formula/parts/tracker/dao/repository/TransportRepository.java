@@ -177,4 +177,14 @@ public class TransportRepository extends BaseRepository<Transport> {
         return executeListSelectQuery(query, this::mapToEntity);
     }
 
+    public long countByStatus(final String status) {
+        final String query = """
+                SELECT COUNT(t.ID)
+                FROM NBP02.TRANSPORT t
+                WHERE t.STATUS = ?
+            """;
+
+        return executeCountQuery(query, status);
+    }
+
 }

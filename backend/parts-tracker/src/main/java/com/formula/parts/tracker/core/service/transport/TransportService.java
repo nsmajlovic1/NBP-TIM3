@@ -1,5 +1,6 @@
 package com.formula.parts.tracker.core.service.transport;
 
+import com.formula.parts.tracker.shared.dto.statistic.StatisticResponse;
 import com.formula.parts.tracker.shared.dto.transport.TransportCreateRequest;
 import com.formula.parts.tracker.shared.dto.transport.TransportResponse;
 import com.formula.parts.tracker.shared.exception.ApiException;
@@ -11,6 +12,6 @@ public interface TransportService {
 
     List<TransportResponse> getAll() throws ApiException;
 
-    void delete(final Long transportId);
+    List<StatisticResponse> countByStatus();
 
 }

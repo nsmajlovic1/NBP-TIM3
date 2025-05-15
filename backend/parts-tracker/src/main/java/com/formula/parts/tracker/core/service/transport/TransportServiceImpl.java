@@ -11,6 +11,7 @@ import com.formula.parts.tracker.dao.repository.PackageRepository;
 import com.formula.parts.tracker.dao.repository.TeamRepository;
 import com.formula.parts.tracker.dao.repository.TransportCompanyRepository;
 import com.formula.parts.tracker.dao.repository.TransportRepository;
+import com.formula.parts.tracker.shared.dto.statistic.StatisticResponse;
 import com.formula.parts.tracker.shared.dto.transport.TransportCreateRequest;
 import com.formula.parts.tracker.shared.dto.transport.TransportResponse;
 import com.formula.parts.tracker.shared.enums.Status;
@@ -88,8 +89,20 @@ public class TransportServiceImpl implements TransportService {
     }
 
     @Override
-    public void delete(Long transportId) {
+    public List<StatisticResponse> countByStatus() {
+        final StatisticResponse pendingCount = new StatisticResponse();
+        pendingCount.setLabel(Status.PENDING.getValue());
+        pendingCount.setCount(transportRepository.countByStatus(Status.PENDING.getValue()));
 
+        final StatisticResponse inTransitCount = new StatisticResponse();
+        inTransitCount.setLabel(Status.IN_TRANSIT.getValue());
+        inTransitCount.setCount(transportRepository.countByStatus(Status.IN_TRANSIT.getValue()));
+
+        final StatisticResponse finishedCount = new StatisticResponse();
+        finishedCount.setLabel(Status.FINISHED.getValue());
+        finishedCount.setCount(transportRepository.countByStatus(Status.FINISHED.getValue()));
+
+        return List.of(pendingCount, inTransitCount, finishedCount);
     }
 
 }
