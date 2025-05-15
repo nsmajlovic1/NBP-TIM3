@@ -31,12 +31,15 @@ public class SecurityConfiguration {
         http.cors(cors -> cors.configurationSource(corsConfigurationSource()))
             .csrf(AbstractHttpConfigurer::disable)
             .authorizeHttpRequests(req ->
-                req.requestMatchers("/api/auth/register", "api/team/create", "api/team/*/assign/*")
+                req.requestMatchers("/api/auth/register", "api/team/create", "api/team/*/assign/*",
+                        "api/transport/statistic")
                     .hasAuthority(Role.ADMIN.getValue())
                     .requestMatchers(HttpMethod.POST, "/api/transport", "/api/driver")
                     .hasAuthority(Role.ADMIN.getValue())
                     .requestMatchers(HttpMethod.GET, "/api/driver")
                     .hasAuthority(Role.ADMIN.getValue())
+                    .requestMatchers("api/car-part/statistic")
+                    .hasAnyAuthority(Role.MECHANIC.getValue(), Role.LOGISTIC.getValue())
                     .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "api/auth/login")
                     .permitAll()
                     .anyRequest().authenticated()
