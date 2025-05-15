@@ -44,11 +44,18 @@ const TeamReport = () => {
 
   return (
     <Box>
-      <Typography variant="h4" gutterBottom>
-        Storage Report
+      <Typography mb={4} variant="h4" gutterBottom>
+        Storage Utilization Report
       </Typography>
 
-      <Box display="flex" justifyContent="flex-end" mb={2}>
+      {reportData ? (
+        <ReportOverview report={reportData} />
+      ) : (
+        <Typography variant="body1">Loading report data...</Typography>
+      )}
+
+      
+      <Box display="flex" justifyContent="flex-end" mb={2} mt={4}>
         <Button
           variant="contained"
           color="primary"
@@ -59,11 +66,6 @@ const TeamReport = () => {
         </Button>
       </Box>
 
-      {reportData ? (
-        <ReportOverview report={reportData} />
-      ) : (
-        <Typography variant="body1">Loading report data...</Typography>
-      )}
     </Box>
   );
 };

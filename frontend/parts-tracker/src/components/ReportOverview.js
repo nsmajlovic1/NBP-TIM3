@@ -5,38 +5,37 @@ import {
   TableContainer,
   TableHead,
   TableRow,
-  Paper,
 } from "@mui/material";
 
 const ReportOverview = ({ report }) => {
   if (!report || report.length === 0) return null;
 
   return (
-    <TableContainer component={Paper} elevation={3}>
+    <TableContainer>
       <Table>
         <TableHead>
           <TableRow>
-            <TableCell><strong>Storage ID</strong></TableCell>
-            <TableCell><strong>City</strong></TableCell>
-            <TableCell><strong>Country</strong></TableCell>
-            <TableCell><strong>Street</strong></TableCell>
-            <TableCell><strong>Capacity</strong></TableCell>
-            <TableCell><strong>Current Parts</strong></TableCell>
-            <TableCell><strong>Occupancy (%)</strong></TableCell>
-            <TableCell><strong>Total Weight (kg)</strong></TableCell>
+            <TableCell sx={{ fontWeight: "bold", color: "black" }}>Storage ID</TableCell>
+            <TableCell sx={{ fontWeight: "bold", color: "black" }}>City</TableCell>
+            <TableCell sx={{ fontWeight: "bold", color: "black" }}>Country</TableCell>
+            <TableCell sx={{ fontWeight: "bold", color: "black" }}>Street</TableCell>
+            <TableCell sx={{ fontWeight: "bold", color: "black" }}>Capacity</TableCell>
+            <TableCell sx={{ fontWeight: "bold", color: "black" }}>Current Parts</TableCell>
+            <TableCell sx={{ fontWeight: "bold", color: "black" }}>Occupancy (%)</TableCell>
+            <TableCell sx={{ fontWeight: "bold", color: "black" }}>Total Weight (kg)</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
           {report.map((item) => (
             <TableRow key={item.storageId}>
-              <TableCell>{item.storageId}</TableCell>
-              <TableCell>{item.cityName}</TableCell>
-              <TableCell>{item.countryIso}</TableCell>
-              <TableCell>{item.streetName}</TableCell>
-              <TableCell>{item.capacity}</TableCell>
-              <TableCell>{item.currentPartsCount}</TableCell>
-              <TableCell>{item.occupancyPercent}%</TableCell>
-              <TableCell>{item.totalWeight}</TableCell>
+              <TableCell sx={{ color: "black" }}>{item.storageId}</TableCell>
+              <TableCell sx={{ color: "black" }}>{item.cityName}</TableCell>
+              <TableCell sx={{ color: "black" }}>{item.countryIso}</TableCell>
+              <TableCell sx={{ color: "black" }}>{item.streetName}</TableCell>
+              <TableCell sx={{ color: "black" }}>{item.capacity}</TableCell>
+              <TableCell sx={{ color: "black" }}>{item.currentPartsCount}</TableCell>
+              <TableCell sx={{ color: "black" }}>{item.occupancyPercent}%</TableCell>
+              <TableCell sx={{ color: "black" }}>{item.totalWeight}</TableCell>
             </TableRow>
           ))}
         </TableBody>
