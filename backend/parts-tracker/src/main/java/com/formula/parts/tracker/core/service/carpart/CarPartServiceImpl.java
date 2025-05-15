@@ -11,6 +11,7 @@ import com.formula.parts.tracker.dao.repository.TeamRepository;
 import com.formula.parts.tracker.shared.dto.Page;
 import com.formula.parts.tracker.shared.dto.carpart.CarPartRequest;
 import com.formula.parts.tracker.shared.dto.carpart.CarPartResponse;
+import com.formula.parts.tracker.shared.dto.statistic.StatisticResponse;
 import com.formula.parts.tracker.shared.enums.Status;
 import com.formula.parts.tracker.shared.exception.ApiException;
 import com.formula.parts.tracker.shared.exception.BadRequestException;
@@ -109,6 +110,31 @@ public class CarPartServiceImpl implements CarPartService {
         pageResponse.setTotalPages(totalPages);
 
         return pageResponse;
+    }
+
+    @Override
+    public List<StatisticResponse> countByStatus() throws ApiException {
+        final Team relatedTeam = teamRepository.findByUserId(
+                ((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getId())
+            .orElseThrow(() -> new UnauthorizedException(
+                "Authenticated user is unauthorized to access car parts."));
+
+        final StatisticResponse pendingCount = new StatisticResponse();
+        pendingCount.setLabel(Status.PENDING.getValue());
+        pendingCount.setCount(carPartRepository.countByTeamIdAndStatus(relatedTeam
+            .getId(), Status.PENDING.getValue()));
+
+        final StatisticResponse inTransitCount = new StatisticResponse();
+        inTransitCount.setLabel(Status.IN_TRANSIT.getValue());
+        inTransitCount.setCount(carPartRepository.countByTeamIdAndStatus(relatedTeam
+            .getId(), Status.IN_TRANSIT.getValue()));
+
+        final StatisticResponse inStorageCount = new StatisticResponse();
+        inStorageCount.setLabel(Status.IN_STORAGE.getValue());
+        inStorageCount.setCount(carPartRepository.countByTeamIdAndStatus(relatedTeam
+            .getId(), Status.IN_STORAGE.getValue()));
+
+        return List.of(pendingCount, inTransitCount, inStorageCount);
     }
 
 }

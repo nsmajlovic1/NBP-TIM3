@@ -4,10 +4,12 @@ import com.formula.parts.tracker.core.service.carpart.CarPartService;
 import com.formula.parts.tracker.shared.dto.Page;
 import com.formula.parts.tracker.shared.dto.carpart.CarPartRequest;
 import com.formula.parts.tracker.shared.dto.carpart.CarPartResponse;
+import com.formula.parts.tracker.shared.dto.statistic.StatisticResponse;
 import com.formula.parts.tracker.shared.exception.ApiException;
 import com.formula.parts.tracker.shared.success.ApiSuccessResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -47,6 +49,11 @@ public class CarPartRestService {
         @RequestParam(value = "page", defaultValue = "1") Long page,
         @RequestParam(value = "size", defaultValue = "10") Long size) throws ApiException {
         return ResponseEntity.ok(carPartService.getAll(search, page, size));
+    }
+
+    @GetMapping("statistic")
+    public ResponseEntity<List<StatisticResponse>> getStatistic() throws ApiException {
+        return ResponseEntity.ok(carPartService.countByStatus());
     }
 
 }
