@@ -188,7 +188,7 @@ public class CarPartRepository extends BaseRepository<CarPart> {
 
     public long countByTeamIdAndStatus(final Long teamId, final String status) {
         final String query = """
-                SELECT DISTINCT cp.* FROM NBP02.CAR_PART cp
+                SELECT COUNT(DISTINCT cp.ID) FROM NBP02.CAR_PART cp
                 JOIN NBP02.DRIVER d ON cp.DRIVER_ID = d.ID
                 JOIN NBP02.TEAM t ON d.TEAM_ID = t.ID
                 WHERE t.ID = ? AND cp.STATUS = ?
