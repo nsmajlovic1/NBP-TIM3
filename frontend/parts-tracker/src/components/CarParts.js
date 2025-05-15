@@ -10,6 +10,7 @@ const CarParts = () => {
   const [carParts, setCarParts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [userRole, setUserRole] = useState(null);
   const [openAddModal, setOpenAddModal] = useState(false);
   const [pagination, setPagination] = useState({
     page: 0,
@@ -17,6 +18,11 @@ const CarParts = () => {
     totalElements: 0,
     totalPages: 1,
   });
+
+  useEffect(() => {
+    const storedUser = JSON.parse(localStorage.getItem("user"));
+    setUserRole(storedUser?.role);
+  }, []);
 
   const fetchCarParts = async (page = pagination.page, size = pagination.size) => {
     try {
@@ -70,16 +76,20 @@ const CarParts = () => {
         }}
       >
         <Typography variant="h4">Car Parts ({pagination.totalElements})</Typography>
-        <Button
-          variant="contained"
-          color="primary"
-          onClick={() => setOpenAddModal(true)}
-          startIcon={<FaPlus />}
-        >
-          Add Car Part
-        </Button>
+        {["Logistic"].includes(userRole) && (
+          <Box display="flex" justifyContent="flex-end" mb={2}>
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={() => setOpenAddModal(true)}
+              startIcon={<FaPlus />}
+            >
+              Add Car Part
+            </Button>
+          </Box>
+        )}
+        
       </Box>
-
       <PaginationControls
         pagination={pagination}
         onPageChange={(newPage) => setPagination(prev => ({...prev, page: newPage - 1}))}

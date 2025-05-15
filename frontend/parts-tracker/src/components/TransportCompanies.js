@@ -26,6 +26,7 @@ import AddTransportCompanyModal from "./AddTransportCompanyModal";
 const TransportCompanies = () => {
   const [companies, setCompanies] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [userRole, setUserRole] = useState(null)
   const [error, setError] = useState(null);
   const [openAddModal, setOpenAddModal] = useState(false);
   const [openDeleteModal, setOpenDeleteModal] = useState(false);
@@ -36,6 +37,11 @@ const TransportCompanies = () => {
     totalElements: 0,
     totalPages: 1,
   });
+
+  useEffect(() => {
+    const storedUser = JSON.parse(localStorage.getItem("user"));
+    setUserRole(storedUser?.role);
+  }, []);
 
   const fetchCompanies = async () => {
     try {
@@ -123,16 +129,20 @@ const TransportCompanies = () => {
     }}>
       <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 3 }}>
         <Typography variant="h4">Transport Companies ({companies.length})</Typography>
-        <Button 
-          variant="contained" 
-          color="primary" 
-          onClick={() => setOpenAddModal(true)} 
-          startIcon={<FaPlus />}
-        >
-          Add Company
-        </Button>
+        {["Admin"].includes(userRole) && (
+          <Box display="flex" justifyContent="flex-end" mb={2}>
+            <Button 
+              variant="contained" 
+              color="primary" 
+              onClick={() => setOpenAddModal(true)} 
+              startIcon={<FaPlus />}
+            >
+              Add Company
+            </Button>
+          </Box>
+        )}
       </Box>
-
+                
       <Box
         sx={{
           flex: 1,

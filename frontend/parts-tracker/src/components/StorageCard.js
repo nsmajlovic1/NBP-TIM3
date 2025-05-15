@@ -17,16 +17,16 @@ const StorageCard = ({ storage, isSelected, onClick }) => {
         transition: "0.3s",
         "&:hover": { boxShadow: 3 },
         width: "100%",
-        height: "220px", 
         display: "flex",
+        marginBottom: "20px",
         flexDirection: "column",
       }}
     >
       <CardContent
         sx={{
           display: "flex",
-          flexDirection: "column",
           height: "100%",
+          flexDirection: "column",
           justifyContent: "space-between",
         }}
       >
