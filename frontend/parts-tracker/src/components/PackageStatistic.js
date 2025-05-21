@@ -13,9 +13,8 @@ const PackageStatistic = () => {
   useEffect(() => {
     const fetchData = async () => {
       const user = JSON.parse(localStorage.getItem("user"));
-      if (!user?.teamId) return;
       try {
-        const stats = await getPackagesStatistic(user.teamId);
+        const stats = await getPackagesStatistic();
         setData(stats);
       } catch (error) {
         console.error("Package statistic fetch error:", error);

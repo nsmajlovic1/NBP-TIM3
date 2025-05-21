@@ -1,5 +1,19 @@
 import API from "./api";
 
+
+export const getTransportStatistic = async () => {
+  try {
+    const response = await API.get("/transport/statistic");
+    if (response.status === 200) {
+      return response.data;
+    } else {
+      throw new Error("Failed to fetch transport statistic. Unexpected response status.");
+    }
+  } catch (error) {
+    throw new Error(error.response?.data?.message || "Failed to fetch transport statistic.");
+  }
+};
+
 export const getTransports = async () => {
   try {
     const response = await API.get(`/transport`);

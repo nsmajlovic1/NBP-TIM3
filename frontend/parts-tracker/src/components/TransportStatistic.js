@@ -3,22 +3,20 @@ import { Box, Typography } from "@mui/material";
 import { Pie } from "react-chartjs-2";
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
 import theme from "../theme";
-import { getCarPartsStatistic } from "../services/carPartService";
+import { getTransportStatistic } from "../services/transportService";
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
-const CarPartStatistic = () => {
+const TransportStatistic = () => {
   const [data, setData] = useState(null);
 
   useEffect(() => {
     const fetchData = async () => {
-      const user = JSON.parse(localStorage.getItem("user"));
-      if (!user?.teamId) return;
       try {
-        const stats = await getCarPartsStatistic();
+        const stats = await getTransportStatistic();
         setData(stats);
       } catch (error) {
-        console.error("Car parts statistic fetch error:", error);
+        console.error("Transport statistic fetch error:", error);
       }
     };
 
@@ -26,7 +24,7 @@ const CarPartStatistic = () => {
   }, []);
 
   if (!data || data.length === 0) {
-    return <Typography>No car part statistics available.</Typography>;
+    return <Typography>No transport statistics available.</Typography>;
   }
 
   const chartData = {
@@ -78,11 +76,11 @@ const CarPartStatistic = () => {
           color: "text.primary",
         }}
       >
-        Car Parts Status Distribution
+        Transport Status Distribution
       </Typography>
       <Pie data={chartData} options={options} />
     </Box>
   );
 };
 
-export default CarPartStatistic;
+export default TransportStatistic;

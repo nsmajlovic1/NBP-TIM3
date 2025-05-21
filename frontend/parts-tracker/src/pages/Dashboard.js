@@ -95,7 +95,7 @@ const Dashboard = () => {
               <Typography variant="h4" sx={{ fontFamily: "'Roboto', 'Arial', sans-serif", marginBottom: 1 }}>
                 Welcome, {user.username}!
               </Typography>
-              {(userRole === "Logistic" || userRole === "Mechanic") && <Statistics />}
+              <Statistics />
             </>
           )}
   

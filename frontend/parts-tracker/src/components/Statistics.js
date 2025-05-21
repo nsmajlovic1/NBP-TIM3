@@ -1,8 +1,23 @@
+import { useEffect, useState } from "react";
 import { Box, Typography } from "@mui/material";
 import CarPartStatistic from "./CarPartStatistic";
 import PackageStatistic from "./PackageStatistic";
+import TransportStatistic from "./TransportStatistic";
 
 const Statistics = () => {
+  const [userRole, setUserRole] = useState(null);
+
+  useEffect(() => {
+    const user = JSON.parse(localStorage.getItem("user"));
+    if (user && user.role) {
+      setUserRole(user.role);
+    }
+  }, []);
+
+  if (!userRole) {
+    return <Typography>Loading...</Typography>;
+  }
+
   return (
     <Box sx={{ p: 4 }}>
       <Typography
@@ -14,7 +29,9 @@ const Statistics = () => {
           mb: 2,
         }}
       >
-        Your Team's Statistics Overview
+        {userRole === "Admin"
+          ? "General Statistics"
+          : "Your Team's Statistics Overview"}
       </Typography>
 
       <Box
@@ -27,8 +44,17 @@ const Statistics = () => {
           flexWrap: "wrap",
         }}
       >
-        <CarPartStatistic />
-        <PackageStatistic />
+        {userRole === "Admin" ? (
+          <>
+            <TransportStatistic />
+            <PackageStatistic />
+          </>
+        ) : (
+          <>
+            <CarPartStatistic />
+            <PackageStatistic />
+          </>
+        )}
       </Box>
     </Box>
   );
