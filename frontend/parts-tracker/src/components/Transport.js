@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { getTransports } from "../services/transportService";
 import {
   Box,
@@ -9,6 +9,7 @@ import {
 import TransportList from "./TransportList";
 import AddTransportModal from "./AddTransportModal";
 import AddPackageModal from "./AddPackageModal";
+import PackagesModal from "./PackagesModal";
 import { FaPlus } from "react-icons/fa";
 
 const Transport = () => {
@@ -16,18 +17,22 @@ const Transport = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [userRole, setUserRole] = useState(null);
-  const [modalOpen, setModalOpen] = useState(false);
-  const [packageModalOpen, setPackageModalOpen] = useState(false);
-  const [selectedTransportId, setSelectedTransportId] = useState(null);
+
+  const [addTransportModalOpen, setAddTransportModalOpen] = useState(false);
+  const [addPackageModalOpen, setAddPackageModalOpen] = useState(false);
+  const [selectedTransportIdForAddPackage, setSelectedTransportIdForAddPackage] = useState(null);
+  const [packagesModalOpen, setPackagesModalOpen] = useState(false);
+  const [selectedTransportForPackages, setSelectedTransportForPackages] = useState(null);
 
   useEffect(() => {
     const storedUser = JSON.parse(localStorage.getItem("user"));
     setUserRole(storedUser?.role);
+    fetchTransports();
   }, []);
 
   const fetchTransports = async () => {
+    setLoading(true);
     try {
-      setLoading(true);
       const data = await getTransports();
       setTransports(data);
       setError(null);
@@ -39,24 +44,25 @@ const Transport = () => {
     }
   };
 
-  useEffect(() => {
-    fetchTransports();
-  }, []);
-
   const handleAddTransport = (newTransport) => {
     setTransports((prev) => [...prev, newTransport]);
-    fetchTransports();
+    setAddTransportModalOpen(false);
   };
 
-  const handleOpenPackageModal = (transportId) => {
-    setSelectedTransportId(transportId);
-    setPackageModalOpen(true);
+  const handleOpenAddPackageModal = (transportId) => {
+    setSelectedTransportIdForAddPackage(transportId);
+    setAddPackageModalOpen(true);
   };
 
-  const handleClosePackageModal = () => {
-    setPackageModalOpen(false);
-    setSelectedTransportId(null);
-    fetchTransports();
+  const handlePackageAdded = async () => {
+    setAddPackageModalOpen(false);
+    setSelectedTransportIdForAddPackage(null);
+    await fetchTransports(); 
+  };
+
+  const handleOpenPackagesModal = (transport) => {
+    setSelectedTransportForPackages(transport);
+    setPackagesModalOpen(true);
   };
 
   if (loading) {
@@ -75,7 +81,7 @@ const Transport = () => {
           <Button
             variant="contained"
             color="primary"
-            onClick={() => setModalOpen(true)}
+            onClick={() => setAddTransportModalOpen(true)}
             startIcon={<FaPlus />}
           >
             Add Transport
@@ -92,22 +98,28 @@ const Transport = () => {
       <TransportList
         transports={transports}
         userRole={userRole}
-        onAddPackageClick={handleOpenPackageModal}
+        onAddPackageClick={handleOpenAddPackageModal}
+        onViewPackagesClick={handleOpenPackagesModal}
       />
 
       <AddTransportModal
-        open={modalOpen}
-        onClose={() => setModalOpen(false)}
+        open={addTransportModalOpen}
+        onClose={() => setAddTransportModalOpen(false)}
         onTransportAdded={handleAddTransport}
       />
 
       <AddPackageModal
-        open={packageModalOpen}
-        onClose={handleClosePackageModal}
-        transportId={selectedTransportId}
+        open={addPackageModalOpen}
+        onClose={() => setAddPackageModalOpen(false)}
+        onPackageAdded={handlePackageAdded}
+        transportId={selectedTransportIdForAddPackage}
       />
 
-      <Box sx={{ height: "300px", opacity: 0 }} />
+      <PackagesModal
+        open={packagesModalOpen}
+        onClose={() => setPackagesModalOpen(false)}
+        transport={selectedTransportForPackages}
+      />
     </Box>
   );
 };

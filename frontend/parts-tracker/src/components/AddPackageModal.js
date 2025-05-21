@@ -29,7 +29,7 @@ const MenuProps = {
   },
 };
 
-const AddPackageModal = ({ open, onClose, transportId }) => {
+const AddPackageModal = ({ open, onClose, transportId, onPackageAdded }) => {
   const [packageData, setPackageData] = useState({
     code: "",
     carParts: [],
@@ -78,18 +78,16 @@ const AddPackageModal = ({ open, onClose, transportId }) => {
         transportId,
       });
       toast.success("Package added successfully!");
+      onPackageAdded(); 
       cleanInput();
-      onClose();
     } catch (error) {
       const errorMessage =
         error?.response?.data?.errors?.[0]?.message ||
         error.message ||
         "Failed to add package";
-
       toast.error(errorMessage);
     }
   };
-
 
   return (
     <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
