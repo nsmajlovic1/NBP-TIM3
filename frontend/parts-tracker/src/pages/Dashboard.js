@@ -14,6 +14,7 @@ import Drivers from "../components/Drivers";
 import MyTeam from "../components/MyTeam";
 import CarParts from "../components/CarParts";
 import Report from "../components/Report";
+import Statistics from "../components/Statistics"; 
 
 const Dashboard = () => {
   const { user, logout } = useAuth(); 
@@ -46,6 +47,8 @@ const Dashboard = () => {
   const handleOptionSelect = (option) => {
     setSelectedOption(option);
   };
+
+  const userRole = user?.role;
 
   return (
     <div style={{ display: "flex", flexDirection: "column", height: "97vh", overflow: "hidden" }}>
@@ -88,9 +91,12 @@ const Dashboard = () => {
   
         <div style={{ flexGrow: 1, paddingTop: "20px", paddingLeft: "20px", paddingRight: "20px", overflow: "hidden", paddingBottom: "20px" }}>
           {selectedOption === "Dashboard" && (
-            <Typography variant="h4" sx={{ fontFamily: "'Roboto', 'Arial', sans-serif" }}>
-              Welcome, {user.username}!
-            </Typography>
+            <>
+              <Typography variant="h4" sx={{ fontFamily: "'Roboto', 'Arial', sans-serif", marginBottom: 1 }}>
+                Welcome, {user.username}!
+              </Typography>
+              {(userRole === "Logistic" || userRole === "Mechanic") && <Statistics />}
+            </>
           )}
   
           {selectedOption === "Add User" && <AddUserForm />}
