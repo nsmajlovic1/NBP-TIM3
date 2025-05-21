@@ -1,28 +1,25 @@
 import React from "react";
-import { Card, CardContent, Typography, Paper, Box } from "@mui/material";
+import { Card, CardContent, Typography, Paper, Box, Button } from "@mui/material";
 import { styled } from "@mui/material/styles";
+import { FaPlus } from "react-icons/fa";
 
 const ScrollableBox = styled(Box)(({ theme }) => ({
   overflowY: "auto",
-
   "&::-webkit-scrollbar": {
     width: "0px",
     height: "0px",
   },
-
   "&::-webkit-scrollbar-track": {
     background: "transparent",
   },
-
   "&::-webkit-scrollbar-thumb": {
     background: "transparent",
   },
-
   scrollbarWidth: "none",
   scrollbarColor: "transparent transparent",
 }));
 
-const TransportList = ({ transports }) => {
+const TransportList = ({ transports, userRole, onAddPackageClick }) => {
   if (!transports.length) {
     return (
       <Typography
@@ -52,53 +49,38 @@ const TransportList = ({ transports }) => {
             border: "1px solid #ccc",
             display: "flex",
             flexDirection: "column",
-            height: "305px",
             flexShrink: 0,
           }}
         >
           <CardContent sx={{ p: 2, height: "100%", overflow: "auto" }}>
-            <Typography color="black">
-              <strong>ID:</strong> {transport.id}
-            </Typography>
-            <Typography color="black">
-              <strong>Type:</strong> {transport.type}
-            </Typography>
-            <Typography color="black">
-              <strong>Departure Date:</strong> {transport.departureDate}
-            </Typography>
-            <Typography color="black">
-              <strong>Arrival Date:</strong> {transport.arrivalDate}
-            </Typography>
-            <Typography color="black">
-              <strong>Vehicle Number:</strong> {transport.vehicleNumber}
-            </Typography>
-            <Typography color="black">
-              <strong>Company:</strong> {transport.company?.name || "N/A"}
-            </Typography>
-            <Typography color="black">
-              <strong>Capacity:</strong> {transport.capacity}
-            </Typography>
-            <Typography color="black">
-              <strong>Status:</strong> {transport.status}
-            </Typography>
+            <Typography color="black"><strong>ID:</strong> {transport.id}</Typography>
+            <Typography color="black"><strong>Type:</strong> {transport.type}</Typography>
+            <Typography color="black"><strong>Departure Date:</strong> {transport.departureDate}</Typography>
+            <Typography color="black"><strong>Arrival Date:</strong> {transport.arrivalDate}</Typography>
+            <Typography color="black"><strong>Vehicle Number:</strong> {transport.vehicleNumber}</Typography>
+            <Typography color="black"><strong>Company:</strong> {transport.company?.name || "N/A"}</Typography>
+            <Typography color="black"><strong>Capacity:</strong> {transport.capacity}</Typography>
+            <Typography color="black"><strong>Status:</strong> {transport.status}</Typography>
             <Paper
               elevation={0}
-              sx={{
-                backgroundColor: "#f5f5f5",
-                p: 1,
-                mt: 1,
-                borderRadius: "4px",
-              }}
+              sx={{ backgroundColor: "#f5f5f5", p: 1, mt: 1, borderRadius: "4px" }}
             >
-              <Typography color="black">
-                <strong>Departure Address:</strong>{" "}
-                {transport.departureAddress?.address || "N/A"}
-              </Typography>
-              <Typography color="black">
-                <strong>Destination Address:</strong>{" "}
-                {transport.destinationAddress?.address || "N/A"}
-              </Typography>
+              <Typography color="black"><strong>Departure Address:</strong> {transport.departureAddress?.address || "N/A"}</Typography>
+              <Typography color="black"><strong>Destination Address:</strong> {transport.destinationAddress?.address || "N/A"}</Typography>
             </Paper>
+
+            {userRole === "Logistic" && (
+              <Box sx={{ mt: 2 }}>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={() => onAddPackageClick(transport.id)}
+                  startIcon={<FaPlus />}
+                >
+                  Add Package 
+                </Button>
+              </Box>
+            )}
           </CardContent>
         </Card>
       ))}

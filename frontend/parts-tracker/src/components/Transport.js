@@ -8,7 +8,7 @@ import {
 } from "@mui/material";
 import TransportList from "./TransportList";
 import AddTransportModal from "./AddTransportModal";
-import PaginationControls from "./PaginationControls";
+import AddPackageModal from "./AddPackageModal";
 import { FaPlus } from "react-icons/fa";
 
 const Transport = () => {
@@ -17,11 +17,8 @@ const Transport = () => {
   const [error, setError] = useState(null);
   const [userRole, setUserRole] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
-  const [pagination, setPagination] = useState({
-    page: 0,
-    size: 5,
-    totalPages: 1,
-  });
+  const [packageModalOpen, setPackageModalOpen] = useState(false);
+  const [selectedTransportId, setSelectedTransportId] = useState(null);
 
   useEffect(() => {
     const storedUser = JSON.parse(localStorage.getItem("user"));
@@ -33,7 +30,6 @@ const Transport = () => {
       setLoading(true);
       const data = await getTransports();
       setTransports(data);
-
       setError(null);
     } catch (err) {
       console.error("Error fetching transports:", err);
@@ -49,9 +45,19 @@ const Transport = () => {
 
   const handleAddTransport = (newTransport) => {
     setTransports((prev) => [...prev, newTransport]);
-    fetchTransports(); 
+    fetchTransports();
   };
 
+  const handleOpenPackageModal = (transportId) => {
+    setSelectedTransportId(transportId);
+    setPackageModalOpen(true);
+  };
+
+  const handleClosePackageModal = () => {
+    setPackageModalOpen(false);
+    setSelectedTransportId(null);
+    fetchTransports();
+  };
 
   if (loading) {
     return (
@@ -83,13 +89,22 @@ const Transport = () => {
         </Typography>
       )}
 
-
-      <TransportList transports={transports} />
+      <TransportList
+        transports={transports}
+        userRole={userRole}
+        onAddPackageClick={handleOpenPackageModal}
+      />
 
       <AddTransportModal
         open={modalOpen}
         onClose={() => setModalOpen(false)}
         onTransportAdded={handleAddTransport}
+      />
+
+      <AddPackageModal
+        open={packageModalOpen}
+        onClose={handleClosePackageModal}
+        transportId={selectedTransportId}
       />
 
       <Box sx={{ height: "300px", opacity: 0 }} />

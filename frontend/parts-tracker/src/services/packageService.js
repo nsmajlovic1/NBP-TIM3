@@ -12,3 +12,22 @@ export const getPackagesStatistic = async () => {
     throw new Error(error.response?.data?.message || "Failed to fetch package statistic.");
   }
 };
+
+export const createPackage = async (packageData) => {
+  try {
+    const response = await API.post("/package", packageData);
+
+    if (response.status === 200) {
+      return response.data;
+    } else {
+      throw new Error("Failed to add package. Unexpected response status.");
+    }
+  } catch (error) {
+    const serverErrors = error.response?.data?.errors;
+    if (serverErrors && Array.isArray(serverErrors) && serverErrors.length > 0) {
+      throw new Error(serverErrors[0].message);
+    }
+
+    throw new Error(error.response?.data?.message || "Failed to add package.");
+  }
+};
