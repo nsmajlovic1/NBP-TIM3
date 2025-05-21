@@ -5,6 +5,7 @@ import { toast } from "react-toastify";
 import { saveAs } from "file-saver";
 import { getPDFReportByTeam } from "../services/reportService";
 import GeneralOverview from "./GeneralOverview";
+import TeamOverview from "./TeamOverview";
 
 const AdminReport = () => {
   const [view, setView] = useState("general");
@@ -37,8 +38,15 @@ const AdminReport = () => {
         sx={{ mb: 4 }}
       >
         <ToggleButton value="general">General Overview</ToggleButton>
+        <ToggleButton value="team">Team Overview</ToggleButton>
       </ToggleButtonGroup>
+
+      {view === "general" ? (
         <GeneralOverview />
+      ) : (
+        <TeamOverview selectedTeamId={selectedTeamId} setSelectedTeamId={setSelectedTeamId} />
+      )}
+
       <Box display="flex" justifyContent="flex-end" mt={4}>
         <Button
           variant="contained"
