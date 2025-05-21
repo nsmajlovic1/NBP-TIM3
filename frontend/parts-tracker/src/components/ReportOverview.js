@@ -11,18 +11,41 @@ const ReportOverview = ({ report }) => {
   if (!report || report.length === 0) return null;
 
   return (
-    <TableContainer>
-      <Table>
+    <TableContainer
+      sx={{
+        maxHeight: "370px",
+        overflowY: "auto",
+        marginBottom: "40px",
+        scrollbarWidth: "none", 
+        "&::-webkit-scrollbar": {
+          display: "none", 
+        },
+      }}
+    >
+      <Table stickyHeader>
         <TableHead>
           <TableRow>
-            <TableCell sx={{ fontWeight: "bold", color: "black" }}>Storage ID</TableCell>
-            <TableCell sx={{ fontWeight: "bold", color: "black" }}>City</TableCell>
-            <TableCell sx={{ fontWeight: "bold", color: "black" }}>Country</TableCell>
-            <TableCell sx={{ fontWeight: "bold", color: "black" }}>Street</TableCell>
-            <TableCell sx={{ fontWeight: "bold", color: "black" }}>Capacity</TableCell>
-            <TableCell sx={{ fontWeight: "bold", color: "black" }}>Current Parts</TableCell>
-            <TableCell sx={{ fontWeight: "bold", color: "black" }}>Occupancy (%)</TableCell>
-            <TableCell sx={{ fontWeight: "bold", color: "black" }}>Total Weight (kg)</TableCell>
+            {[
+              "Storage ID",
+              "City",
+              "Country",
+              "Street",
+              "Capacity",
+              "Current Parts",
+              "Occupancy (%)",
+              "Total Weight (kg)",
+            ].map((header) => (
+              <TableCell
+                key={header}
+                sx={{
+                  fontWeight: "bold",
+                  backgroundColor: "#fff",
+                  color: "#000",
+                }}
+              >
+                {header}
+              </TableCell>
+            ))}
           </TableRow>
         </TableHead>
         <TableBody>
