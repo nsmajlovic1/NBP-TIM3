@@ -77,7 +77,7 @@ public class ImageRestService {
         return new ResponseEntity<>(imageData, headers, HttpStatus.OK);
     }
 
-    @GetMapping("/assign")
+    @GetMapping("/all")
     public List<ImageResponse> getImagesByAssign(@RequestParam Long assignId, @RequestParam String assignType) {
         return imageService.getImagesByAssign(assignId, assignType);
     }
