@@ -8,13 +8,19 @@ import com.formula.parts.tracker.dao.model.User;
 import com.formula.parts.tracker.dao.repository.RoleRepository;
 import com.formula.parts.tracker.dao.repository.TeamRepository;
 import com.formula.parts.tracker.dao.repository.UserRepository;
+import com.formula.parts.tracker.shared.constant.Constants;
+import com.formula.parts.tracker.shared.constant.EmailTemplatePaths;
 import com.formula.parts.tracker.shared.dto.Page;
+import com.formula.parts.tracker.shared.dto.email.EmailEvent;
+import com.formula.parts.tracker.shared.dto.email.EmailRequest;
+import com.formula.parts.tracker.shared.dto.email.context.UserAccessCredentials;
 import com.formula.parts.tracker.shared.dto.user.PasswordChangeRequest;
 import com.formula.parts.tracker.shared.dto.user.UserLoginRequest;
 import com.formula.parts.tracker.shared.dto.user.UserLoginResponse;
 import com.formula.parts.tracker.shared.dto.user.UserRegistrationRequest;
 import com.formula.parts.tracker.shared.dto.user.UserResponse;
 import com.formula.parts.tracker.shared.enums.EmailSubject;
+import com.formula.parts.tracker.shared.enums.NotificationSystem;
 import com.formula.parts.tracker.shared.exception.ApiException;
 import com.formula.parts.tracker.shared.exception.BadRequestException;
 import com.formula.parts.tracker.shared.exception.NotFoundException;
@@ -25,6 +31,7 @@ import java.util.Map;
 import java.util.function.Predicate;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -45,6 +52,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
     private final EmailService emailService;
+    private final ApplicationEventPublisher applicationEventPublisher;
 
     @Value("${access.token.expiration.minutes}")
     private int accessTokenExpirationMinutes;
@@ -108,11 +116,28 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
         userEntity = userRepository.persist(userEntity);
 
-        emailService.sendPlaintextEmail(EmailSubject.INITIAL_PASSWORD,
-            userEntity.getEmail(),
-            request.getPassword());
+        applicationEventPublisher.publishEvent(new EmailEvent(this, getUserRegistrationEmailRequest(
+            request, userEntity)));
 
         return userMapper.toUserResponse(userEntity);
+    }
+
+    private static EmailRequest getUserRegistrationEmailRequest(
+        final UserRegistrationRequest request,
+        final User userEntity) {
+        final UserAccessCredentials context = new UserAccessCredentials();
+        context.setFirstName(userEntity.getFirstName());
+        context.setLastName(userEntity.getLastName());
+        context.setUsername(userEntity.getUsername());
+        context.setPassword(request.getPassword());
+        context.setFooterText(NotificationSystem.USER_REGISTRATION.getValue());
+
+        final EmailRequest emailRequest = new EmailRequest();
+        emailRequest.setTo(List.of(userEntity.getEmail()));
+        emailRequest.setContext(Map.of(Constants.CONTEXT, context));
+        emailRequest.setSubject(EmailSubject.USER_ACCESS_CREDENTIALS.getValue());
+        emailRequest.setTemplatePath(EmailTemplatePaths.USER_ACCESS_CREDENTIALS);
+        return emailRequest;
     }
 
     private <T> void validateUniqueFieldConstraint(final Predicate<T> existsByField,

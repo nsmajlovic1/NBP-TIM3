@@ -13,6 +13,7 @@ public class Package extends Base {
     private Long shipmentId;
     private Long departureStorageId;
     private Long destinationStorageId;
+    private Long teamId;
 
     private List<CarPart> carParts;
 

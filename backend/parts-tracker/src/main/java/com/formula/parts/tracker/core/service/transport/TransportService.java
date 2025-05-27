@@ -14,4 +14,6 @@ public interface TransportService {
 
     List<StatisticResponse> countByStatus();
 
+    void sendTransportCompletionReminders();
+
 }

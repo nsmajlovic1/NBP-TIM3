@@ -5,7 +5,8 @@ import lombok.Getter;
 @Getter
 public enum EmailSubject {
 
-    INITIAL_PASSWORD("Initial Password");
+    USER_ACCESS_CREDENTIALS("User Access Credentials"),
+    TRANSPORT_FINISHING_TODAY("Transport finishing today");
 
     private final String value;
 
