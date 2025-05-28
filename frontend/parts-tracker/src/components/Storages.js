@@ -165,7 +165,7 @@ const Storages = () => {
             </Typography>
           ) : storages.length > 0 ? (
             storages.map((storage) => (
-              <Box marginRight={3} key={storage.id} sx={{ height: 250 }}>
+              <Box marginRight={3} key={storage.id}>
                 <StorageCard
                   storage={storage}
                   isSelected={selectedStorage?.id === storage.id}
