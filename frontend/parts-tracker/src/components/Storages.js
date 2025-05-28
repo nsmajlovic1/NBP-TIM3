@@ -6,6 +6,7 @@ import StorageCard from "./StorageCard";
 import { Box, Button, Typography, CircularProgress } from "@mui/material";
 import { FaPlus } from "react-icons/fa";
 import AddStorageModal from "./AddStorageModal";
+import { getStorageImageInfo, getImageById } from "../services/imageService";
 
 const Storages = () => {
   const [storages, setStorages] = useState([]);
@@ -34,6 +35,7 @@ const Storages = () => {
 
         const teamStorages = await getStoragesByTeam(userTeamId);
         data = teamStorages.content;
+
         if (!teamStorages || teamStorages.length === 0) {
           setError("Your team currently does not have any storage units.");
         } else {
@@ -45,7 +47,34 @@ const Storages = () => {
         setError(null);
       }
 
-      setStorages(data || []);
+      if (!data || data.length === 0) {
+        setStorages([]);
+        setLoading(false);
+        return;
+      }
+
+      const storagesWithImages = await Promise.all(
+        data.map(async (storage) => {
+          try {
+            const imageInfo = await getStorageImageInfo({
+              assignId: storage.id,
+              assignType: "STORAGE",
+            });
+
+            if (imageInfo && imageInfo.id) {
+              const imageData = await getImageById(imageInfo.id);
+              console.log(imageData)
+              return { ...storage, image: imageData };
+            } else {
+              return { ...storage, image: null };
+            }
+          } catch {
+            return { ...storage, image: null };
+          }
+        })
+      );
+
+      setStorages(storagesWithImages);
     } catch (err) {
       console.error("Error fetching storages:", err);
       setError("Failed to load storage data");
@@ -54,6 +83,7 @@ const Storages = () => {
       setLoading(false);
     }
   };
+
 
   useEffect(() => {
     if (userRole) {

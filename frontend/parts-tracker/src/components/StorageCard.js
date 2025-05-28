@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react'; 
 import {
   Card,
   CardContent,
@@ -21,6 +21,7 @@ const StorageCard = ({ storage, isSelected, onClick }) => {
   const [fileName, setFileName] = useState('');
   const [isUploading, setIsUploading] = useState(false);
   const [imagePreview, setImagePreview] = useState('');
+  const [storageImageUrl, setStorageImageUrl] = useState(null);
 
   const { streetName, cityName, countryIso } = storage.location;
   const {
@@ -29,7 +30,19 @@ const StorageCard = ({ storage, isSelected, onClick }) => {
     countryIso: teamCountry,
   } = storage.team;
 
-    
+  useEffect(() => {
+    if (storage.image) {
+      const url = URL.createObjectURL(storage.image);
+      setStorageImageUrl(url);
+
+      return () => {
+        URL.revokeObjectURL(url);
+        setStorageImageUrl(null);
+      };
+    } else {
+      setStorageImageUrl(null);
+    }
+  }, [storage.image]);
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
@@ -63,7 +76,6 @@ const StorageCard = ({ storage, isSelected, onClick }) => {
 
     setIsUploading(true);
     try {
-
       await uploadStorageImage(storage.id, selectedFile); 
 
       toast.success('Image uploaded successfully!');
@@ -74,7 +86,6 @@ const StorageCard = ({ storage, isSelected, onClick }) => {
       setIsUploading(false);
     }
   };
-
 
   const handleCloseModal = () => {
     setSelectedFile(null);
@@ -99,6 +110,33 @@ const StorageCard = ({ storage, isSelected, onClick }) => {
           minHeight: 180,
         }}
       >
+
+        <Box
+          sx={{
+            width: '100%',
+            height: 150,
+            backgroundColor: '#f0f0f0',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            mb: 2,
+            borderRadius: '4px',
+            overflow: 'hidden',
+          }}
+        >
+          {storageImageUrl ? (
+            <img
+              src={storageImageUrl}
+              alt={`Storage ${storage.id}`}
+              style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+            />
+          ) : (
+            <Typography variant="body2" color="textSecondary" sx={{ textAlign: 'center' }}>
+              No image available
+            </Typography>
+          )}
+        </Box>
+
         <CardContent sx={{
           display: "flex",
           flexDirection: "column",

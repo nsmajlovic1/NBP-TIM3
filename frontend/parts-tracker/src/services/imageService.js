@@ -7,7 +7,7 @@ export const uploadStorageImage = async (assignId, file) => {
   }
 
   const formData = new FormData();
-  formData.append('assignId', assignId);
+  formData.append('assignId', assignId.toString());
   formData.append('assignType', 'STORAGE');
   formData.append('file', file);
   try {
@@ -40,7 +40,7 @@ export const getStorageImageInfo = async (requestData) => {
       assignId: requestData.assignId.toString(),
       assignType: 'STORAGE'
     });
-    const response = await API.get(`/get?${params.toString()}`);
+    const response = await API.get(`/image/get?${params.toString()}`);
 
     if (response.status === 200) {
       return response.data;
@@ -57,20 +57,21 @@ export const getStorageImageInfo = async (requestData) => {
   }
 };
 
-export const getStorageImageById = async (id) => {
+export const getImageById = async (id) => {
   try {
     const response = await API.get(`/image/${id}`, {
-      responseType: 'blob' 
+      responseType: 'blob'  
     });
 
     if (response.status === 200) {
-      const imageUrl = URL.createObjectURL(response.data);
-      return imageUrl;
+      console.log(response.data)
+      return response.data;
     } else {
-      throw new Error('Failed to fetch image. Unexpected response status.');
+      throw new Error("Failed to fetch image.");
     }
   } catch (error) {
-    throw new Error(error.response?.data?.message || 'Failed to fetch image.');
+    console.error("Error fetching image by ID:", error);
+    return null;
   }
 };
 

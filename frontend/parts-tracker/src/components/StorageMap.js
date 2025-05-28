@@ -21,15 +21,28 @@ const FlyToLocation = ({ position }) => {
 
   useEffect(() => {
     if (position) {
-      map.flyTo(position, 13);
+      const offsetPosition = [position[0] - 0.01, position[1]];
+      map.flyTo(offsetPosition, 12);
     }
-  }, [position]);
+  }, [position, map]);
 
   return null;
 };
 
 const StorageMap = ({ storages, selectedStorage, onMarkerClick, popupOpen, setPopupOpen }) => {
   const markerRefs = useRef({});
+  const mapRef = useRef();
+  const hasCentered = useRef(false);
+
+  useEffect(() => {
+    if (mapRef.current && storages.length > 0 && !hasCentered.current) {
+      mapRef.current.flyTo(
+        [storages[0].location.latitude, storages[0].location.longitude],
+        12
+      );
+      hasCentered.current = true;
+    }
+  }, [storages]);
 
   useEffect(() => {
     if (popupOpen && markerRefs.current[popupOpen]) {
@@ -39,10 +52,11 @@ const StorageMap = ({ storages, selectedStorage, onMarkerClick, popupOpen, setPo
 
   return (
     <MapContainer
-      center={[43.8563, 18.4131]}
+      center={[43.8563, 18.4131]} 
       zoom={8}
       scrollWheelZoom
       style={{ height: "100%", width: "100%" }}
+      whenCreated={(map) => { mapRef.current = map; }}
     >
       <TileLayer
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
@@ -70,7 +84,7 @@ const StorageMap = ({ storages, selectedStorage, onMarkerClick, popupOpen, setPo
               }
             }}
           >
-            <Popup>
+            <Popup className="storage-popup">
               <StoragePopup storage={storage} />
             </Popup>
           </Marker>
