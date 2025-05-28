@@ -1,6 +1,9 @@
 package com.formula.parts.tracker.dao.repository;
 
-import com.formula.parts.tracker.dao.model.*;
+import com.formula.parts.tracker.dao.model.Role;
+import com.formula.parts.tracker.dao.model.RoleFields;
+import com.formula.parts.tracker.dao.model.User;
+import com.formula.parts.tracker.dao.model.UserFields;
 import com.formula.parts.tracker.shared.exception.DatabaseException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -102,12 +105,12 @@ public class UserRepository extends BaseRepository<User> {
 
     public List<User> findByRoleName(final String keyword, Long page, Long size) {
         final String query = """
-            SELECT u.ID AS USER_ID, r.ID AS ROLE_ID, u.*, r.*
-            FROM NBP.NBP_USER u
-            JOIN NBP.NBP_ROLE r ON u.ROLE_ID = r.ID
-            WHERE LOWER(r.NAME) LIKE ?
-            OFFSET ? ROWS FETCH NEXT ? ROWS ONLY
-        """;
+                SELECT u.ID AS USER_ID, r.ID AS ROLE_ID, u.*, r.*
+                FROM NBP.NBP_USER u
+                JOIN NBP.NBP_ROLE r ON u.ROLE_ID = r.ID
+                WHERE LOWER(r.NAME) LIKE ?
+                OFFSET ? ROWS FETCH NEXT ? ROWS ONLY
+            """;
 
         // Using LOWER for case-sensitive cases
         String pattern = "%" + keyword.toLowerCase() + "%";
@@ -119,14 +122,26 @@ public class UserRepository extends BaseRepository<User> {
 
     public Long countByRoleName(final String keyword) {
         final String query = """
-            SELECT COUNT(*) FROM NBP.NBP_USER u
-            JOIN NBP.NBP_ROLE r ON u.ROLE_ID = r.ID
-            WHERE LOWER(r.NAME) LIKE ?
-        """;
+                SELECT COUNT(*) FROM NBP.NBP_USER u
+                JOIN NBP.NBP_ROLE r ON u.ROLE_ID = r.ID
+                WHERE LOWER(r.NAME) LIKE ?
+            """;
 
         String pattern = "%" + keyword.toLowerCase() + "%";
 
         return executeCountQuery(query, pattern);
+    }
+
+    public List<User> findByRoleNameAndTeamId(final String roleName, final Long teamId) {
+        final String query = """
+                SELECT u.ID AS USER_ID, r.ID AS ROLE_ID, u.*, r.*
+                FROM NBP.NBP_USER u
+                JOIN NBP.NBP_ROLE r ON u.ROLE_ID = r.ID
+                JOIN NBP02.TEAM_MEMBER tm ON tm.USER_ID = u.ID
+                WHERE r.NAME = ? AND tm.TEAM_ID = ?
+            """;
+
+        return executeListSelectQuery(query, this::mapToEntityWithRole, roleName, teamId);
     }
 
 }

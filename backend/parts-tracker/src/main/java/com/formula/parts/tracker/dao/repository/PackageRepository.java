@@ -1,5 +1,6 @@
 package com.formula.parts.tracker.dao.repository;
 
+import com.formula.parts.tracker.dao.model.DriverFields;
 import com.formula.parts.tracker.dao.model.Package;
 import com.formula.parts.tracker.dao.model.PackageFields;
 import com.formula.parts.tracker.dao.model.TransportFields;
@@ -29,6 +30,9 @@ public class PackageRepository extends BaseRepository<Package> {
             pkg.setShipmentId(resultSet.getLong(PackageFields.SHIPMENT_ID));
             pkg.setDepartureStorageId(resultSet.getLong(PackageFields.DEPARTURE_STORAGE_ID));
             pkg.setDestinationStorageId(resultSet.getLong(PackageFields.DESTINATION_STORAGE_ID));
+
+            long teamId = resultSet.getLong(DriverFields.TEAM_ID);
+            pkg.setTeamId(resultSet.wasNull() ? null : teamId);
 
             return pkg;
         } catch (final SQLException exception) {
@@ -149,6 +153,19 @@ public class PackageRepository extends BaseRepository<Package> {
                 Map.Entry::getKey,
                 Collectors.mapping(Map.Entry::getValue, Collectors.toList())
             ));
+    }
+
+    public List<Package> findByTransportId(final Long transportId) {
+        final String query = """
+                SELECT DISTINCT p.*, d.TEAM_ID AS TEAM_ID
+                FROM NBP02."PACKAGE" p
+                INNER JOIN NBP02.SHIPMENT s ON s.ID = p.SHIPMENT_ID
+                INNER JOIN NBP02.CAR_PART cp ON p.ID = cp.PACKAGE_ID
+                INNER JOIN NBP02.DRIVER d ON cP.DRIVER_ID = d.ID
+                WHERE s.TRANSPORT_ID = ?
+            """;
+
+        return executeListSelectQuery(query, this::mapToEntity, transportId);
     }
 
 }

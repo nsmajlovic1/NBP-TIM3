@@ -7,9 +7,11 @@ import com.formula.parts.tracker.dao.model.TransportCompany;
 import com.formula.parts.tracker.dao.model.TransportCompanyFields;
 import com.formula.parts.tracker.dao.model.TransportFields;
 import com.formula.parts.tracker.shared.exception.DatabaseException;
+import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import javax.sql.DataSource;
@@ -185,6 +187,34 @@ public class TransportRepository extends BaseRepository<Transport> {
             """;
 
         return executeCountQuery(query, status);
+    }
+
+    public List<Transport> findByExpectedArrivalDayAndStatus(final LocalDate expectedArrivalDate,
+        final String status) {
+        final String query = """
+                SELECT
+                    t.*,
+                    t.ID AS TRANSPORT_ID,
+                    t.COMPANY_ID AS TRANSPORT_COMPANY_ID,
+                    t.DEPARTURE_ADDRESS_ID AS DEPARTURE_ADDRESS_ID,
+                    t.DESTINATION_ADDRESS_ID AS DESTINATION_ADDRESS_ID,
+                    dep.*,
+                    dep.ID AS DEPARTURE_ADDRESS_ID,
+                    destination.*,
+                    destination.ID AS DESTINATION_ADDRESS_ID,
+                    c.*,
+                    c.ID AS COMPANY_ID
+                FROM NBP02.TRANSPORT t
+                JOIN NBP02.ADDRESS dep ON t.DEPARTURE_ADDRESS_ID = dep.ID
+                JOIN NBP02.ADDRESS destination ON t.DESTINATION_ADDRESS_ID = destination.ID
+                JOIN NBP02.TRANSPORT_COMPANY c ON t.COMPANY_ID = c.ID
+                WHERE TRUNC(t.EXPECTED_ARRIVAL_DATE) = ? AND t.STATUS = ?
+                ORDER BY t.ID DESC
+            """;
+
+        final Date sqlDate = Date.valueOf(expectedArrivalDate);
+
+        return executeListSelectQuery(query, this::mapToEntity, sqlDate, status);
     }
 
 }
