@@ -91,7 +91,7 @@ const Drivers = () => {
 
       <DriversList drivers={drivers} />
 
-      <Box sx={{ height: "300px", opacity: 0 }} />
+      <Box sx={{ height: "200px", opacity: 0 }} />
 
       <AddDriverModal
         open={modalOpen}

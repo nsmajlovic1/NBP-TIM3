@@ -4,25 +4,23 @@ import { styled } from "@mui/material/styles";
 import CarPartCard from "./CarPartCard";
 
 const ScrollableBox = styled(Box)(({ theme }) => ({
-  overflowY: "auto",
-  scrollbarWidth: "thin",
+   overflowY: "auto",
+
   "&::-webkit-scrollbar": {
-    width: "6px",
+    width: "0px",
+    height: "0px",
   },
+
   "&::-webkit-scrollbar-track": {
-    background: theme.palette.grey[100],
+    background: "transparent",
   },
+
   "&::-webkit-scrollbar-thumb": {
-    background: theme.palette.grey[400],
-    borderRadius: "3px",
+    background: "transparent",
   },
-  "&::-webkit-scrollbar-thumb:hover": {
-    background: theme.palette.grey[500],
-  },
+
+  scrollbarWidth: "none",
   scrollbarColor: "transparent transparent",
-  "&:hover": {
-    scrollbarColor: `${theme.palette.grey[400]} ${theme.palette.grey[100]}`,
-  },
 }));
 
 const CarPartList = ({ carParts, error }) => {
