@@ -10,4 +10,5 @@ public class ImageRequest {
     private String assignType;
     private String extension;
     private byte[] data;
+    private String base64;
 }

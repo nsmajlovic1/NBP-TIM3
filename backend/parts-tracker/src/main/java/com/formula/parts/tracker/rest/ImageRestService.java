@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.Base64;
 import java.util.List;
 
 @RestController
@@ -25,31 +26,18 @@ public class ImageRestService {
     private final ImageService imageService;
 
     @PostMapping("/upload")
-    public ResponseEntity<?> upload(
-            @RequestParam("assignId") Long assignId,
-            @RequestParam("assignType") String assignType,
-            @RequestParam("file") MultipartFile file
-    ) {
+    public ResponseEntity<?> upload(@RequestBody ImageRequest request) {
         try {
-            if (file.getSize() > 5 * 1024 * 1024) { // 5MB = 5 * 1024 * 1024 bytes
-                return ResponseEntity.badRequest()
-                        .body("File size must not exceed 5MB");
-            }
-            ImageRequest request = new ImageRequest();
-            request.setAssignId(assignId);
-            request.setAssignType(assignType);
-            request.setData(file.getBytes());
-
-            String filename = file.getOriginalFilename();
-            if (filename != null && filename.contains(".")) {
-                String extension = filename.substring(filename.lastIndexOf('.') + 1).toLowerCase();
-                request.setExtension(extension);
-            } else {
-                request.setExtension("jpg"); // default fallback
+            byte[] decodedBytes = Base64.getDecoder().decode(request.getBase64());
+            if (decodedBytes.length > 5 * 1024 * 1024) {
+                return ResponseEntity.badRequest().body("File size must not exceed 5MB");
             }
 
+            request.setData(decodedBytes);
             return ResponseEntity.ok(imageService.upload(request));
-        } catch (IOException e) {
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body("Invalid Base64 image");
+        } catch (Exception e) {
             return ResponseEntity.internalServerError().build();
         }
     }
