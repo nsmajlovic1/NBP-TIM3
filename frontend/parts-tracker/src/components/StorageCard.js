@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import {
   Card,
   CardContent,
@@ -24,6 +24,7 @@ const StorageCard = ({ storage, isSelected, onClick, onImageDeleted }) => {
   const [storageImageUrl, setStorageImageUrl] = useState(null);
   const [openDeleteModal, setOpenDeleteModal] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [dragActive, setDragActive] = useState(false);
 
   const { streetName, cityName, countryIso } = storage.location;
   const { name: teamName, description: teamDescription, countryIso: teamCountry } = storage.team;
@@ -41,8 +42,7 @@ const StorageCard = ({ storage, isSelected, onClick, onImageDeleted }) => {
     }
   }, [storage.image]);
 
-  const handleFileChange = (e) => {
-    const file = e.target.files[0];
+  const handleFile = (file) => {
     if (!file) return;
 
     const allowedExtensions = ['jpg', 'jpeg', 'png'];
@@ -50,12 +50,12 @@ const StorageCard = ({ storage, isSelected, onClick, onImageDeleted }) => {
 
     if (!allowedExtensions.includes(fileExtension)) {
       toast.error("Only JPG and PNG images are allowed.");
-      return;
+      return false;
     }
 
     if (file.size > 5 * 1024 * 1024) {
       toast.error("Image must be smaller than 5MB.");
-      return;
+      return false;
     }
 
     setSelectedFile(file);
@@ -66,6 +66,36 @@ const StorageCard = ({ storage, isSelected, onClick, onImageDeleted }) => {
       setImagePreview(event.target.result);
     };
     reader.readAsDataURL(file);
+
+    return true;
+  };
+
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    handleFile(file);
+  };
+
+  const handleDragOver = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setDragActive(true);
+  };
+
+  const handleDragLeave = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setDragActive(false);
+  };
+
+  const handleDrop = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setDragActive(false);
+    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+      const file = e.dataTransfer.files[0];
+      handleFile(file);
+      e.dataTransfer.clearData();
+    }
   };
 
   const handleSubmit = async () => {
@@ -91,6 +121,7 @@ const StorageCard = ({ storage, isSelected, onClick, onImageDeleted }) => {
     setFileName('');
     setImagePreview('');
     setModalOpen(false);
+    setDragActive(false);
   };
 
   const handleDeleteConfirm = async () => {
@@ -104,6 +135,7 @@ const StorageCard = ({ storage, isSelected, onClick, onImageDeleted }) => {
       setIsDeleting(false);
       toast.success("Image deleted successfully.");
       if (onImageDeleted) {
+        setOpenDeleteModal(false);
         onImageDeleted();
       }
     } catch (error) {
@@ -215,48 +247,70 @@ const StorageCard = ({ storage, isSelected, onClick, onImageDeleted }) => {
       <Dialog open={modalOpen} onClose={handleCloseModal}>
         <DialogTitle>Upload Image</DialogTitle>
         <DialogContent>
-          <Box sx={{ mt: 2 }}>
-            <Button variant="outlined" component="label" fullWidth>
+          <Box
+            sx={{
+              mt: 2,
+              border: dragActive ? '2px dashed #1976d2' : '2px dashed #ccc',
+              borderRadius: '4px',
+              p: 3,
+              textAlign: 'center',
+              cursor: 'pointer',
+              backgroundColor: dragActive ? '#e3f2fd' : 'transparent',
+              transition: 'background-color 0.3s, border-color 0.3s'
+            }}
+            onDragOver={handleDragOver}
+            onDragLeave={handleDragLeave}
+            onDrop={handleDrop}
+            onClick={() => document.getElementById('fileInput').click()}
+          >
+            <Typography variant="body1" sx={{ mb: 1 }}>
+              Drag & drop an image here, or click to select a file
+            </Typography>
+            <Button
+              variant="outlined"
+              component="label"
+            >
               Choose Image
               <input
+                id="fileInput"
                 type="file"
                 hidden
                 accept="image/png, image/jpeg"
                 onChange={handleFileChange}
               />
             </Button>
-
-            {fileName && (
-              <Typography variant="body2" sx={{ mt: 2, mb: 1 }}>
-                Selected file: {fileName}
-              </Typography>
-            )}
-
-            {imagePreview && (
-              <Box sx={{
-                display: 'flex',
-                justifyContent: 'center',
-                mt: 2,
-                mb: 2,
-                maxHeight: '300px',
-                overflow: 'hidden'
-              }}>
-                <img
-                  src={imagePreview}
-                  alt="Preview"
-                  style={{
-                    maxWidth: '100%',
-                    maxHeight: '300px',
-                    borderRadius: '4px'
-                  }}
-                />
-              </Box>
-            )}
-
-            <Typography variant="caption" color="textSecondary">
-              Allowed formats: JPG, PNG (max 5MB)
-            </Typography>
           </Box>
+
+          {fileName && (
+            <Typography variant="body2" sx={{ mt: 2, mb: 1 }}>
+              Selected file: {fileName}
+            </Typography>
+          )}
+
+          {imagePreview && (
+            <Box sx={{
+              display: 'flex',
+              justifyContent: 'center',
+              mt: 2,
+              mb: 2,
+              maxHeight: '300px',
+              overflow: 'hidden'
+            }}>
+              <img
+                src={imagePreview}
+                alt="Preview"
+                style={{
+                  maxWidth: '100%',
+                  maxHeight: '300px',
+                  borderRadius: '4px'
+                }}
+              />
+            </Box>
+          )}
+
+          <Typography variant="caption" color="textSecondary">
+            Allowed formats: JPG, PNG (max 5MB)
+          </Typography>
         </DialogContent>
         <DialogActions sx={{ px: 3, pb: 2 }}>
           <Button

@@ -1,38 +1,43 @@
 import API from "./api";
 
-export const uploadStorageImage = async (assignId, file) => {
-  const token = localStorage.getItem('token');
-  if (!token) {
-    throw new Error('Token not found in localStorage');
-  }
+export const uploadStorageImage = async (storageId, file) => {
 
-  const formData = new FormData();
-  formData.append('assignId', assignId.toString());
-  formData.append('assignType', 'STORAGE');
-  formData.append('file', file);
+  const getBase64 = (file) => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result.split(',')[1]);
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+  };
+
   try {
-      const response = await fetch('/api/image/upload', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${token}`,
-      },
-      body: formData,
+    const base64Image = await getBase64(file);
+
+    const fileExtension = file.name.split('.').pop().toLowerCase();
+
+    const response = await API.post(`/image/upload`, {
+      
+      assignId: storageId,
+      assignType: "STORAGE",
+      extension: fileExtension, 
+      base64: base64Image     
     });
 
     if (response.status === 200) {
         return response.data;
       } else {
-        throw new Error("Failed to fetch image info. Unexpected response status.");
+        throw new Error("Failed to upload image.");
       }
-  } catch (error) {
-    const serverErrors = error.response?.data?.errors;
-    if (serverErrors && Array.isArray(serverErrors) && serverErrors.length > 0) {
-      throw new Error(serverErrors[0].message);
-    }
+    } catch (error) {
+      const serverErrors = error.response?.data?.errors;
+      if (serverErrors && Array.isArray(serverErrors) && serverErrors.length > 0) {
+        throw new Error(serverErrors[0].message);
+      }
 
-    throw new Error(error.response?.data?.message || "Failed to fetch image info.");
-  }
-}
+      throw new Error(error.response?.data?.message || "Failed to upload image.");
+    }
+  };
 
 export const getStorageImageInfo = async (requestData) => {
   try {
@@ -64,7 +69,6 @@ export const getImageById = async (id) => {
     });
 
     if (response.status === 200) {
-      console.log(response.data)
       return response.data;
     } else {
       throw new Error("Failed to fetch image.");
