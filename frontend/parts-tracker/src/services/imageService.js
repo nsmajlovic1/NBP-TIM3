@@ -75,5 +75,23 @@ export const getImageById = async (id) => {
   }
 };
 
+export const deleteImage = async (id) => {
+  try {
+    const response = await API.delete(`/image/${id}`);
+
+    if (response.status === 200) {
+      return response.data;
+    } else {
+      throw new Error("Failed to delete image.")
+    }
+  } catch (error) {
+    const serverErrors = error.response?.data?.errors;
+    if (serverErrors && Array.isArray(serverErrors) && serverErrors.length > 0) {
+      throw new Error(serverErrors[0].message);
+    }
+    throw new Error(error.response?.data?.message || "Failed to delete image.");
+  }
+}
+
 
 

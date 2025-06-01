@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
-import { getStorages } from "../services/storageService";
-import { getStoragesByTeam } from "../services/storageService";
+import { getStorages, getStoragesByTeam } from "../services/storageService";
 import StorageMap from "./StorageMap";
 import StorageCard from "./StorageCard";
 import { Box, Button, Typography, CircularProgress } from "@mui/material";
@@ -63,13 +62,24 @@ const Storages = () => {
 
             if (imageInfo && imageInfo.id) {
               const imageData = await getImageById(imageInfo.id);
-              console.log(imageData)
-              return { ...storage, image: imageData };
+              return {
+                ...storage,
+                imageId: imageInfo.id,
+                image: imageData,
+              };
             } else {
-              return { ...storage, image: null };
+              return {
+                ...storage,
+                imageId: null,
+                image: null,
+              };
             }
           } catch {
-            return { ...storage, image: null };
+            return {
+              ...storage,
+              imageId: null,
+              image: null,
+            };
           }
         })
       );
@@ -83,7 +93,6 @@ const Storages = () => {
       setLoading(false);
     }
   };
-
 
   useEffect(() => {
     if (userRole) {
@@ -110,18 +119,17 @@ const Storages = () => {
     fetchStorages();
   };
 
+  const handleImageDeleted = () => {
+    fetchStorages();
+  };
+
   if (loading) {
     return (
       <Box display="flex" height="100%">
         <Box flex={3} height="100%">
           <StorageMap storages={[]} />
         </Box>
-        <Box
-          flex={1}
-          display="flex"
-          justifyContent="center"
-          alignItems="center"
-        >
+        <Box flex={1} display="flex" justifyContent="center" alignItems="center">
           <CircularProgress />
         </Box>
       </Box>
@@ -165,32 +173,17 @@ const Storages = () => {
 
         <Box
           sx={{
-          flexGrow: 1,
-           overflowY: "auto",
-
-          "&::-webkit-scrollbar": {
-            width: "0px",
-            height: "0px",
-          },
-
-          "&::-webkit-scrollbar-track": {
-            background: "transparent",
-          },
-
-          "&::-webkit-scrollbar-thumb": {
-            background: "transparent",
-          },
-
-          scrollbarWidth: "none",
-          scrollbarColor: "transparent transparent",
+            flexGrow: 1,
+            overflowY: "auto",
+            "&::-webkit-scrollbar": { width: "0px", height: "0px" },
+            "&::-webkit-scrollbar-track": { background: "transparent" },
+            "&::-webkit-scrollbar-thumb": { background: "transparent" },
+            scrollbarWidth: "none",
+            scrollbarColor: "transparent transparent",
           }}
         >
           {error ? (
-            <Typography
-              variant="body1"
-              color="error"
-              sx={{ textAlign: "center", mt: 3 }}
-            >
+            <Typography variant="body1" color="error" sx={{ textAlign: "center", mt: 3 }}>
               {error}
             </Typography>
           ) : storages.length > 0 ? (
@@ -200,15 +193,12 @@ const Storages = () => {
                   storage={storage}
                   isSelected={selectedStorage?.id === storage.id}
                   onClick={() => handleCardClick(storage)}
+                  onImageDeleted={handleImageDeleted}
                 />
               </Box>
             ))
           ) : (
-            <Typography
-              variant="body1"
-              color="textSecondary"
-              sx={{ textAlign: "center", mt: 3 }}
-            >
+            <Typography variant="body1" color="textSecondary" sx={{ textAlign: "center", mt: 3 }}>
               No storage data available
             </Typography>
           )}

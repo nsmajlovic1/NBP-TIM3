@@ -1,11 +1,11 @@
-import { useState, useEffect } from 'react'; 
+import { useState, useEffect } from 'react';
 import {
   Card,
   CardContent,
   Typography,
   Paper,
   Button,
-  Dialog, 
+  Dialog,
   DialogTitle,
   DialogContent,
   CircularProgress,
@@ -13,28 +13,25 @@ import {
   DialogActions
 } from '@mui/material';
 import { toast } from 'react-toastify';
-import { uploadStorageImage } from '../services/imageService';
+import { uploadStorageImage, deleteImage } from '../services/imageService';
 
-const StorageCard = ({ storage, isSelected, onClick }) => {
+const StorageCard = ({ storage, isSelected, onClick, onImageDeleted }) => {
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedFile, setSelectedFile] = useState(null);
   const [fileName, setFileName] = useState('');
   const [isUploading, setIsUploading] = useState(false);
   const [imagePreview, setImagePreview] = useState('');
   const [storageImageUrl, setStorageImageUrl] = useState(null);
+  const [openDeleteModal, setOpenDeleteModal] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const { streetName, cityName, countryIso } = storage.location;
-  const {
-    name: teamName,
-    description: teamDescription,
-    countryIso: teamCountry,
-  } = storage.team;
+  const { name: teamName, description: teamDescription, countryIso: teamCountry } = storage.team;
 
   useEffect(() => {
     if (storage.image) {
       const url = URL.createObjectURL(storage.image);
       setStorageImageUrl(url);
-
       return () => {
         URL.revokeObjectURL(url);
         setStorageImageUrl(null);
@@ -50,7 +47,7 @@ const StorageCard = ({ storage, isSelected, onClick }) => {
 
     const allowedExtensions = ['jpg', 'jpeg', 'png'];
     const fileExtension = file.name.split('.').pop().toLowerCase();
-    
+
     if (!allowedExtensions.includes(fileExtension)) {
       toast.error("Only JPG and PNG images are allowed.");
       return;
@@ -70,16 +67,18 @@ const StorageCard = ({ storage, isSelected, onClick }) => {
     };
     reader.readAsDataURL(file);
   };
-  
+
   const handleSubmit = async () => {
     if (!selectedFile) return;
 
     setIsUploading(true);
     try {
-      await uploadStorageImage(storage.id, selectedFile); 
-
+      await uploadStorageImage(storage.id, selectedFile);
       toast.success('Image uploaded successfully!');
       handleCloseModal();
+      if (onImageDeleted) {
+        onImageDeleted();
+      }
     } catch (error) {
       toast.error(error.message || 'Failed to upload image.');
     } finally {
@@ -92,6 +91,30 @@ const StorageCard = ({ storage, isSelected, onClick }) => {
     setFileName('');
     setImagePreview('');
     setModalOpen(false);
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (!storage.imageId) {
+      toast.error("No image to delete.");
+      return;
+    }
+    try {
+      setIsDeleting(true);
+      await deleteImage(storage.imageId);
+      setIsDeleting(false);
+      toast.success("Image deleted successfully.");
+      if (onImageDeleted) {
+        onImageDeleted();
+      }
+    } catch (error) {
+      setIsDeleting(false);
+      toast.error(error.message || "Failed to delete image.");
+    }
+    setOpenDeleteModal(false);
+  };
+
+  const handleDeleteCancel = () => {
+    setOpenDeleteModal(false);
   };
 
   return (
@@ -110,7 +133,6 @@ const StorageCard = ({ storage, isSelected, onClick }) => {
           minHeight: 180,
         }}
       >
-
         <Box
           sx={{
             width: '100%',
@@ -178,14 +200,14 @@ const StorageCard = ({ storage, isSelected, onClick }) => {
 
           <Button
             variant="contained"
-            color="primary"
+            color={storage.image ? "error" : "primary"}
             sx={{ mt: 2, alignSelf: "start" }}
             onClick={(e) => {
               e.stopPropagation();
-              setModalOpen(true);
+              storage.image ? setOpenDeleteModal(true) : setModalOpen(true);
             }}
           >
-            Upload Image
+            {storage.image ? "Remove Image" : "Upload Image"}
           </Button>
         </CardContent>
       </Card>
@@ -196,50 +218,50 @@ const StorageCard = ({ storage, isSelected, onClick }) => {
           <Box sx={{ mt: 2 }}>
             <Button variant="outlined" component="label" fullWidth>
               Choose Image
-              <input 
-                type="file" 
-                hidden 
-                accept="image/png, image/jpeg" 
-                onChange={handleFileChange} 
+              <input
+                type="file"
+                hidden
+                accept="image/png, image/jpeg"
+                onChange={handleFileChange}
               />
             </Button>
-            
+
             {fileName && (
               <Typography variant="body2" sx={{ mt: 2, mb: 1 }}>
                 Selected file: {fileName}
               </Typography>
             )}
-            
+
             {imagePreview && (
-              <Box sx={{ 
-                display: 'flex', 
+              <Box sx={{
+                display: 'flex',
                 justifyContent: 'center',
                 mt: 2,
                 mb: 2,
                 maxHeight: '300px',
                 overflow: 'hidden'
               }}>
-                <img 
-                  src={imagePreview} 
-                  alt="Preview" 
-                  style={{ 
-                    maxWidth: '100%', 
+                <img
+                  src={imagePreview}
+                  alt="Preview"
+                  style={{
+                    maxWidth: '100%',
                     maxHeight: '300px',
                     borderRadius: '4px'
-                  }} 
+                  }}
                 />
               </Box>
             )}
-            
+
             <Typography variant="caption" color="textSecondary">
               Allowed formats: JPG, PNG (max 5MB)
             </Typography>
           </Box>
         </DialogContent>
         <DialogActions sx={{ px: 3, pb: 2 }}>
-          <Button 
-            onClick={handleCloseModal} 
-            variant="outlined" 
+          <Button
+            onClick={handleCloseModal}
+            variant="outlined"
             disabled={isUploading}
           >
             Cancel
@@ -252,6 +274,27 @@ const StorageCard = ({ storage, isSelected, onClick }) => {
             startIcon={isUploading ? <CircularProgress size={20} /> : null}
           >
             {isUploading ? 'Uploading...' : 'Upload'}
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      <Dialog open={openDeleteModal} onClose={handleDeleteCancel}>
+        <DialogTitle>Confirm Deletion</DialogTitle>
+        <DialogContent>
+          <Typography>
+            Are you sure you want to delete the image?
+          </Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleDeleteCancel}>Cancel</Button>
+          <Button
+            onClick={handleDeleteConfirm}
+            color="error"
+            variant="contained"
+            disabled={isDeleting}
+            startIcon={isDeleting ? <CircularProgress size={20} /> : null}
+          >
+            {isDeleting ? "Deleting..." : "Delete"}
           </Button>
         </DialogActions>
       </Dialog>
