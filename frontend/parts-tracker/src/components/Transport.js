@@ -89,12 +89,6 @@ const Transport = () => {
         )}
       </Box>
 
-      {error && (
-        <Typography color="error" sx={{ mb: 2 }}>
-          {error}
-        </Typography>
-      )}
-
       <TransportList
         transports={transports}
         userRole={userRole}
