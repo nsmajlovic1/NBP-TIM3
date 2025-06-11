@@ -140,7 +140,7 @@ public class PackageRepository extends BaseRepository<Package> {
 
     public Map<Long, List<Package>> findGroupedByTransport() {
         final String query = """
-                SELECT DISTINCT p.*, s.TRANSPORT_ID
+                SELECT DISTINCT p.*, s.TRANSPORT_ID, d.TEAM_ID
                 FROM NBP02."PACKAGE" p
                 INNER JOIN NBP02.SHIPMENT s ON s.ID = p.SHIPMENT_ID
                 INNER JOIN NBP02.CAR_PART cp ON p.ID = cp.PACKAGE_ID
