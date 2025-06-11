@@ -2,7 +2,7 @@ import API from "./api";
 
 export const getStorages = async () => {
   try {
-    const response = await API.get("/storage/all");
+    const response = await API.get("/storage/all?page=1&size=100");
 
     if (response.status === 200) {
       return response.data;
