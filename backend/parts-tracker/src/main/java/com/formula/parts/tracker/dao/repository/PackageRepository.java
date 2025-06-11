@@ -71,10 +71,13 @@ public class PackageRepository extends BaseRepository<Package> {
             pkg.getDestinationStorageId()
         );
 
-        final String selectQuery = """
-                SELECT p.*
+        final String selectQuery = """                
+                SELECT DISTINCT p.*, d.TEAM_ID AS TEAM_ID
                 FROM NBP02."PACKAGE" p
-                ORDER BY ID DESC FETCH FIRST 1 ROWS ONLY
+                INNER JOIN NBP02.SHIPMENT s ON s.ID = p.SHIPMENT_ID
+                INNER JOIN NBP02.CAR_PART cp ON p.ID = cp.PACKAGE_ID
+                INNER JOIN NBP02.DRIVER d ON cP.DRIVER_ID = d.ID
+                ORDER BY p.ID DESC FETCH FIRST 1 ROWS ONLY
             """;
 
         return executeSingleSelectQuery(selectQuery, this::mapToEntity);
@@ -82,7 +85,7 @@ public class PackageRepository extends BaseRepository<Package> {
 
     public List<Package> findByTransportIdAndTeamId(final Long transportId, final Long teamId) {
         final String query = """
-                SELECT DISTINCT p.*
+                SELECT DISTINCT p.*, d.TEAM_ID AS TEAM_ID
                 FROM NBP02."PACKAGE" p
                 INNER JOIN NBP02.SHIPMENT s ON s.ID = p.SHIPMENT_ID
                 INNER JOIN NBP02.CAR_PART cp ON p.ID = cp.PACKAGE_ID
@@ -122,7 +125,7 @@ public class PackageRepository extends BaseRepository<Package> {
 
     public Map<Long, List<Package>> findByTeamIdGroupedByTransport(final Long teamId) {
         final String query = """
-                SELECT DISTINCT p.*, s.TRANSPORT_ID
+                SELECT DISTINCT p.*, s.TRANSPORT_ID, d.TEAM_ID
                 FROM NBP02."PACKAGE" p
                 INNER JOIN NBP02.SHIPMENT s ON s.ID = p.SHIPMENT_ID
                 INNER JOIN NBP02.CAR_PART cp ON p.ID = cp.PACKAGE_ID

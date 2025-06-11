@@ -47,7 +47,7 @@ public class CarPartRestService {
     public ResponseEntity<Page<CarPartResponse>> getAllCarParts(
         @RequestParam(value = "search", required = false) String search,
         @RequestParam(value = "page", defaultValue = "1") Long page,
-        @RequestParam(value = "size", defaultValue = "10") Long size) throws ApiException {
+        @RequestParam(value = "size", defaultValue = "10000") Long size) throws ApiException {
         return ResponseEntity.ok(carPartService.getAll(search, page, size));
     }
 
